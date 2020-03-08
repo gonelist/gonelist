@@ -89,12 +89,12 @@ func GetTreeFileNode(prefix, relativePath string) (list []*FileNode, err error) 
 	return list, nil
 }
 
-func CacheGetPathList(oPath string) ([]*FileNode, error) {
+func CacheGetPathList(oPath string) (*FileNode, error) {
 	root := FileTree
 	pArray := strings.Split(oPath, "/")
 
 	if oPath == "" || oPath == "/" || len(pArray) < 2 {
-		return root.Children, nil
+		return root, nil
 	}
 
 	for i := 1; i < len(pArray); i++ {
@@ -115,5 +115,5 @@ func CacheGetPathList(oPath string) ([]*FileNode, error) {
 		}
 	}
 
-	return root.Children, nil
+	return root, nil
 }

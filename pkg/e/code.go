@@ -2,8 +2,7 @@ package e
 
 const (
 	SUCCESS            = 200
-	HTTP_REQUEST_ERROR = 300
-	INVALID_PARAMS     = 400
+	INVALID_PARAMS     = 300
 	ERROR              = 500
 	// 具体返回内容
 	INVALID_STATE  = 10001
@@ -12,7 +11,6 @@ const (
 
 var MsgFlags = map[int]string{
 	SUCCESS:            "ok",
-	HTTP_REQUEST_ERROR: "请求接口错误",
 	INVALID_PARAMS:     "请求参数错误",
 	ERROR:              "fail",
 	INVALID_STATE:      "state 字符串与设置的不一致，请检查设置",

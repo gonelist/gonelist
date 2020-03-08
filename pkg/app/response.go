@@ -1,9 +1,8 @@
 package app
 
 import (
-	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 	"GOIndex/pkg/e"
+	"github.com/gin-gonic/gin"
 )
 
 type Res struct {
@@ -19,10 +18,10 @@ func Response(c *gin.Context, httpCode, errCode int, data interface{}) {
 		Msg:  e.GetMsg(errCode),
 		Data: data,
 	}
-	log.WithFields(log.Fields{
-		"header":   c.Request.Header,
-		"response": res,
-	}).Info("返回内容")
+	//log.WithFields(log.Fields{
+	//	"header":   c.Request.Header,
+	//	"response": res,
+	//}).Info("返回内容")
 	c.JSON(httpCode, res)
 	return
 }

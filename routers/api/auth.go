@@ -15,7 +15,7 @@ func Login(c *gin.Context) {
 	// 判断是否登录
 	if mg_auth.GetClient() != nil {
 		// 有 Client 则重定向到首页
-		c.Redirect(http.StatusFound, "/getallfiles")
+		c.Redirect(http.StatusFound, "/onedrive/getallfiles")
 	} else {
 		c.Redirect(http.StatusFound, "/loginmg")
 	}

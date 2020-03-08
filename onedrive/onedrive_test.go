@@ -1,9 +1,9 @@
 package onedrive
 
 import (
+	"GOIndex/pkg/file"
 	"encoding/json"
 	"fmt"
-	"GOIndex/pkg/file"
 	"testing"
 )
 
@@ -47,11 +47,18 @@ func TestCacheGetPathList(t *testing.T) {
 
 	FileTree = filetree
 
-	child, err := CacheGetPathList("/test")
+	root, err := CacheGetPathList("/便笺.txt")
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
-	for _, item := range child {
-		fmt.Println(item)
+	if root.IsFolder == false {
+		// 是一个文件
+		b, _ := json.Marshal(root)
+		fmt.Println(string(b))
+	} else {
+		for _, item := range root.Children {
+			fmt.Println(item)
+		}
 	}
 }
