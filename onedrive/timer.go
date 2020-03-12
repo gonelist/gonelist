@@ -15,7 +15,7 @@ func AutoRefresh() {
 		"time": time.Now(),
 	}).Info("自动刷新所有缓存")
 	FileTree = GetAllFiles()
-	log.Info(FileTree)
+	log.Debug(FileTree)
 }
 
 func timer(timer func()) {

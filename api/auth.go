@@ -1,12 +1,12 @@
 package api
 
 import (
-	"github.com/gin-gonic/gin"
-	"net/http"
 	"GOIndex/mg_auth"
 	"GOIndex/onedrive"
 	"GOIndex/pkg/app"
 	"GOIndex/pkg/e"
+	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 
@@ -22,10 +22,12 @@ func Login(c *gin.Context) {
 	app.Response(c, http.StatusOK, 0, nil)
 }
 
+
 // 跳转到网页登录
 func LoginMG(c *gin.Context) {
 	mg_auth.RedirectLoginMG(c)
 }
+
 
 // 接受 code
 func GetCode(c *gin.Context) {

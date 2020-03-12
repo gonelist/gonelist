@@ -1,13 +1,13 @@
 package mg_auth
 
 import (
+	"GOIndex/conf"
 	"context"
 	"errors"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
 	"net/http"
-	"GOIndex/conf"
 )
 
 // 使用代码流的方式获取授权，文档
@@ -67,6 +67,7 @@ func GetAccessToken(code ReceiveCode) error {
 	log.WithField("token", tok).Info("获取 AccessToken 成功")
 	return nil
 }
+
 
 func GetClient() *http.Client {
 	return client

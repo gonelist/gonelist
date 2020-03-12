@@ -1,26 +1,31 @@
 package onedrive
 
 import (
+	"GOIndex/mg_auth"
 	"encoding/json"
 	"errors"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
-	"GOIndex/mg_auth"
 	"strings"
 	"time"
 )
 
+const (
+	ROOTUrl = "https://graph.microsoft.com/v1.0/me/drive/root/children"
+)
+
 // 获取某个路径的内容，如果 token 失效或没有正常结果返回 err
 func GetUrlToAns(relativePath string) (Answer, error) {
-	var url string
-	var ans Answer
+	var (
+		url  = ROOTUrl
+		ans Answer
+	)
 
-	if relativePath == "" {
-		url = "https://graph.microsoft.com/v1.0/me/drive/root/children"
-	} else {
+	if relativePath != "" {
 		// eg. /test
 		url = "https://graph.microsoft.com/v1.0/me/drive/root:" + relativePath + ":/children"
 	}
+
 	client := mg_auth.GetClient()
 	resp, err := client.Get(url)
 	if err != nil {
@@ -31,11 +36,13 @@ func GetUrlToAns(relativePath string) (Answer, error) {
 		}).Info("请求 graph.microsoft.com 失败")
 		return ans, err
 	}
+
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.WithField("err", err).Info("读取 graph.microsoft.com 返回内容失败")
 		return ans, err
 	}
+
 	// 解析内容
 	json.Unmarshal(body, &ans)
 	err = CheckAnswerValid(ans, relativePath)
@@ -45,9 +52,11 @@ func GetUrlToAns(relativePath string) (Answer, error) {
 	return ans, nil
 }
 
+
 // 获取所有文件的树
 func GetAllFiles() *FileNode {
 	var err error
+
 	root := &FileNode{
 		Name:           "root",
 		Path:           "/",
@@ -64,9 +73,13 @@ func GetAllFiles() *FileNode {
 	return root
 }
 
+
 func GetTreeFileNode(prefix, relativePath string) (list []*FileNode, err error) {
-	var ans Answer
-	oPath := prefix + relativePath
+	var (
+		ans Answer
+		oPath = prefix + relativePath
+	)
+
 	ans, err = GetUrlToAns(oPath)
 	if err != nil {
 		log.WithFields(log.Fields{
@@ -75,6 +88,7 @@ func GetTreeFileNode(prefix, relativePath string) (list []*FileNode, err error) 
 		}).Info("请求 graph.microsoft.com 出现错误")
 		return nil, err
 	}
+
 	// 解析对应 list
 	list = ConvertAnsToFileNodes(oPath, ans)
 	for i, _ := range list {
@@ -88,6 +102,7 @@ func GetTreeFileNode(prefix, relativePath string) (list []*FileNode, err error) 
 	}
 	return list, nil
 }
+
 
 func CacheGetPathList(oPath string) (*FileNode, error) {
 	root := FileTree
@@ -117,3 +132,4 @@ func CacheGetPathList(oPath string) (*FileNode, error) {
 
 	return root, nil
 }
+
