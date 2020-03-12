@@ -1,10 +1,10 @@
 package routers
 
 import (
+	"GOIndex/api"
+	"GOIndex/middleware"
 	"github.com/gin-gonic/gin"
 	cors "github.com/rs/cors/wrapper/gin"
-	"GOIndex/routers/api"
-	"GOIndex/routers/middleware"
 )
 
 func InitRouter() *gin.Engine {

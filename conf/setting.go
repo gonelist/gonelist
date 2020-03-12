@@ -1,10 +1,11 @@
 package conf
 
 import (
+	"GOIndex/pkg/file"
 	"encoding/json"
+	"errors"
 	"fmt"
 	log "github.com/sirupsen/logrus"
-	"GOIndex/pkg/file"
 	"time"
 )
 
@@ -45,14 +46,17 @@ func LoadUserConfig(filePath string) error {
 	var content string
 	var err error
 
-	fmt.Println("导入", filePath, "配置")
+	if len(filePath) == 0 {
+		return errors.New("配置文件名不能为空")
+	}
+
+	log.Infof("当前使用的配置文件为:%s", filePath)
+
 	content = file.ReadFromFile(filePath)
 	err = json.Unmarshal([]byte(content), &UserSetting)
 	if err != nil {
-		fmt.Println("导入用户配置出现错误")
-		log.Warn(err)
-		return err
+		return fmt.Errorf("导入用户配置出现错误: %w", err)
 	}
-	fmt.Println("成功导入用户配置")
+	log.Info("成功导入用户配置")
 	return nil
 }

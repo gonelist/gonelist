@@ -6,6 +6,15 @@ import (
 	"time"
 )
 
+type ErrJson struct {
+	Code       string `json:"code"`
+	Message    string `json:"message"`
+	InnerError struct {
+		RequestID string `json:"request-id"`
+		Date      string `json:"date"`
+	} `json:"innerError"`
+}
+
 type Answer struct {
 	OdataContext string `json:"@odata.context"`
 	Value        []struct {
@@ -16,7 +25,7 @@ type Answer struct {
 		Name                 string    `json:"name"`
 		WebURL               string    `json:"webUrl"`
 		CTag                 string    `json:"cTag"`
-		Size                 int       `json:"size"`
+		Size                 int64     `json:"size"`
 		CreatedBy            struct {
 			User struct {
 				Email       string `json:"email"`
@@ -62,14 +71,7 @@ type Answer struct {
 			Width  int `json:"width"`
 		} `json:"image,omitempty"`
 	} `json:"value"`
-	Error struct {
-		Code       string `json:"code"`
-		Message    string `json:"message"`
-		InnerError struct {
-			RequestID string `json:"request-id"`
-			Date      string `json:"date"`
-		} `json:"innerError"`
-	} `json:"error"`
+	Error ErrJson `json:"error,omitempty"`
 }
 
 // 判断收到的 Answer 是否正常
