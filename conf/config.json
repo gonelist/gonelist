@@ -2,5 +2,10 @@
   "client_id": "88966400-cb81-49cb-89c2-6d09f0a3d9e2",
   "redirect_url": "http://localhost:8000/auth",
   "client_secret": "/FKad]FPtKNk-=j11aPwEOBSxYUYUU54",
-  "state": "23333"
+  "state": "23333",
+  "server": {
+    "run_mode": "run_mode",
+    "http_port": 8000,
+    "refresh_time": 10
+  }
 }

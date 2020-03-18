@@ -1,4 +1,4 @@
-package GOIndex
+package main
 
 import (
 	"GOIndex/conf"
@@ -7,7 +7,6 @@ import (
 	"flag"
 	"fmt"
 	log "github.com/sirupsen/logrus"
-
 )
 
 func main() {
@@ -30,5 +29,5 @@ func main() {
 	// 启动服务器
 	r := routers.InitRouter()
 
-	panic(r.Run(fmt.Sprintf(":%d", conf.ServerSetting.HttpPort)))
+	panic(r.Run(fmt.Sprintf(":%d", conf.UserSetting.Server.HttpPort)))
 }

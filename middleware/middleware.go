@@ -1,9 +1,9 @@
 package middleware
 
 import (
+	"GOIndex/mg_auth"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"GOIndex/mg_auth"
 )
 
 func CheckLogin() gin.HandlerFunc {

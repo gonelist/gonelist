@@ -9,7 +9,6 @@ import (
 	"net/http"
 )
 
-
 // 通过监听一个地址，跳转打开 login
 func Login(c *gin.Context) {
 	// 判断是否登录
@@ -22,12 +21,10 @@ func Login(c *gin.Context) {
 	app.Response(c, http.StatusOK, 0, nil)
 }
 
-
 // 跳转到网页登录
 func LoginMG(c *gin.Context) {
 	mg_auth.RedirectLoginMG(c)
 }
-
 
 // 接受 code
 func GetCode(c *gin.Context) {

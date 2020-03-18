@@ -17,7 +17,7 @@ const (
 // 获取某个路径的内容，如果 token 失效或没有正常结果返回 err
 func GetUrlToAns(relativePath string) (Answer, error) {
 	var (
-		url  = ROOTUrl
+		url = ROOTUrl
 		ans Answer
 	)
 
@@ -52,7 +52,6 @@ func GetUrlToAns(relativePath string) (Answer, error) {
 	return ans, nil
 }
 
-
 // 获取所有文件的树
 func GetAllFiles() *FileNode {
 	var err error
@@ -73,10 +72,9 @@ func GetAllFiles() *FileNode {
 	return root
 }
 
-
 func GetTreeFileNode(prefix, relativePath string) (list []*FileNode, err error) {
 	var (
-		ans Answer
+		ans   Answer
 		oPath = prefix + relativePath
 	)
 
@@ -102,7 +100,6 @@ func GetTreeFileNode(prefix, relativePath string) (list []*FileNode, err error) 
 	}
 	return list, nil
 }
-
 
 func CacheGetPathList(oPath string) (*FileNode, error) {
 	root := FileTree
@@ -132,4 +129,3 @@ func CacheGetPathList(oPath string) (*FileNode, error) {
 
 	return root, nil
 }
-

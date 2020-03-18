@@ -68,7 +68,6 @@ func GetAccessToken(code ReceiveCode) error {
 	return nil
 }
 
-
 func GetClient() *http.Client {
 	return client
 }

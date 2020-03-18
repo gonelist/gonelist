@@ -1,6 +1,6 @@
 # GOIndex
 
-默认情况下读取当前路径的 `conf/config.json` 作为配置文件
+默认情况下读取当前路径的 `conf/config.json` 作为配置文件，或者启动加参数`--conf=dir1/file.json`指定配置文件路径
 
 在配置文件中填对对应的内容即可
 - client_id 客户端 id

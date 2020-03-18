@@ -1,6 +1,7 @@
 package onedrive
 
 import (
+	"GOIndex/conf"
 	log "github.com/sirupsen/logrus"
 	"time"
 )
@@ -19,7 +20,7 @@ func AutoRefresh() {
 }
 
 func timer(timer func()) {
-	ticker := time.NewTicker(1 * time.Minute)
+	ticker := time.NewTicker(conf.GetRefreshTime())
 	for {
 		select {
 		case <-ticker.C:

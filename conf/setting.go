@@ -11,15 +11,18 @@ import (
 
 // 服务器设置
 type Server struct {
-	RunMode      string
-	HttpPort     int
+	RunMode      string  `json:"run_mode"`
+	HttpPort     int     `json:"http_port"`
+	refreshTime  int  `json:"refresh_time"` //单位为分钟
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
 }
 
-var ServerSetting = &Server{
+
+var defaultServerSetting = &Server{
 	RunMode:      "release",
 	HttpPort:     8000,
+	refreshTime:  10,
 	ReadTimeout:  60,
 	WriteTimeout: 60,
 }
@@ -37,7 +40,8 @@ type UserInfo struct {
 	GrantType    string `json:"-"` // 值为 authorization_code
 	Scope        string `json:"-"` // 值为 offline_access files.readwrite.all
 	AccessToken  string `json:"-"` // 令牌
-	RefreshToken string `json:"-"` //刷新令牌
+	RefreshToken string `json:"refresh_token"` //刷新令牌
+	Server      *Server `json:"server"`
 }
 
 var UserSetting UserInfo
@@ -57,6 +61,14 @@ func LoadUserConfig(filePath string) error {
 	if err != nil {
 		return fmt.Errorf("导入用户配置出现错误: %w", err)
 	}
+	if UserSetting.Server == nil {
+		UserSetting.Server = defaultServerSetting
+	}
 	log.Info("成功导入用户配置")
 	return nil
+}
+
+// return the refresh time from the settings
+func GetRefreshTime() time.Duration {
+	return time.Duration(UserSetting.Server.refreshTime) * time.Minute
 }
