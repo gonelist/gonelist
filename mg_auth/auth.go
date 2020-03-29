@@ -71,3 +71,7 @@ func GetAccessToken(code ReceiveCode) error {
 func GetClient() *http.Client {
 	return client
 }
+
+func ClearCLient() {
+	client = nil
+}

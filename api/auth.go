@@ -47,3 +47,8 @@ func GetCode(c *gin.Context) {
 	go onedrive.SetAutoRefresh()
 	app.Response(c, http.StatusOK, e.SUCCESS, "登陆成功")
 }
+
+// 注销登陆
+func CancelLogin(c *gin.Context) {
+	mg_auth.ClearCLient()
+}

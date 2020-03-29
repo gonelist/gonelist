@@ -59,6 +59,7 @@ func GetAllFiles() *FileNode {
 	root := &FileNode{
 		Name:           "root",
 		Path:           "/",
+		IsFolder:       false,
 		LastModifyTime: time.Now(),
 		Children:       nil,
 	}
@@ -68,6 +69,9 @@ func GetAllFiles() *FileNode {
 		log.Info(err)
 	} else {
 		root.Children = list
+		if root.Children != nil {
+			root.IsFolder = true
+		}
 	}
 	return root
 }
