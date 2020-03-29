@@ -73,6 +73,8 @@ func GetAllFiles() *FileNode {
 			root.IsFolder = true
 		}
 	}
+	// 更新树结构
+	FileTree = root
 	return root
 }
 

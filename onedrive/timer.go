@@ -15,7 +15,7 @@ func AutoRefresh() {
 	log.WithFields(log.Fields{
 		"time": time.Now(),
 	}).Info("自动刷新所有缓存")
-	FileTree = GetAllFiles()
+	GetAllFiles()  // 获取所有文件并且刷新树结构
 	log.Debug(FileTree)
 }
 
