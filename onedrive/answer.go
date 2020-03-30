@@ -96,6 +96,7 @@ type FileNode struct {
 	Children       []*FileNode `json:"children"`
 }
 
+var IsLogin bool
 var FileTree *FileNode
 
 // Answer 是一个列表

@@ -12,7 +12,7 @@ import (
 // 通过监听一个地址，跳转打开 login
 func Login(c *gin.Context) {
 	// 判断是否登录
-	if mg_auth.GetClient() != nil {
+	if onedrive.IsLogin != true {
 		// 有 Client 则重定向到首页
 		c.Redirect(http.StatusFound, "/onedrive/getpath?path=/")
 	} else {
@@ -53,7 +53,8 @@ func GetCode(c *gin.Context) {
 
 // 注销登陆
 func CancelLogin(c *gin.Context) {
-	mg_auth.ClearCLient()
-	
+	//mg_auth.ClearCLient()
+	onedrive.IsLogin = false
+
 	app.Response(c, http.StatusOK, e.SUCCESS, "注销成功")
 }

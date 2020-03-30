@@ -75,6 +75,7 @@ func GetAllFiles() *FileNode {
 	}
 	// 更新树结构
 	FileTree = root
+	IsLogin = true
 	return root
 }
 
