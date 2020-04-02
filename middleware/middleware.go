@@ -12,7 +12,7 @@ func CheckLogin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if mg_auth.GetClient() == nil {
 			// 没有 Client 则重定向到登陆
-			app.Response(c, http.StatusOK, e.REDIRECT, "需要重定向")
+			app.Response(c, http.StatusOK, e.REDIRECT_LOGIN, "需要重定向到登陆")
 			//c.Redirect(http.StatusFound, "/login")
 			c.Abort()
 		}

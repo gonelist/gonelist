@@ -12,7 +12,7 @@ import (
 // 通过监听一个地址，跳转打开 login
 func Login(c *gin.Context) {
 	// 判断是否登录
-	if onedrive.IsLogin != true {
+	if onedrive.IsLogin == true {
 		// 有 Client 则重定向到首页
 		c.Redirect(http.StatusFound, "/onedrive/getpath?path=/")
 	} else {
@@ -46,6 +46,7 @@ func GetCode(c *gin.Context) {
 		app.Response(c, http.StatusOK, e.GetErrorCode(err), "登陆失败，请重新登陆")
 	} else {
 		// 初始化 onedrive 的连接，读取内容
+		onedrive.GetAllFiles()
 		go onedrive.SetAutoRefresh()
 		app.Response(c, http.StatusOK, e.SUCCESS, "登陆成功")
 	}

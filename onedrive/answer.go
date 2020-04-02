@@ -93,6 +93,7 @@ type FileNode struct {
 	IsFolder       bool        `json:"is_folder"`
 	DownloadUrl    string      `json:"download_url"`
 	LastModifyTime time.Time   `json:"last_modify_time"`
+	Size           int64       `json:"size"`
 	Children       []*FileNode `json:"children"`
 }
 
@@ -109,6 +110,7 @@ func ConvertAnsToFileNodes(oldPath string, ans Answer) []*FileNode {
 			LastModifyTime: item.FileSystemInfo.LastModifiedDateTime,
 			DownloadUrl:    item.MicrosoftGraphDownloadURL,
 			IsFolder:       false,
+			Size:           item.Size,
 			Children:       nil,
 		}
 		if item.Folder.ChildCount != 0 {
