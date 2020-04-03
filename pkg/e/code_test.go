@@ -15,7 +15,7 @@ func TestGetMsg(t *testing.T) {
 	}
 	sort.Ints(keys)
 	for _, k := range keys {
-		fmt.Println(k, ",", params[k])
+		fmt.Println("|", k, "|", params[k], "|")
 		//handler(k, params[k])
 	}
 }

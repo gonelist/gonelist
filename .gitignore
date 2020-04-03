@@ -6,6 +6,7 @@
 .DS_Store
 tmp/
 example/
+dist/
 
 # User-specific stuff
 .idea/**/workspace.xml

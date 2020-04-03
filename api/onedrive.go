@@ -7,12 +7,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
-// 测试接口，从 MG 获取树结构
+// 测试接口，从 MG 获取整个树结构
 func MGGetFileTree(c *gin.Context) {
-	root := onedrive.GetAllFiles()
+	root, err := onedrive.GetAllFiles()
+	if err != nil {
+		log.Warn("请求 graph.microsoft.com 错误")
+		app.Response(c, http.StatusOK, e.MG_ERROR, nil)
+	}
 
 	str, _ := json.Marshal(root)
 	fmt.Println("*root", string(str))

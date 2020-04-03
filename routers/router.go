@@ -2,9 +2,11 @@ package routers
 
 import (
 	"GOIndex/api"
+	"GOIndex/conf"
 	"GOIndex/middleware"
 	"github.com/gin-gonic/gin"
 	cors "github.com/rs/cors/wrapper/gin"
+	"net/http"
 )
 
 func InitRouter() *gin.Engine {
@@ -24,7 +26,7 @@ func InitRouter() *gin.Engine {
 	r.GET("/login", api.Login)
 	r.GET("/loginmg", api.LoginMG)
 	r.GET("/auth", api.GetCode)
-	r.GET("/cancelLogin",api.CancelLogin)
+	r.GET("/cancelLogin", api.CancelLogin)
 	onedrive := r.Group("/onedrive")
 	// 中间件判断是否已经登录
 	onedrive.Use(middleware.CheckLogin())
@@ -34,5 +36,8 @@ func InitRouter() *gin.Engine {
 		// 根据路径获取对应数据
 		onedrive.GET("/getpath", api.CacheGetPath)
 	}
+	// 前端内容
+	r.StaticFS("/"+conf.UserSetting.SubPath, http.Dir("dist"))
+
 	return r
 }

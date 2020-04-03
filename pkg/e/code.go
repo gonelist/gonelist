@@ -9,6 +9,7 @@ const (
 	INVALID_STATE      = 10001
 	ITEM_NOT_FOUND     = 10002
 	ACCESS_TOKEN_ERROR = 10003
+	MG_ERROR           = 10004
 )
 
 var MsgFlags = map[int]string{
@@ -19,6 +20,7 @@ var MsgFlags = map[int]string{
 	INVALID_STATE:      "state 字符串与设置的不一致，请检查设置",
 	ITEM_NOT_FOUND:     "未找到对应项目",
 	ACCESS_TOKEN_ERROR: "获取 AccessToken 错误",
+	MG_ERROR:           "请求graph.microsoft.com错误",
 }
 
 func GetMsg(code int) string {

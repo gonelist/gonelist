@@ -42,9 +42,9 @@ func RedirectLoginMG(c *gin.Context) {
 }
 
 type ReceiveCode struct {
-	Code         string `binding:"required"`
-	SessionState string `binding:"required"`
-	State        string `binding:"required"`
+	Code string `binding:"required"`
+	//SessionState string `binding:"required"`
+	State string `binding:"required"`
 }
 
 // receive code ,get access_token
@@ -70,8 +70,4 @@ func GetAccessToken(code ReceiveCode) error {
 
 func GetClient() *http.Client {
 	return client
-}
-
-func ClearCLient() {
-	client = nil
 }

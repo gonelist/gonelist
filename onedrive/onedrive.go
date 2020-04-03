@@ -53,7 +53,7 @@ func GetUrlToAns(relativePath string) (Answer, error) {
 }
 
 // 获取所有文件的树
-func GetAllFiles() *FileNode {
+func GetAllFiles() (*FileNode, error) {
 	var err error
 
 	root := &FileNode{
@@ -67,6 +67,7 @@ func GetAllFiles() *FileNode {
 	list, err := GetTreeFileNode("", "")
 	if err != nil {
 		log.Info(err)
+		return nil, err
 	} else {
 		root.Children = list
 		if root.Children != nil {
@@ -76,7 +77,7 @@ func GetAllFiles() *FileNode {
 	// 更新树结构
 	FileTree = root
 	IsLogin = true
-	return root
+	return root, nil
 }
 
 func GetTreeFileNode(prefix, relativePath string) (list []*FileNode, err error) {

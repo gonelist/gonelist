@@ -16,6 +16,8 @@ type Server struct {
 	RefreshTime  int    `json:"refresh_time"` //单位为分钟
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
+
+	SubPath      string `json:"sub_path"` // 路径前缀，如 http://yoursite.com/goindex/
 }
 
 var defaultServerSetting = &Server{

@@ -6,6 +6,7 @@ import (
 	"GOIndex/pkg/app"
 	"GOIndex/pkg/e"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -31,12 +32,13 @@ func LoginMG(c *gin.Context) {
 func GetCode(c *gin.Context) {
 	var err error
 	code := &mg_auth.ReceiveCode{
-		Code:         c.Query("code"),
+		Code: c.Query("code"),
 		//SessionState: c.Query("session_state"), // 有的账号好像没有
-		State:        c.Query("state"),
+		State: c.Query("state"),
 	}
 	err = c.ShouldBind(code)
 	if err != nil {
+		log.Warn(err)
 		app.Response(c, http.StatusOK, e.INVALID_PARAMS, nil)
 		return
 	}
