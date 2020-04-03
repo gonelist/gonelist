@@ -32,7 +32,7 @@ func GetCode(c *gin.Context) {
 	var err error
 	code := &mg_auth.ReceiveCode{
 		Code:         c.Query("code"),
-		SessionState: c.Query("session_state"),
+		//SessionState: c.Query("session_state"), // 有的账号好像没有
 		State:        c.Query("state"),
 	}
 	err = c.ShouldBind(code)
