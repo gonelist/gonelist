@@ -1,6 +1,7 @@
 package api
 
 import (
+	"GOIndex/conf"
 	"GOIndex/mg_auth"
 	"GOIndex/onedrive"
 	"GOIndex/pkg/app"
@@ -49,8 +50,11 @@ func GetCode(c *gin.Context) {
 	} else {
 		// 初始化 onedrive 的连接，读取内容
 		onedrive.GetAllFiles()
+		onedrive.IsLogin = true
 		go onedrive.SetAutoRefresh()
-		app.Response(c, http.StatusOK, e.SUCCESS, "登陆成功")
+		// 登陆成功跳转到网站首页
+		c.Redirect(http.StatusTemporaryRedirect, conf.UserSetting.Server.SiteUrl)
+		//app.Response(c, http.StatusOK, e.SUCCESS, "登陆成功")
 	}
 }
 

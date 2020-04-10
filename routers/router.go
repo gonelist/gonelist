@@ -2,7 +2,6 @@ package routers
 
 import (
 	"GOIndex/api"
-	"GOIndex/conf"
 	"GOIndex/middleware"
 	"github.com/gin-gonic/gin"
 	cors "github.com/rs/cors/wrapper/gin"
@@ -37,7 +36,8 @@ func InitRouter() *gin.Engine {
 		onedrive.GET("/getpath", api.CacheGetPath)
 	}
 	// 前端内容
-	r.StaticFS("/"+conf.UserSetting.SubPath, http.Dir("dist"))
+	//r.StaticFS("/"+conf.UserSetting.SubPath, http.Dir("dist"))
+	r.StaticFS("/dist", http.Dir("dist"))
 
 	return r
 }

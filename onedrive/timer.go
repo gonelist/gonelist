@@ -33,5 +33,4 @@ func timer(AutoRefresh func()) {
 			}
 		}
 	}
-	log.Info("测试")
 }

@@ -17,7 +17,9 @@ type Server struct {
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
 
-	SubPath      string `json:"sub_path"` // 路径前缀，如 http://yoursite.com/goindex/
+	BindGlobal bool   `json:"bind_global"`
+	SubPath    string `json:"sub_path"` // 路径前缀，如果填 goindex，即 http://yoursite.com/goindex/
+	SiteUrl    string `json:"site_url"` // 网站网址，如 https://goindex.cugxuan.cn
 }
 
 var defaultServerSetting = &Server{
@@ -26,6 +28,10 @@ var defaultServerSetting = &Server{
 	RefreshTime:  10,
 	ReadTimeout:  60,
 	WriteTimeout: 60,
+
+	BindGlobal: false,
+	SubPath:    "goindex",
+	SiteUrl:    "https://goindex.cugxuan.cn",
 }
 
 // 用户信息设置
@@ -36,13 +42,14 @@ type UserInfo struct {
 	RedirectURL  string `json:"redirect_url"`
 	State        string `json:"state"` // 用户设置的标识
 	// 获取 access_token
-	ClientSecret string  `json:"client_secret"`
-	Code         string  `json:"-"`             // 服务器收到的中间内容
-	GrantType    string  `json:"-"`             // 值为 authorization_code
-	Scope        string  `json:"-"`             // 值为 offline_access files.readwrite.all
-	AccessToken  string  `json:"-"`             // 令牌
-	RefreshToken string  `json:"refresh_token"` //刷新令牌
-	Server       *Server `json:"server"`
+	ClientSecret string `json:"client_secret"`
+	Code         string `json:"-"`             // 服务器收到的中间内容
+	GrantType    string `json:"-"`             // 值为 authorization_code
+	Scope        string `json:"-"`             // 值为 offline_access files.readwrite.all
+	AccessToken  string `json:"-"`             // 令牌
+	RefreshToken string `json:"refresh_token"` //刷新令牌
+	// 用户设置
+	Server *Server `json:"server"`
 }
 
 var UserSetting UserInfo

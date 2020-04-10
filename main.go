@@ -29,5 +29,9 @@ func main() {
 	// 启动服务器
 	r := routers.InitRouter()
 
-	panic(r.Run(fmt.Sprintf(":%d", conf.UserSetting.Server.HttpPort)))
+	var bindPrefix string
+	if conf.UserSetting.Server.BindGlobal == false {
+		bindPrefix = "127.0.0.1"
+	}
+	panic(r.Run(fmt.Sprintf("%s:%d", bindPrefix, conf.UserSetting.Server.HttpPort)))
 }
