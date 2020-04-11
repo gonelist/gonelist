@@ -9,6 +9,7 @@ import (
 )
 
 func InitRouter() *gin.Engine {
+
 	r := gin.New()
 
 	r.Use(gin.Logger())
@@ -35,9 +36,20 @@ func InitRouter() *gin.Engine {
 		// 根据路径获取对应数据
 		onedrive.GET("/getpath", api.CacheGetPath)
 	}
-	// 前端内容
-	//r.StaticFS("/"+conf.UserSetting.SubPath, http.Dir("dist"))
-	r.StaticFS("/dist", http.Dir("dist"))
 
+	// 前端内容
+	//r.StaticFS("/", http.Dir("dist"))
+
+	return r
+}
+
+func InitWeb() *gin.Engine {
+	r := gin.New()
+
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
+	r.Use(cors.Default())
+
+	r.StaticFS("/", http.Dir("dist"))
 	return r
 }

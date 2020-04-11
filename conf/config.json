@@ -4,11 +4,12 @@
   "client_secret": "/FKad]FPtKNk-=j11aPwEOBSxYUYUU54",
   "state": "23333",
   "server": {
-    "run_mode": "run_mode",
-    "http_port": 8000,
+    "web_port": 8001,
+    "back_port": 8000,
     "refresh_time": 10,
-    "sub_path": "goindex",
-    "site_url": "https://goindex.cugxuan.cn",
-    "bind_global": false
+    "web_bind_global": true,
+    "back_bind_global": false,
+    "site_url": "http://localhost:8001",
+    "folder_sub": "/"
   }
 }

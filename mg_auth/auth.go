@@ -20,7 +20,7 @@ var oauthConfig oauth2.Config
 var oauthStateString string
 var client *http.Client
 
-func SetUserInfo(user conf.UserInfo) {
+func SetUserInfo(user conf.UserSetting) {
 	oauthConfig = oauth2.Config{
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",

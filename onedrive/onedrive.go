@@ -1,6 +1,7 @@
 package onedrive
 
 import (
+	"GOIndex/conf"
 	"GOIndex/mg_auth"
 	"encoding/json"
 	"errors"
@@ -55,6 +56,7 @@ func GetUrlToAns(relativePath string) (Answer, error) {
 // 获取所有文件的树
 func GetAllFiles() (*FileNode, error) {
 	var err error
+	var prefix string
 
 	root := &FileNode{
 		Name:           "root",
@@ -64,7 +66,12 @@ func GetAllFiles() (*FileNode, error) {
 		Children:       nil,
 	}
 
-	list, err := GetTreeFileNode("", "")
+	if conf.UserSet.Server.FolderSub == "/" {
+		prefix = ""
+	} else {
+		prefix = conf.UserSet.Server.FolderSub
+	}
+	list, err := GetTreeFileNode(prefix, "")
 	if err != nil {
 		log.Info(err)
 		return nil, err

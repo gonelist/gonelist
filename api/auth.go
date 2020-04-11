@@ -53,7 +53,7 @@ func GetCode(c *gin.Context) {
 		onedrive.IsLogin = true
 		go onedrive.SetAutoRefresh()
 		// 登陆成功跳转到网站首页
-		c.Redirect(http.StatusTemporaryRedirect, conf.UserSetting.Server.SiteUrl)
+		c.Redirect(http.StatusTemporaryRedirect, conf.UserSet.Server.SiteUrl)
 		//app.Response(c, http.StatusOK, e.SUCCESS, "登陆成功")
 	}
 }
