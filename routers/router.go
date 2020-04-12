@@ -26,7 +26,7 @@ func InitRouter() *gin.Engine {
 	r.GET("/login", api.Login)
 	r.GET("/loginmg", api.LoginMG)
 	r.GET("/auth", api.GetCode)
-	r.GET("/cancelLogin", api.CancelLogin)
+	//r.GET("/cancelLogin", api.CancelLogin)
 	onedrive := r.Group("/onedrive")
 	// 中间件判断是否已经登录
 	onedrive.Use(middleware.CheckLogin())
