@@ -18,11 +18,11 @@
 ## 下载已编译的程序
 
 - [Github release](https://github.com/cugxuan/GOIndex/releases)
-<!-- - [GOIndex release]() -->
+<!-- - [gonGOIndexelist release]() -->
 
-默认情况下读取当前路径的 `conf/config.json` 作为配置文件，或者启动加参数`--conf=dir1/file.json`指定配置文件路径
+默认情况下读取当前路径的 `config.json` 作为配置文件，或者启动加参数 `--conf=dir1/file.json` 指定配置文件路径
 
-在配置文件中填对对应的内容即可，至少需要修改 `site_url`
+如果需要修改配置，在配置文件中填对对应的内容即可
 ```
 {
   //---不建议改动--------
@@ -32,27 +32,18 @@
   // 设置一个自己喜欢的字符串
   "state": "23333",
   "server": {
-    // 可以修改监听的端口
-    "http_port": 8000,
-    // 自动刷新的时间单位是分钟，默认 10 分钟
-    "refresh_time": 10,
-    "bind_global": false,
-    // 设置路径前缀，如 https://yoursite.com/goindex/
-    "sub_path": "goindex",
-    "site_url": "https://goindex.cugxuan.cn",
-
     // 网页前端监听的端口
     "web_port": 8001,
     // 后端监听的端口
     "back_port": 8000,
     // 自动刷新的时间单位是分钟，默认 10 分钟，不要超过 1 小时
     "refresh_time": 10,
-    // 你的网站地址
-    "site_url": "https://goindex.cugxuan.cn:8001",
+    // 登陆成功后，跳转的 URL，可不设置
+    "site_url": "http://localhost:8001",
     // 自定义 onedrive 的子文件夹
     "folder_sub": "/"
     "web_bind_global": true,
-    "back_bind_global": false,
+    "back_bind_global": true,
   }
 }
 ```

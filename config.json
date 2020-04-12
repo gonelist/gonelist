@@ -8,7 +8,7 @@
     "back_port": 8000,
     "refresh_time": 10,
     "web_bind_global": true,
-    "back_bind_global": false,
+    "back_bind_global": true,
     "site_url": "http://localhost:8001",
     "folder_sub": "/"
   }

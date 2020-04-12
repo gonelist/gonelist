@@ -1,12 +1,12 @@
 package main
 
 import (
-	"GOIndex/conf"
-	"GOIndex/mg_auth"
-	"GOIndex/routers"
 	"flag"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/sync/errgroup"
+	"gonelist/conf"
+	"gonelist/mg_auth"
+	"gonelist/routers"
 	"net/http"
 	"time"
 )
@@ -17,7 +17,7 @@ var (
 
 func main() {
 
-	confPath := flag.String("conf", "conf/config.json", "指定配置文件路径")
+	confPath := flag.String("conf", "config.json", "指定配置文件路径")
 	flag.Parse()
 
 	log.SetFormatter(&log.TextFormatter{
