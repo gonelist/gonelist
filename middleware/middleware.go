@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	"GOIndex/mg_auth"
-	"GOIndex/pkg/app"
-	"GOIndex/pkg/e"
+	"gonelist/mg_auth"
+	"gonelist/pkg/app"
+	"gonelist/pkg/e"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )

@@ -18,7 +18,7 @@
 ## 下载已编译的程序
 
 - [Github release](https://github.com/cugxuan/GOIndex/releases)
-<!-- - [gonGOIndexelist release]() -->
+<!-- - [GONEList release]() -->
 
 默认情况下读取当前路径的 `config.json` 作为配置文件，或者启动加参数 `--conf=dir1/file.json` 指定配置文件路径
 

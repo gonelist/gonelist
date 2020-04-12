@@ -1,7 +1,7 @@
 package conf
 
 import (
-	"GOIndex/pkg/file"
+	"gonelist/pkg/file"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -19,7 +19,7 @@ type Server struct {
 
 	WebBindGlobal  bool   `json:"web_bind_global"`
 	BackBindGlobal bool   `json:"back_bind_global"`
-	SiteUrl        string `json:"site_url"`   // 网站网址，如 https://goindex.cugxuan.cn
+	SiteUrl        string `json:"site_url"`   // 网站网址，如 https://gonelist.cugxuan.cn
 	FolderSub      string `json:"folder_sub"` // onedrive 的子文件夹
 }
 
@@ -32,7 +32,7 @@ var defaultServerSetting = &Server{
 
 	WebBindGlobal:  true,
 	BackBindGlobal: false,
-	SiteUrl:        "https://goindex.cugxuan.cn",
+	SiteUrl:        "https://gonelist.cugxuan.cn",
 	FolderSub:      "/",
 }
 

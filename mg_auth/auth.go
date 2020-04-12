@@ -1,7 +1,7 @@
 package mg_auth
 
 import (
-	"GOIndex/conf"
+	"gonelist/conf"
 	"context"
 	"errors"
 	"github.com/gin-gonic/gin"

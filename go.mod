@@ -1,4 +1,4 @@
-module GOIndex
+module gonelist
 
 go 1.13
 

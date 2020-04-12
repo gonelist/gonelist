@@ -1,9 +1,9 @@
 package api
 
 import (
-	"GOIndex/onedrive"
-	"GOIndex/pkg/app"
-	"GOIndex/pkg/e"
+	"gonelist/onedrive"
+	"gonelist/pkg/app"
+	"gonelist/pkg/e"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"

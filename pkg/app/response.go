@@ -1,7 +1,7 @@
 package app
 
 import (
-	"GOIndex/pkg/e"
+	"gonelist/pkg/e"
 	"github.com/gin-gonic/gin"
 )
 

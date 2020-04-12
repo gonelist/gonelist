@@ -1,11 +1,11 @@
 package api
 
 import (
-	"GOIndex/conf"
-	"GOIndex/mg_auth"
-	"GOIndex/onedrive"
-	"GOIndex/pkg/app"
-	"GOIndex/pkg/e"
+	"gonelist/conf"
+	"gonelist/mg_auth"
+	"gonelist/onedrive"
+	"gonelist/pkg/app"
+	"gonelist/pkg/e"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"net/http"

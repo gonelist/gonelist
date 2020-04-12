@@ -1,7 +1,7 @@
 package onedrive
 
 import (
-	"GOIndex/pkg/file"
+	"gonelist/pkg/file"
 	"encoding/json"
 	"fmt"
 	"testing"

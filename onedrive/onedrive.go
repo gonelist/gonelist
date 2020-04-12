@@ -1,8 +1,8 @@
 package onedrive
 
 import (
-	"GOIndex/conf"
-	"GOIndex/mg_auth"
+	"gonelist/conf"
+	"gonelist/mg_auth"
 	"encoding/json"
 	"errors"
 	log "github.com/sirupsen/logrus"
