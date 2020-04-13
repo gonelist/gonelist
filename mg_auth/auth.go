@@ -26,7 +26,7 @@ func SetUserInfo(user conf.UserSetting) {
 			AuthURL:  "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
 			TokenURL: "https://login.microsoftonline.com/common/oauth2/v2.0/token",
 		},
-		Scopes:       []string{"offline_access", "files.readwrite.all"},
+		Scopes:       []string{"offline_access", "files.read"},
 		ClientID:     user.ClientID,
 		ClientSecret: user.ClientSecret,
 		RedirectURL:  user.RedirectURL,
