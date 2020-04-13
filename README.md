@@ -1,4 +1,4 @@
-# GOIndex
+# GONEList
 
 这是一款使用 `golang + vue` 编写的基于 onedrive 的在线网盘  
 效果展示：https://gonelist.cugxuan.cn  
@@ -15,17 +15,16 @@
 
 # 安装配置
 
-## 下载已编译的程序
-
-- [Github release](https://github.com/cugxuan/GOIndex/releases)
-<!-- - [GONEList release]() -->
-
+完整的下载安装流程请看 [安装文档](https://github.com/cugxuan/gonelist/wiki/Install)
+下载对应的 [Github Release](https://github.com/cugxuan/GOIndex/releases)，直接运行即可启动
 默认情况下读取当前路径的 `config.json` 作为配置文件，或者启动加参数 `--conf=dir1/file.json` 指定配置文件路径
+
+## config.json
 
 如果需要修改配置，在配置文件中填对对应的内容即可
 ```
 {
-  //---不建议改动--------
+  //------建议填入自己的 id 和 secret --------
   "client_id": "88966400-cb81-49cb-89c2-6d09f0a3d9e2",
   "redirect_url": "http://localhost:8000/auth",
   "client_secret": "/FKad]FPtKNk-=j11aPwEOBSxYUYUU54",
@@ -40,6 +39,7 @@
     "site_url": "http://localhost:8000",
     // 自定义 onedrive 的子文件夹
     "folder_sub": "/"
+    // 是否绑定到 0.0.0.0
     "bind_global": true,
   }
 }
