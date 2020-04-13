@@ -32,18 +32,15 @@
   // 设置一个自己喜欢的字符串
   "state": "23333",
   "server": {
-    // 网页前端监听的端口
-    "web_port": 8001,
-    // 后端监听的端口
-    "back_port": 8000,
+    // 监听的端口
+    "port": 8000,
     // 自动刷新的时间单位是分钟，默认 10 分钟，不要超过 1 小时
     "refresh_time": 10,
     // 登陆成功后，跳转的 URL，可不设置
-    "site_url": "http://localhost:8001",
+    "site_url": "http://localhost:8000",
     // 自定义 onedrive 的子文件夹
     "folder_sub": "/"
-    "web_bind_global": true,
-    "back_bind_global": true,
+    "bind_global": true,
   }
 }
 ```

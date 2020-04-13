@@ -1,11 +1,11 @@
 package routers
 
 import (
-	"gonelist/api"
-	"gonelist/middleware"
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	cors "github.com/rs/cors/wrapper/gin"
-	"net/http"
+	"gonelist/api"
+	"gonelist/middleware"
 )
 
 func InitRouter() *gin.Engine {
@@ -15,6 +15,8 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 	r.Use(cors.Default())
+
+	r.Use(static.Serve("/", static.LocalFile("dist", false)))
 
 	// 测试接口
 	r.GET("/testapi", func(c *gin.Context) {
@@ -37,19 +39,5 @@ func InitRouter() *gin.Engine {
 		onedrive.GET("/getpath", api.CacheGetPath)
 	}
 
-	// 前端内容
-	//r.StaticFS("/", http.Dir("dist"))
-
-	return r
-}
-
-func InitWeb() *gin.Engine {
-	r := gin.New()
-
-	r.Use(gin.Logger())
-	r.Use(gin.Recovery())
-	r.Use(cors.Default())
-
-	r.StaticFS("/", http.Dir("dist"))
 	return r
 }

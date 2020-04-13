@@ -1,37 +1,33 @@
 package conf
 
 import (
-	"gonelist/pkg/file"
 	"encoding/json"
 	"errors"
 	"fmt"
 	log "github.com/sirupsen/logrus"
+	"gonelist/pkg/file"
 	"time"
 )
 
 // 服务器设置
 type Server struct {
-	WebPort      int    `json:"web_port"`
-	BackPort     int    `json:"back_port"`
-	RefreshTime  int    `json:"refresh_time"` //单位为分钟
+	Port         int `json:"port"`
+	RefreshTime  int `json:"refresh_time"` //单位为分钟
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
 
-	WebBindGlobal  bool   `json:"web_bind_global"`
-	BackBindGlobal bool   `json:"back_bind_global"`
-	SiteUrl        string `json:"site_url"`   // 网站网址，如 https://gonelist.cugxuan.cn
-	FolderSub      string `json:"folder_sub"` // onedrive 的子文件夹
+	BindGlobal bool   `json:"bind_global"`
+	SiteUrl    string `json:"site_url"`   // 网站网址，如 https://gonelist.cugxuan.cn
+	FolderSub  string `json:"folder_sub"` // onedrive 的子文件夹
 }
 
 var defaultServerSetting = &Server{
-	WebPort:      8001,
-	BackPort:     8000,
+	Port:         8000,
 	RefreshTime:  10,
 	ReadTimeout:  60,
 	WriteTimeout: 60,
 
-	WebBindGlobal:  true,
-	BackBindGlobal: false,
+	BindGlobal:  true,
 	SiteUrl:        "https://gonelist.cugxuan.cn",
 	FolderSub:      "/",
 }
@@ -39,17 +35,17 @@ var defaultServerSetting = &Server{
 // 用户信息设置
 type UserSetting struct {
 	// 获取授权代码
-	ResponseType string `json:"-"`             // 值为 code
+	ResponseType string `json:"-"` // 值为 code
 	ClientID     string `json:"client_id"`
 	RedirectURL  string `json:"redirect_url"`
-	State        string `json:"state"`         // 用户设置的标识
+	State        string `json:"state"` // 用户设置的标识
 	// 获取 access_token
 	ClientSecret string `json:"client_secret"`
-	Code         string `json:"-"`             // 服务器收到的中间内容
-	GrantType    string `json:"-"`             // 值为 authorization_code
-	Scope        string `json:"-"`             // 值为 offline_access files.readwrite.all
-	AccessToken  string `json:"-"`             // 令牌
-	RefreshToken string `json:"-"`             // 刷新令牌
+	Code         string `json:"-"` // 服务器收到的中间内容
+	GrantType    string `json:"-"` // 值为 authorization_code
+	Scope        string `json:"-"` // 值为 offline_access files.readwrite.all
+	AccessToken  string `json:"-"` // 令牌
+	RefreshToken string `json:"-"` // 刷新令牌
 	// 用户设置
 	Server *Server `json:"server"`
 }

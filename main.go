@@ -31,41 +31,16 @@ func main() {
 	mg_auth.SetUserInfo(conf.UserSet)
 
 	// 处理端口绑定
-	backAddr := conf.GetBindAddr(conf.UserSet.Server.BackBindGlobal, conf.UserSet.Server.BackPort)
-	webAddr := conf.GetBindAddr(conf.UserSet.Server.WebBindGlobal, conf.UserSet.Server.WebPort)
+	Addr := conf.GetBindAddr(conf.UserSet.Server.BindGlobal, conf.UserSet.Server.Port)
 
 	// 启动服务器
-	serverBack := &http.Server{
-		Addr:         backAddr,
+	server := &http.Server{
+		Addr:         Addr,
 		Handler:      routers.InitRouter(),
 		ReadTimeout:  60 * time.Second,
 		WriteTimeout: 60 * time.Second,
+		MaxHeaderBytes: 1 << 20,
 	}
 
-	serverFront := &http.Server{
-		Addr:         webAddr,
-		Handler:      routers.InitWeb(),
-		ReadTimeout:  60 * time.Second,
-		WriteTimeout: 60 * time.Second,
-	}
-
-	g.Go(func() error {
-		err := serverBack.ListenAndServe()
-		if err != nil && err != http.ErrServerClosed {
-			log.Fatal(err)
-		}
-		return err
-	})
-
-	g.Go(func() error {
-		err := serverFront.ListenAndServe()
-		if err != nil && err != http.ErrServerClosed {
-			log.Fatal(err)
-		}
-		return err
-	})
-
-	if err := g.Wait(); err != nil {
-		log.Fatal(err)
-	}
+	panic(server.ListenAndServe())
 }

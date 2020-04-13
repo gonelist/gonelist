@@ -4,12 +4,10 @@
   "client_secret": "lURpL3U@bBlmJ0:_dnU.LeLOGNGdVT30",
   "state": "23333",
   "server": {
-    "web_port": 8001,
-    "back_port": 8000,
+    "port": 8000,
     "refresh_time": 10,
-    "web_bind_global": true,
-    "back_bind_global": true,
-    "site_url": "http://localhost:8001",
+    "bind_global": true,
+    "site_url": "http://localhost:8000",
     "folder_sub": "/"
   }
 }
