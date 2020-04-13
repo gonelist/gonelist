@@ -47,7 +47,7 @@ func TestCacheGetPathList(t *testing.T) {
 
 	FileTree = filetree
 
-	root, err := CacheGetPathList("/便笺.txt")
+	root, err := CacheGetPathList("/ttt")
 	if err != nil {
 		fmt.Println(err)
 		return

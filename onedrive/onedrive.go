@@ -1,11 +1,11 @@
 package onedrive
 
 import (
-	"gonelist/conf"
-	"gonelist/mg_auth"
 	"encoding/json"
 	"errors"
 	log "github.com/sirupsen/logrus"
+	"gonelist/conf"
+	"gonelist/mg_auth"
 	"io/ioutil"
 	"strings"
 	"time"
@@ -120,7 +120,7 @@ func CacheGetPathList(oPath string) (*FileNode, error) {
 	pArray := strings.Split(oPath, "/")
 
 	if oPath == "" || oPath == "/" || len(pArray) < 2 {
-		return root, nil
+		return ConvertReturnNode(root), nil
 	}
 
 	for i := 1; i < len(pArray); i++ {
@@ -141,5 +141,35 @@ func CacheGetPathList(oPath string) (*FileNode, error) {
 		}
 	}
 
-	return root, nil
+	// 去掉
+	reNode := ConvertReturnNode(root)
+	return reNode, nil
+}
+
+func ConvertReturnNode(node *FileNode) *FileNode {
+	if node == nil {
+		return nil
+	}
+
+	reNode := CopyFileNode(node)
+	for key, _ := range node.Children {
+		tmpNode := node.Children[key]
+		reNode.Children = append(reNode.Children, CopyFileNode(tmpNode))
+	}
+	return reNode
+}
+
+func CopyFileNode(node *FileNode) *FileNode {
+	if node == nil {
+		return nil
+	}
+	return &FileNode{
+		Name:           node.Name,
+		Path:           node.Path,
+		IsFolder:       node.IsFolder,
+		DownloadUrl:    node.DownloadUrl,
+		LastModifyTime: node.LastModifyTime,
+		Size:           node.Size,
+		Children:       nil,
+	}
 }
