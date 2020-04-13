@@ -1,8 +1,8 @@
 # GOIndex
 
 这是一款使用 `golang + vue` 编写的基于 onedrive 的在线网盘  
-效果展示：https://goindex.cugxuan.cn  
-前端项目地址：https://github.com/Sillywa/GOIndex-Web  
+效果展示：https://gonelist.cugxuan.cn  
+前端项目地址：https://github.com/Sillywa/gonelist-web
 
 # 功能特性
 

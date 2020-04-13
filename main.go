@@ -3,16 +3,11 @@ package main
 import (
 	"flag"
 	log "github.com/sirupsen/logrus"
-	"golang.org/x/sync/errgroup"
 	"gonelist/conf"
 	"gonelist/mg_auth"
 	"gonelist/routers"
 	"net/http"
 	"time"
-)
-
-var (
-	g errgroup.Group
 )
 
 func main() {
@@ -35,10 +30,10 @@ func main() {
 
 	// 启动服务器
 	server := &http.Server{
-		Addr:         Addr,
-		Handler:      routers.InitRouter(),
-		ReadTimeout:  60 * time.Second,
-		WriteTimeout: 60 * time.Second,
+		Addr:           Addr,
+		Handler:        routers.InitRouter(),
+		ReadTimeout:    60 * time.Second,
+		WriteTimeout:   60 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
 
