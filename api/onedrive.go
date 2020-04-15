@@ -1,13 +1,12 @@
 package api
 
 import (
+	"encoding/json"
+	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 	"gonelist/onedrive"
 	"gonelist/pkg/app"
 	"gonelist/pkg/e"
-	"encoding/json"
-	"fmt"
-	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -20,7 +19,7 @@ func MGGetFileTree(c *gin.Context) {
 	}
 
 	str, _ := json.Marshal(root)
-	fmt.Println("*root", string(str))
+	log.Info("*root", string(str))
 
 	app.Response(c, http.StatusOK, e.SUCCESS, root)
 }
@@ -34,5 +33,18 @@ func CacheGetPath(c *gin.Context) {
 		app.Response(c, http.StatusOK, e.ITEM_NOT_FOUND, nil)
 	} else {
 		app.Response(c, http.StatusOK, e.SUCCESS, root)
+	}
+}
+
+// 分享文件下载链接
+func Download(c *gin.Context) {
+	filePath := c.Param("path")
+
+	downloadURL, err := onedrive.GetDownloadUrl(filePath)
+	if err != nil {
+		app.Response(c, http.StatusOK, e.ITEM_NOT_FOUND, nil)
+	} else {
+		c.Redirect(http.StatusFound, downloadURL)
+		c.Abort()
 	}
 }

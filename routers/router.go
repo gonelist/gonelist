@@ -29,6 +29,8 @@ func InitRouter() *gin.Engine {
 	r.GET("/loginmg", api.LoginMG)
 	r.GET("/auth", api.GetCode)
 	//r.GET("/cancelLogin", api.CancelLogin)
+	// 直接下载接口
+	r.GET("/d/*path", middleware.CheckLogin(), api.Download)
 	onedrive := r.Group("/onedrive")
 	// 中间件判断是否已经登录
 	onedrive.Use(middleware.CheckLogin())
@@ -37,6 +39,7 @@ func InitRouter() *gin.Engine {
 		onedrive.GET("/getallfiles", api.MGGetFileTree)
 		// 根据路径获取对应数据
 		onedrive.GET("/getpath", api.CacheGetPath)
+		// 直接下载文件
 	}
 
 	return r

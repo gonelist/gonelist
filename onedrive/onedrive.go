@@ -55,10 +55,13 @@ func GetUrlToAns(relativePath string) (Answer, error) {
 
 // 获取所有文件的树
 func GetAllFiles() (*FileNode, error) {
-	var err error
-	var prefix string
+	var (
+		err    error
+		prefix string
+		root   *FileNode
+	)
 
-	root := &FileNode{
+	root = &FileNode{
 		Name:           "root",
 		Path:           "/",
 		IsFolder:       false,
@@ -116,7 +119,12 @@ func GetTreeFileNode(prefix, relativePath string) (list []*FileNode, err error) 
 }
 
 func CacheGetPathList(oPath string) (*FileNode, error) {
-	root := FileTree
+	var (
+		root    *FileNode
+		isFound bool
+	)
+
+	root = FileTree
 	pArray := strings.Split(oPath, "/")
 
 	if oPath == "" || oPath == "/" || len(pArray) < 2 {
@@ -124,14 +132,14 @@ func CacheGetPathList(oPath string) (*FileNode, error) {
 	}
 
 	for i := 1; i < len(pArray); i++ {
-		flag := false
+		isFound = false
 		for _, item := range root.Children {
 			if pArray[i] == item.Name {
 				root = item
-				flag = true
+				isFound = true
 			}
 		}
-		if flag == false {
+		if isFound == false {
 			log.WithFields(log.Fields{
 				"oPath":    oPath,
 				"pArray":   pArray,
@@ -172,4 +180,21 @@ func CopyFileNode(node *FileNode) *FileNode {
 		Size:           node.Size,
 		Children:       nil,
 	}
+}
+
+func GetDownloadUrl(filePath string) (string, error) {
+	var (
+		file *FileNode
+		err  error
+	)
+
+	if file, err = CacheGetPathList(filePath); err != nil || file == nil || file.IsFolder == true {
+		log.WithFields(log.Fields{
+			"filePath": filePath,
+			"err":      err,
+		}).Info("请求的文件未找到")
+		return "", err
+	}
+
+	return file.DownloadUrl, nil
 }
