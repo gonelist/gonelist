@@ -7,6 +7,7 @@
     "port": 8000,
     "refresh_time": 10,
     "bind_global": true,
+    "dist_path": "./dist/",
     "site_url": "http://localhost:8000",
     "folder_sub": "/"
   }

@@ -49,9 +49,11 @@ $ ./gonelist_linux_amd64
     // 登陆成功后，跳转的 URL，可不设置，新版已自动跳转
     "site_url": "http://localhost:8000",
     // 自定义 onedrive 的子文件夹
-    "folder_sub": "/"
+    "folder_sub": "/",
+    //静态页面的目录，默认当前路径下的dist目录
+    "dist_path": "./dist/",
     // 是否绑定到 0.0.0.0
-    "bind_global": true,
+    "bind_global": true
   }
 }
 ```

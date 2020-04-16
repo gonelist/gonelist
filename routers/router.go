@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	cors "github.com/rs/cors/wrapper/gin"
 	"gonelist/api"
+	"gonelist/conf"
 	"gonelist/middleware"
 )
 
@@ -16,7 +17,7 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Recovery())
 	r.Use(cors.Default())
 
-	r.Use(static.Serve("/", static.LocalFile("dist", false)))
+	r.Use(static.Serve("/", static.LocalFile(conf.GetDistPATH(), false)))
 
 	// 测试接口
 	r.GET("/testapi", func(c *gin.Context) {
