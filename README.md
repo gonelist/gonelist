@@ -18,7 +18,7 @@
 
 如果您的 onedrive 网盘内，**没有隐私内容**，可以按照下面的流程快速配置体验效果，完整的下载安装流程请看 [安装文档](https://github.com/cugxuan/gonelist/wiki/Install)  
 
-
+## 实体服务运行
 下载 [Github Release](https://github.com/cugxuan/GOIndex/releases) 或者 [gonelist-release](https://gonelist.cugxuan.cn/#/gonelist-release) 中对应的包，直接运行即可启动，以 Linux 系统本地启动为例
 ```
 // 下载对应的安装包，也可以下载 github 的 release 链接
@@ -29,6 +29,10 @@ $ ./gonelist_linux_amd64
 打开 http://localhost:8000 按照提示登录后即可
 
 默认情况下读取当前路径的 `config.json` 作为配置文件，或加参数 `--conf=dir1/file.json` 指定配置文件路径
+
+## docker运行
+
+直接使用项目的`docker-compose.yml`去`docker-compose up -d`即可，建议把配置文件放在一个文件夹里，把文件夹挂载进去。否则直挂文件docker挂载的是inode
 
 ## config.json
 

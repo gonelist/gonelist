@@ -15,10 +15,10 @@ type Server struct {
 	RefreshTime  int `json:"refresh_time"` //单位为分钟
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
-	DistPATH	string `json:"dist_path"` // 静态文件目录
-	BindGlobal bool   `json:"bind_global"`
-	SiteUrl    string `json:"site_url"`   // 网站网址，如 https://gonelist.cugxuan.cn
-	FolderSub  string `json:"folder_sub"` // onedrive 的子文件夹
+	DistPATH     string `json:"dist_path"` // 静态文件目录
+	BindGlobal   bool   `json:"bind_global"`
+	SiteUrl      string `json:"site_url"`   // 网站网址，如 https://gonelist.cugxuan.cn
+	FolderSub    string `json:"folder_sub"` // onedrive 的子文件夹
 }
 
 var defaultServerSetting = &Server{
@@ -26,10 +26,10 @@ var defaultServerSetting = &Server{
 	RefreshTime:  10,
 	ReadTimeout:  60,
 	WriteTimeout: 60,
-	DistPATH: "dist",
-	BindGlobal: true,
-	SiteUrl:    "https://gonelist.cugxuan.cn",
-	FolderSub:  "/",
+	DistPATH:     "dist",
+	BindGlobal:   true,
+	SiteUrl:      "https://gonelist.cugxuan.cn",
+	FolderSub:    "/",
 }
 
 // 用户信息设置

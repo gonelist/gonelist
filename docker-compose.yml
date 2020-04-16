@@ -1,0 +1,19 @@
+version: '3.4'
+services:
+  gonelist:
+    image: zhangguanzhang/gonelist:v0.2
+    container_name: gonelist
+    hostname: gonelist
+    volumes:
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
+      - ./config/:/etc/config/ #建议把配置文件放当前路径的config下面，不然挂载的是inode
+    command:
+      - '--conf=/etc/config/config.json'
+    #network_mode: "host"
+    ports:
+      - 8081:8000
+    logging:
+      driver: json-file
+      options:
+        max-file: '3'
+        max-size: 100m
