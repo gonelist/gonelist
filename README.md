@@ -3,6 +3,7 @@
 这是一款使用 `golang + vue` 编写的基于 onedrive 的**在线共享网盘**  
 效果展示：https://gonelist.cugxuan.cn  
 前端项目地址：https://github.com/Sillywa/gonelist-web
+有问题请提 issue，也可以进入 QQ 群交流，群号：1083165608
 
 # 功能特性
 
