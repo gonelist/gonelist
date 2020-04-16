@@ -1,10 +1,10 @@
 package middleware
 
 import (
+	"github.com/gin-gonic/gin"
 	"gonelist/mg_auth"
 	"gonelist/pkg/app"
 	"gonelist/pkg/e"
-	"github.com/gin-gonic/gin"
 	"net/http"
 )
 

@@ -1,8 +1,8 @@
 package onedrive
 
 import (
-	"gonelist/conf"
 	log "github.com/sirupsen/logrus"
+	"gonelist/conf"
 	"time"
 )
 

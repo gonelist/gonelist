@@ -1,9 +1,12 @@
 package onedrive
 
 import (
-	"gonelist/pkg/file"
 	"encoding/json"
 	"fmt"
+	"gonelist/conf"
+	"gonelist/mg_auth"
+	"gonelist/pkg/file"
+	"log"
 	"testing"
 )
 
@@ -61,4 +64,21 @@ func TestCacheGetPathList(t *testing.T) {
 			fmt.Println(item)
 		}
 	}
+}
+
+func TestConvertReturnNode(t *testing.T) {
+	var data string
+	var filetree *FileNode
+
+	if err := conf.LoadUserConfig("../example/config.json"); err != nil {
+		log.Fatal(err)
+	}
+
+	mg_auth.SetUserInfo(conf.UserSet)
+
+	data = file.ReadFromFile("../example/filetree.json")
+	json.Unmarshal([]byte(data), &filetree)
+
+	reNode := ConvertReturnNode(filetree)
+	fmt.Println(reNode)
 }

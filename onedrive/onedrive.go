@@ -149,7 +149,7 @@ func CacheGetPathList(oPath string) (*FileNode, error) {
 		}
 	}
 
-	// 去掉
+	// 只返回当前层的内容
 	reNode := ConvertReturnNode(root)
 	return reNode, nil
 }
@@ -171,9 +171,21 @@ func CopyFileNode(node *FileNode) *FileNode {
 	if node == nil {
 		return nil
 	}
+	var (
+		folderSub string
+		path      string
+	)
+
+	// 替换相对路径
+	if folderSub = conf.UserSet.Server.FolderSub; folderSub != "/" {
+		path = strings.Replace(node.Path, conf.UserSet.Server.FolderSub, "", 1)
+	} else {
+		path = node.Path
+	}
+
 	return &FileNode{
 		Name:           node.Name,
-		Path:           node.Path,
+		Path:           path,
 		IsFolder:       node.IsFolder,
 		DownloadUrl:    node.DownloadUrl,
 		LastModifyTime: node.LastModifyTime,

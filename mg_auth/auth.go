@@ -1,12 +1,12 @@
 package mg_auth
 
 import (
-	"gonelist/conf"
 	"context"
 	"errors"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
+	"gonelist/conf"
 	"net/http"
 )
 

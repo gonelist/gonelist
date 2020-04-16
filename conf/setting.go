@@ -27,9 +27,9 @@ var defaultServerSetting = &Server{
 	ReadTimeout:  60,
 	WriteTimeout: 60,
 
-	BindGlobal:  true,
-	SiteUrl:        "https://gonelist.cugxuan.cn",
-	FolderSub:      "/",
+	BindGlobal: true,
+	SiteUrl:    "https://gonelist.cugxuan.cn",
+	FolderSub:  "/",
 }
 
 // 用户信息设置

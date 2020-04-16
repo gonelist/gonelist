@@ -1,8 +1,8 @@
 package app
 
 import (
-	"gonelist/pkg/e"
 	"github.com/gin-gonic/gin"
+	"gonelist/pkg/e"
 )
 
 type Res struct {

@@ -16,6 +16,7 @@ func MGGetFileTree(c *gin.Context) {
 	if err != nil {
 		log.Warn("请求 graph.microsoft.com 错误")
 		app.Response(c, http.StatusOK, e.MG_ERROR, nil)
+		return
 	}
 
 	str, _ := json.Marshal(root)
