@@ -19,6 +19,7 @@ type ErrJson struct {
 type Folder struct {
 	ChildCount int `json:"childCount"`
 }
+
 type Value struct {
 	CreatedDateTime      time.Time `json:"createdDateTime"` // 创建时间
 	ETag                 string    `json:"eTag"`
@@ -73,9 +74,10 @@ type Value struct {
 }
 
 type Answer struct {
-	OdataContext string  `json:"@odata.context"`
-	Value        []Value `json:"value"`
-	Error        ErrJson `json:"error,omitempty"`
+	OdataContext  string  `json:"@odata.context"`
+	OdataNextLink string  `json:"@odata.nextLink"`
+	Value         []Value `json:"value"`
+	Error         ErrJson `json:"error,omitempty"`
 }
 
 // 修改 Folder 的默认值，为 -1 时不是文件夹

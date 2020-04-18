@@ -2,7 +2,7 @@
 
 这是一款使用 `golang + vue` 编写的基于 onedrive 的**在线共享网盘**  
 效果展示：https://gonelist.cugxuan.cn  
-前端项目地址：https://github.com/Sillywa/gonelist-web
+前端项目地址：https://github.com/Sillywa/gonelist-web  
 有问题请提 issue，也可以进入 QQ 群交流，群号：1083165608
 
 # 功能特性
@@ -12,7 +12,10 @@
 - 「直链下载」，文件直链下载，下载不消耗服务器流量
 - 「自动刷新」，自动刷新缓存，可自定义时间
 - 「自定义目录」，支持将 onedrive 的某个目录作为根目录
+- 「海量文件」，支持单目录下上千个文件，正常使用
 - ...
+
+注：不支持 **教育账号**，因为应用需要管理员同意
 
 # 安装配置
 

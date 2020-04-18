@@ -82,3 +82,15 @@ func TestConvertReturnNode(t *testing.T) {
 	reNode := ConvertReturnNode(filetree)
 	fmt.Println(reNode)
 }
+
+// 测试一个目录下，上千文件的情况
+func TestThousand(t *testing.T) {
+	data := file.ReadFromFile("../example/pdf.json")
+	var ans Answer
+	var ans1 Answer
+	json.Unmarshal([]byte(data), &ans)
+	fmt.Println(len(ans.Value))
+	data1 := file.ReadFromFile("../example/pdf1.json")
+	json.Unmarshal([]byte(data1), &ans1)
+	fmt.Println(len(ans1.Value))
+}
