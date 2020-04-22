@@ -12,6 +12,7 @@
 - 「直链下载」，文件直链下载，下载不消耗服务器流量
 - 「自动刷新」，自动刷新缓存，可自定义时间
 - 「自定义目录」，支持将 onedrive 的某个目录作为根目录
+- 「在线播放」，支持在线播放音频和视频
 - 「海量文件」，支持单目录下上千个文件，正常使用
 - ...
 
@@ -24,8 +25,10 @@
 ## 实体服务运行
 下载 [Github Release](https://github.com/cugxuan/GOIndex/releases) 或者 [gonelist-release](https://gonelist.cugxuan.cn/#/gonelist-release) 中对应的包，直接运行即可启动，以 Linux 系统本地启动为例
 ```
-// 下载对应的安装包，也可以下载 gonelist-release 中的包
-$ wget https://github.com/cugxuan/gonelist/releases/download/v0.2/gonelist_linux_amd64.tar.gz
+// 下载对应的安装包，也可下载 gonelist-release 中的包
+$ wget https://github.com/cugxuan/gonelist/releases/download/v0.3/gonelist_linux_amd64.tar.gz
+// 如果速度过慢，可以使用 CDN 链接下载
+$ wget http://g.cugxuan.cn/v0.3/gonelist_linux_amd64.tar.gz
 $ tar -zxf gonelist_linux_amd64.tar.gz && cd gonelist_linux_amd64
 $ ./gonelist_linux_amd64
 ```
@@ -64,8 +67,3 @@ $ ./gonelist_linux_amd64
   }
 }
 ```
-
-# 参考项目
-
-前端页面 UI 参考：
-https://moeclub.org/onedrive/
