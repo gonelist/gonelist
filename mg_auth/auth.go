@@ -21,12 +21,21 @@ var oauthStateString string
 var client *http.Client
 
 func SetUserInfo(user conf.UserSetting) {
-	oauthConfig = oauth2.Config{
-		Endpoint: oauth2.Endpoint{
+	var endPoint oauth2.Endpoint
+	if user.ChinaCloud == true {
+		endPoint = oauth2.Endpoint{
+			AuthURL:  "https://login.chinacloudapi.cn/common/oauth2/v2.0/authorize",
+			TokenURL: "https://login.chinacloudapi.cn/common/oauth2/v2.0/token",
+		}
+	} else {
+		endPoint = oauth2.Endpoint{
 			AuthURL:  "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
 			TokenURL: "https://login.microsoftonline.com/common/oauth2/v2.0/token",
-		},
-		Scopes:       []string{"offline_access", "files.read"},
+		}
+	}
+	oauthConfig = oauth2.Config{
+		Endpoint:     endPoint,
+		Scopes:       []string{"offline_access", "files.read"}, // 只申请读权限，避免应用程序进行修改，但使用 config.json 给的默认 id 还是不太安全
 		ClientID:     user.ClientID,
 		ClientSecret: user.ClientSecret,
 		RedirectURL:  user.RedirectURL,

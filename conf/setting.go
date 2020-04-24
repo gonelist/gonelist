@@ -46,6 +46,7 @@ type UserSetting struct {
 	Scope        string `json:"-"` // 值为 offline_access files.readwrite.all
 	AccessToken  string `json:"-"` // 令牌
 	RefreshToken string `json:"-"` // 刷新令牌
+	ChinaCloud   bool   `json:"china_cloud"`
 	// 用户设置
 	Server *Server `json:"server"`
 }

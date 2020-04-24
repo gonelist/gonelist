@@ -9,9 +9,24 @@ import (
 	"time"
 )
 
-const (
-	ROOTUrl = "https://graph.microsoft.com/v1.0/me/drive/root/children"
+var (
+	// 默认 https://graph.microsoft.com/v1.0/me/drive/root/children
+	// ChinaCloud https://microsoftgraph.chinacloudapi.cn/v1.0/me/drive/root/children
+	ROOTUrl  string
+	UrlBegin string
+	UrlEnd   string
 )
+
+func SetROOTUrl(chinaCloud bool) {
+	if chinaCloud == false {
+		ROOTUrl = "https://graph.microsoft.com/v1.0/me/drive/root/children"
+		UrlBegin = "https://graph.microsoft.com/v1.0/me/drive/root:"
+	} else {
+		ROOTUrl = "https://microsoftgraph.chinacloudapi.cn/v1.0/me/drive/root/children"
+		UrlBegin = "https://microsoftgraph.chinacloudapi.cn/v1.0/me/drive/root:"
+	}
+	UrlEnd = ":/children"
+}
 
 // 获取所有文件的树
 func GetAllFiles() (*FileNode, error) {
@@ -90,8 +105,8 @@ func GetUrlToAns(relativePath string) (Answer, error) {
 	)
 
 	if relativePath != "" {
-		// eg. /test
-		url = "https://graph.microsoft.com/v1.0/me/drive/root:" + relativePath + ":/children" + "?$top=3000"
+		// eg. /test -> https://graph.microsoft.com/v1.0/me/drive/root:/test:/children
+		url = UrlBegin + relativePath + UrlEnd + "?$top=3000"
 	}
 
 	for {

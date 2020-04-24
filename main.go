@@ -5,6 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"gonelist/conf"
 	"gonelist/mg_auth"
+	"gonelist/onedrive"
 	"gonelist/routers"
 	"net/http"
 	"time"
@@ -24,6 +25,7 @@ func main() {
 		log.Fatal(err)
 	}
 	mg_auth.SetUserInfo(conf.UserSet)
+	onedrive.SetROOTUrl(conf.UserSet.ChinaCloud)
 
 	// 处理端口绑定
 	Addr := conf.GetBindAddr(conf.UserSet.Server.BindGlobal, conf.UserSet.Server.Port)

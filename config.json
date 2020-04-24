@@ -3,6 +3,7 @@
   "redirect_url": "http://localhost:8000/auth",
   "client_secret": "lURpL3U@bBlmJ0:_dnU.LeLOGNGdVT30",
   "state": "23333",
+  "china_cloud": false,
   "server": {
     "port": 8000,
     "refresh_time": 10,
