@@ -20,9 +20,9 @@ var oauthConfig oauth2.Config
 var oauthStateString string
 var client *http.Client
 
-func SetUserInfo(user conf.UserSetting) {
+func SetUserInfo(user *conf.UserSetting) {
 	var endPoint oauth2.Endpoint
-	if user.ChinaCloud == true {
+	if user.ChinaCloud.Enable == true {
 		endPoint = oauth2.Endpoint{
 			AuthURL:  "https://login.chinacloudapi.cn/common/oauth2/v2.0/authorize",
 			TokenURL: "https://login.chinacloudapi.cn/common/oauth2/v2.0/token",

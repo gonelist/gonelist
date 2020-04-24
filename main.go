@@ -25,7 +25,7 @@ func main() {
 		log.Fatal(err)
 	}
 	mg_auth.SetUserInfo(conf.UserSet)
-	onedrive.SetROOTUrl(conf.UserSet.ChinaCloud)
+	onedrive.SetROOTUrl(conf.UserSet.ChinaCloud.Enable)
 
 	// 处理端口绑定
 	Addr := conf.GetBindAddr(conf.UserSet.Server.BindGlobal, conf.UserSet.Server.Port)

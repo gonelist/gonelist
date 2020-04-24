@@ -32,6 +32,18 @@ var defaultServerSetting = &Server{
 	FolderSub:    "/",
 }
 
+type ChinaCloud struct {
+	Enable       bool   `json:"enable"`
+	ClientID     string `json:"client_id"`
+	ClientSecret string `json:"client_secret"`
+}
+
+var defaultChinaCloudSetting = &ChinaCloud{
+	Enable:       false,
+	ClientID:     "",
+	ClientSecret: "",
+}
+
 // 用户信息设置
 type UserSetting struct {
 	// 获取授权代码
@@ -40,18 +52,18 @@ type UserSetting struct {
 	RedirectURL  string `json:"redirect_url"`
 	State        string `json:"state"` // 用户设置的标识
 	// 获取 access_token
-	ClientSecret string `json:"client_secret"`
-	Code         string `json:"-"` // 服务器收到的中间内容
-	GrantType    string `json:"-"` // 值为 authorization_code
-	Scope        string `json:"-"` // 值为 offline_access files.readwrite.all
-	AccessToken  string `json:"-"` // 令牌
-	RefreshToken string `json:"-"` // 刷新令牌
-	ChinaCloud   bool   `json:"china_cloud"`
+	ClientSecret string      `json:"client_secret"`
+	Code         string      `json:"-"` // 服务器收到的中间内容
+	GrantType    string      `json:"-"` // 值为 authorization_code
+	Scope        string      `json:"-"` // 值为 offline_access files.readwrite.all
+	AccessToken  string      `json:"-"` // 令牌
+	RefreshToken string      `json:"-"` // 刷新令牌
+	ChinaCloud   *ChinaCloud `json:"china_cloud"`
 	// 用户设置
 	Server *Server `json:"server"`
 }
 
-var UserSet UserSetting
+var UserSet = &UserSetting{}
 
 func LoadUserConfig(filePath string) error {
 	var content string
@@ -68,8 +80,16 @@ func LoadUserConfig(filePath string) error {
 	if err != nil {
 		return fmt.Errorf("导入用户配置出现错误: %w", err)
 	}
+	// 处理 ChinaCloud 和 Server 的设置
 	if UserSet.Server == nil {
 		UserSet.Server = defaultServerSetting
+	}
+	if UserSet.ChinaCloud == nil {
+		UserSet.ChinaCloud = defaultChinaCloudSetting
+	}
+	if UserSet.ChinaCloud.Enable == true {
+		UserSet.ClientID = UserSet.ChinaCloud.ClientID
+		UserSet.ClientSecret = UserSet.ChinaCloud.ClientSecret
 	}
 	log.Info("成功导入用户配置")
 	return nil
