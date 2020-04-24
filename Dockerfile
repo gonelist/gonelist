@@ -16,7 +16,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o gonelist main.go
 
 FROM alpine:3.11.5
 WORKDIR /root
-ARG VERSION=v0.2
+ARG VERSION=v0.3
 COPY --from=builder /root/myapp/gonelist /bin/gonelist
 RUN apk add curl && \
     cd /etc && curl -sL https://github.com/Sillywa/gonelist-web/releases/download/${VERSION}/dist.tar.gz | tar -zxf -

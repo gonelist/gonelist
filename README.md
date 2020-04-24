@@ -41,6 +41,17 @@ $ ./gonelist_linux_amd64
 
 直接使用项目的`docker-compose.yml`去`docker-compose up -d`即可，建议把配置文件放在一个文件夹里，把文件夹挂载进去。否则直挂文件docker挂载的是inode
 
+```
+$ ls -l *
+-rw-r--r-- 1 root root  515 Apr 22 18:55 docker-compose.yml
+
+config:
+total 4
+-rw-r--r-- 1 root root 329 Apr 16 20:02 config.json
+```
+
+容器的话配置文件的`dist_path`值得改为`/etc/dist/`
+
 ## config.json
 
 如果需要修改配置，在配置文件中填对对应的内容即可
