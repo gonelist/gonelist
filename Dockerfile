@@ -9,9 +9,10 @@ COPY go.sum ./
 RUN go mod download
 
 FROM mod as builder
-LABEL stage=intermediate
+LABEL stage=intermediate0
+ARG LDFLAGS
 COPY ./ ./
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o gonelist main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o gonelist ${LDFLAGS} main.go
 
 
 FROM alpine:3.11.5

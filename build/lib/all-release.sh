@@ -1,10 +1,6 @@
 #!/bin/bash
 
-#脚本要存放在项目根目录
-readonly CUR_DIR=$(cd $(dirname ${BASH_SOURCE:-$0}); pwd)
-
-: ${OUTPUT:=${CUR_DIR}/release} ${PROJECT_NAME:=gonelist}
-
+: ${OUTPUT:=${GONELIST_ROOT}/release} ${PROJECT_NAME:=gonelist}
 
 
 # https://golang.org/doc/install/source#environment
@@ -51,8 +47,8 @@ windows=(
 
 
 FILE_LIST=(
-    release/dist
-    config.json
+    ${GONELIST_ROOT}/release/dist
+    ${GONELIST_ROOT}/config.json
 )
 
 for file in ${FILE_LIST[@]};do
@@ -61,7 +57,6 @@ for file in ${FILE_LIST[@]};do
         exit
     fi
 done
-
 
 for os in ${OS_LIST[@]};do
     arch_array="${os}[@]"             # 间接引用数组
@@ -74,8 +69,8 @@ for os in ${OS_LIST[@]};do
         printf "building %-30s" ${bin_file}
         save_dir=${OUTPUT}/${dir_name} 
         mkdir -p $save_dir 
-        cd $CUR_DIR
-        GOOS=$os GOARCH=$arch go build -o ${save_dir}/${bin_file} main.go 2>/dev/null
+        cd $GONELIST_ROOT
+        GOOS=$os GOARCH=$arch go build -o ${save_dir}/${bin_file}  ${LDFLAGS} main.go 2>/dev/null
         if [ "$?" -ne 0 ];then
             echo -e "\t\033[1;31m[failed]\033[0m"
             rm -rf $save_dir
@@ -86,7 +81,7 @@ for os in ${OS_LIST[@]};do
         # 进入目录打包
         cd ${OUTPUT}
         tar -zcf $dir_name.tar.gz ${dir_name}/
-        cd $CUR_DIR
+        cd $GONELIST_ROOT
         rm -rf $save_dir 
         echo -e "\t\033[1;32m[success]\033[0m"
     done

@@ -8,6 +8,9 @@ tmp/
 example/
 dist/
 release/
+gonelist
+main.exe
+main
 
 # User-specific stuff
 .idea/**/workspace.xml
