@@ -34,7 +34,7 @@ fmt:
 	go fmt ./...
 download:
 	@$(GO) mod download
-version: download build
+version: download clean build
 
 build: clean
 	$(GO) build -o gonelist $(LDFLAGS) main.go
