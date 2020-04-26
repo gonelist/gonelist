@@ -46,6 +46,13 @@ windows=(
 )
 
 
+mkdir -p ${GONELIST_ROOT}/release/
+[ ! -d "${GONELIST_ROOT}/release/dist" ] && {
+  cd ${GONELIST_ROOT}/release/
+  curl -sL https://github.com/Sillywa/gonelist-web/releases/download/${TAG_NUM}/dist.tar.gz | tar -zxf -
+  cd $GONELIST_ROOT
+}
+
 FILE_LIST=(
     ${GONELIST_ROOT}/release/dist
     ${GONELIST_ROOT}/config.json
@@ -70,7 +77,7 @@ for os in ${OS_LIST[@]};do
         save_dir=${OUTPUT}/${dir_name} 
         mkdir -p $save_dir 
         cd $GONELIST_ROOT
-        GOOS=$os GOARCH=$arch go build -o ${save_dir}/${bin_file}  ${LDFLAGS} main.go 2>/dev/null
+        bash -c "GOOS=$os GOARCH=$arch go build -o ${save_dir}/${bin_file}  ${LDFLAGS} ${GONELIST_ROOT}/main.go 2>/dev/null"
         if [ "$?" -ne 0 ];then
             echo -e "\t\033[1;31m[failed]\033[0m"
             rm -rf $save_dir
