@@ -34,7 +34,7 @@ $ tar -zxf gonelist_linux_amd64.tar.gz && cd gonelist_linux_amd64
 $ ./gonelist_linux_amd64
 ```
 打开 http://localhost:8000 按照提示登录后即可。如果是在本地部署，登陆成功会跳转到首页，此时已经完成部署。  
-如果是在服务器部署，登陆成功会跳转到http://localhost:8000/auth?code=xxx，将当前网址改成 http://yoursite:8000/auth?code=xxx 再回车等待文件加载后，会自动跳转你的网站 http://yoursite:8000。如果登陆后一直没有反应，可能是因为文件夹数量过多导致，建议设置「子文件夹」选项  
+如果是在服务器部署，登陆成功会跳转到 http://localhost:8000/auth?code=xxx ，将当前网址改成 http://yoursite:8000/auth?code=xxx 再回车等待文件加载后，会自动跳转你的网站 http://yoursite:8000 。如果登陆后一直没有反应，可能是因为文件夹数量过多导致，建议设置「子文件夹」选项  
 默认情况下读取当前路径的 `config.json` 作为配置文件，或加参数 `--conf=dir1/file.json` 指定配置文件路径
 
 ## docker运行
