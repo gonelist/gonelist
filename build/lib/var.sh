@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
 #GONELIST_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
-git=(git --work-tree "${GONELIST_ROOT}")
+readonly git=(git --work-tree "${GONELIST_ROOT}")
+readonly BUILD_DATE=$(date +'%Y-%m-%dT%H:%M:%S')
+readonly HEAD=$("${git[@]}" rev-parse "HEAD^{commit}")
 
 GONELIST::SetVersion(){
 
@@ -15,28 +17,39 @@ GONELIST::SetVersion(){
     )
   }
 
-  # 不为空则切换到指定tag版本编译
-  [ -n "$BUILD_VERSION" ] && {
-    "${git[@]}" checkout ${BUILD_VERSION}
-  } || { # 默认取最新的tag作为版本号
-    # repo上最新tag的commitID
+  #指定tag版本时候判断存在否
+  if [ -n "$TAG" ]; then
+    TAG_COMMITID=$("${git[@]}" rev-parse $TAG 2>/dev/null)
+    if [ "$?" -ne 0 ];then
+        echo no such tag: $TAG
+        exit 1
+    fi
+  else #默认取最新的tag
     TAG_COMMITID=$("${git[@]}" rev-list --tags --max-count=1)
-    # 取最新tag名
-    BUILD_VERSION=$("${git[@]}"  describe --tags ${TAG_COMMITID})
-  }
-
-  TAG_NUM="$BUILD_VERSION"
+    TAG=$("${git[@]}" describe --tags ${TAG_COMMITID})
+  fi
 
 
-  COMMIT_ID=$("${git[@]}" rev-parse HEAD)
-  BUILD_DATE=$(date +'%Y-%m-%dT%H:%M:%S')
+  "${git[@]}" checkout $TAG 1>/dev/null
+  BUILD_VERSION=${TAG}
+
   GIT_TREE_STATE=$("${git[@]}" status --porcelain 2>/dev/null)
 
-  [ -n "${GIT_TREE_STATE}" ] && {
-    # 不为空则为master分支修改代码没提交,把版本号设置为最新tag-dirty，通过版本号+commitID追溯
+  if [ -z "${GIT_TREE_STATE}" ];then
+    GIT_TREE_STATE='clean'
+  else
     GIT_TREE_STATE='dirty'
-    BUILD_VERSION=${BUILD_VERSION}-'dirty'
-  } || GIT_TREE_STATE='clean'
+  fi
+
+  #在tag的版本上更改了代码则置为dirty
+  HEAD_COMMIT=$("${git[@]}" rev-parse HEAD)
+  if [ "${HEAD_COMMIT}" != "${TAG_COMMITID}" ];then
+    #tag的基础上改动，所以tag版本号-dirty
+    BUILD_VERSION=${BUILD_VERSION}-dirty
+    COMMIT_ID=${HEAD_COMMIT}
+  else
+    COMMIT_ID=${TAG_COMMITID}
+  fi
 
   add_ldflag 'Version' ${BUILD_VERSION}
   add_ldflag 'buildDate' ${BUILD_DATE}
@@ -44,5 +57,5 @@ GONELIST::SetVersion(){
   add_ldflag 'gitTreeState' ${GIT_TREE_STATE}
 
   # The -ldflags parameter takes a single string, so join the output.
-  echo $TAG_NUM '-ldflags' \"${ldflags[*]-}\"
+  echo $TAG_NUM -ldflags \'${ldflags[*]-}\'
 }
