@@ -31,7 +31,7 @@ GONELIST::SetVersion(){
   fi
 
 
-  "${git[@]}" checkout $TAG 2 >/dev/null
+  "${git[@]}" checkout $TAG 2>/dev/null
   BUILD_VERSION=${TAG}
 
   GIT_TREE_STATE=$("${git[@]}" status --porcelain 2>/dev/null)
@@ -52,7 +52,7 @@ GONELIST::SetVersion(){
     COMMIT_ID=${TAG_COMMITID}
   fi
 
-  "${git[@]}" checkout $HEAD 2 >/dev/null
+  "${git[@]}" checkout $HEAD 2>/dev/null
 
   add_ldflag 'Version' ${BUILD_VERSION}
   add_ldflag 'buildDate' ${BUILD_DATE}

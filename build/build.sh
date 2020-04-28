@@ -20,6 +20,7 @@ case "$1" in
     ;;
   "docker-local")
     Dockerfile=Dockerfile.local
+    set -e
     go build -o ${GONELIST_ROOT}/gonelist -ldflags "${LDFLAGS}" ${GONELIST_ROOT}/main.go
     ;&
   "docker")
