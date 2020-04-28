@@ -4,6 +4,7 @@
 readonly git=(git --work-tree "${GONELIST_ROOT}")
 readonly BUILD_DATE=$(date +'%Y-%m-%dT%H:%M:%S')
 readonly HEAD=$("${git[@]}" rev-parse "HEAD^{commit}")
+export GONELIST_ROOT BUILD_DATE HEAD
 
 GONELIST::SetVersion(){
 
@@ -13,7 +14,7 @@ GONELIST::SetVersion(){
     local val=${2}
     # If you update these, also update the list component-base/version/def.bzl.
     ldflags+=(
-      "-X main.${key}=${val}"
+      "-X 'main.${key}=${val}'"
     )
   }
 
@@ -30,7 +31,7 @@ GONELIST::SetVersion(){
   fi
 
 
-  "${git[@]}" checkout $TAG 1>/dev/null
+  "${git[@]}" checkout $TAG 2 >/dev/null
   BUILD_VERSION=${TAG}
 
   GIT_TREE_STATE=$("${git[@]}" status --porcelain 2>/dev/null)
@@ -51,11 +52,14 @@ GONELIST::SetVersion(){
     COMMIT_ID=${TAG_COMMITID}
   fi
 
+  "${git[@]}" checkout $HEAD 2 >/dev/null
+
   add_ldflag 'Version' ${BUILD_VERSION}
   add_ldflag 'buildDate' ${BUILD_DATE}
   add_ldflag 'gitCommit' ${COMMIT_ID}
   add_ldflag 'gitTreeState' ${GIT_TREE_STATE}
 
   # The -ldflags parameter takes a single string, so join the output.
-  echo $TAG_NUM -ldflags \'${ldflags[*]-}\'
+  echo $TAG "${ldflags[*]-}"
+
 }

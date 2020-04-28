@@ -1,10 +1,11 @@
 #!/bin/bash
-
+set -x
 #脚本要存放在项目根目录
-readonly GONELIST_ROOT=$(cd $(dirname ${BASH_SOURCE:-$0}); pwd)
 
+cd ${GONELIST_ROOT}
+readonly git=(git --work-tree "${GONELIST_ROOT}")
 : ${OUTPUT:=${GONELIST_ROOT}/release} ${PROJECT_NAME:=gonelist}
-git=(git --work-tree "${GONELIST_ROOT}")
+
 
 
 # https://golang.org/doc/install/source#environment
@@ -65,7 +66,7 @@ fi
 "${git[@]}" checkout $TAG 1>/dev/null
 BUILD_VERSION=${TAG}
 
-BUILD_DATE=$(date +'%Y-%m-%dT%H:%M:%S')
+
 GIT_TREE_STATE=$("${git[@]}" status --porcelain 2>/dev/null)
 
 if [ -z "${GIT_TREE_STATE}" ];then
@@ -137,3 +138,5 @@ for os in ${OS_LIST[@]};do
         echo -e "\t\033[1;32m[success]\033[0m"
     done
 done
+
+"${git[@]}" checkout $HEAD 2>/dev/null
