@@ -12,14 +12,15 @@ FROM mod as builder
 LABEL stage=intermediate0
 ARG LDFLAGS
 COPY ./ ./
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o gonelist ${LDFLAGS} main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o gonelist -ldflags "${LDFLAGS}" main.go
 
 
 FROM alpine:3.11.5
 WORKDIR /root
 ARG VERSION=v0.3
 COPY --from=builder /root/myapp/gonelist /bin/gonelist
-RUN apk add curl && \
-    cd /etc && curl -sL https://github.com/Sillywa/gonelist-web/releases/download/${VERSION}/dist.tar.gz | tar -zxf -
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories && \
+    apk add curl && \
+    cd /etc && curl -sL https://github.com/Sillywa/gonelist-web/releases/download/${VERSION}/dist.tar.gz | tar -zxvf -
 EXPOSE 8000
 ENTRYPOINT ["/bin/gonelist"]
