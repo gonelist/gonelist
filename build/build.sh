@@ -9,24 +9,23 @@ source "${GONELIST_ROOT}/build/lib/var.sh"
 read TAG_NUM LDFLAGS < <(GONELIST::SetVersion)
 
 case "$1" in
-  "release")
+  "release") # checkout到tag构建完再checkout回来
     bash ${GONELIST_ROOT}/build/lib/all-release.sh
     ;;
-  "var")
+  "var") #打印下面build的变量
     echo go build -o ${GONELIST_ROOT}/gonelist -ldflags "${LDFLAGS}" ${GONELIST_ROOT}/main.go
     ;;
-  "build")
+  "build") #使用master构建测试版本
     go build -o ${GONELIST_ROOT}/gonelist -ldflags "${LDFLAGS}" ${GONELIST_ROOT}/main.go
     ;;
-  "docker-local")
+  "docker-local") #使用本地编译二进制文件打包docker和dist
     Dockerfile=Dockerfile.local
-    set -e
     go build -o ${GONELIST_ROOT}/gonelist -ldflags "${LDFLAGS}" ${GONELIST_ROOT}/main.go
     ;&
-  "docker")
+  "docker") #使用容器编译和打包dist
     [ -n "$TAG_NUM" ] && build_arg="--build-arg VERSION=$TAG_NUM"
     docker build -t zhangguanzhang/gonelist:$TAG_NUM $build_arg \
-      --build-arg LDFLAGS="-ldflags ${LDFLAGS}" -f ${Dockerfile:=Dockerfile} .
+      --build-arg LDFLAGS="${LDFLAGS}" -f ${Dockerfile:=Dockerfile} .
     ;;
   "clean")
     rm -rf ${GONELIST_ROOT:=/tmp}/release/*
@@ -37,3 +36,4 @@ case "$1" in
     exit 1
     ;;
 esac
+

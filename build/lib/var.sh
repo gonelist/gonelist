@@ -42,12 +42,12 @@ GONELIST::SetVersion(){
     GIT_TREE_STATE='dirty'
   fi
 
-  #在tag的版本上更改了代码则置为dirty
-  HEAD_COMMIT=$("${git[@]}" rev-parse HEAD)
-  if [ "${HEAD_COMMIT}" != "${TAG_COMMITID}" ];then
+  #master切到tag版本则置为dirty
+
+  if [ "${HEAD}" != "${TAG_COMMITID}" ];then
     #tag的基础上改动，所以tag版本号-dirty
     BUILD_VERSION=${BUILD_VERSION}-dirty
-    COMMIT_ID=${HEAD_COMMIT}
+    COMMIT_ID=${HEAD}
   else
     COMMIT_ID=${TAG_COMMITID}
   fi
