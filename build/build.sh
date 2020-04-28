@@ -16,6 +16,10 @@ case "$1" in
     echo go build -o ${GONELIST_ROOT}/gonelist -ldflags "${LDFLAGS}" ${GONELIST_ROOT}/main.go
     ;;
   "build") #使用master构建测试版本
+    if [ -z `command -v go ` ];then
+      echo go is not in PATH
+      exit 1
+    fi
     go build -o ${GONELIST_ROOT}/gonelist -ldflags "${LDFLAGS}" ${GONELIST_ROOT}/main.go
     ;;
   "docker-local") #使用本地编译二进制文件打包docker和dist

@@ -6,6 +6,10 @@ cd ${GONELIST_ROOT}
 readonly git=(git --work-tree "${GONELIST_ROOT}")
 : ${OUTPUT:=${GONELIST_ROOT}/release} ${PROJECT_NAME:=gonelist}
 
+if [ -z `command -v go` ];then
+  echo go is not in PATH
+  exit 1
+fi
 
 
 # https://golang.org/doc/install/source#environment
