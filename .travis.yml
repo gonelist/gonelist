@@ -1,0 +1,18 @@
+language: go
+go:
+  - '1.14.2'
+script:
+  - "bash  build/build.sh release"
+before_install:
+  - ls -l
+after_script:
+  - ls -l
+  - ls -l release
+deploy:
+  provider: releases
+  api_key: "${GONELIST_GITHUB_TOKEN}"
+  file_glob: true
+  file: release/*.tar.gz
+  skip_cleanup: true
+  on:
+    tags: true

@@ -2,7 +2,7 @@
 
 #GONELIST_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
 readonly git=(git --work-tree "${GONELIST_ROOT}")
-readonly BUILD_DATE=$(date +'%Y-%m-%dT%H:%M:%S')
+readonly BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
 readonly HEAD=$("${git[@]}" rev-parse "HEAD^{commit}")
 export GONELIST_ROOT BUILD_DATE HEAD
 
