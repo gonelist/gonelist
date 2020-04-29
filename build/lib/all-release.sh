@@ -142,5 +142,3 @@ for os in ${OS_LIST[@]};do
         echo -e "\t\033[1;32m[success]\033[0m"
     done
 done
-
-"${git[@]}" checkout $HEAD 2>/dev/null
