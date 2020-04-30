@@ -13,8 +13,6 @@ import (
 	"time"
 )
 
-
-
 func main() {
 
 	confPath := flag.String("conf", "config.json", "指定配置文件路径")
@@ -53,10 +51,10 @@ func main() {
 }
 
 var (
-	Version string
-	gitCommit string
-	gitTreeState = ""            // state of git tree, either "clean" or "dirty"
-	buildDate = "1970-01-01T00:00:00" // build date, output of $(date +'%Y-%m-%dT%H:%M:%S')
+	Version      string
+	gitCommit    string
+	gitTreeState = ""                    // state of git tree, either "clean" or "dirty"
+	buildDate    = "1970-01-01T00:00:00" // build date, output of $(date +'%Y-%m-%dT%H:%M:%S')
 )
 
 func versionPrint() {
