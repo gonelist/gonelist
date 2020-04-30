@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+[ -n "$RELEASE_DEBUG" ] && set -x
 #脚本要存放在项目根目录
 
 cd ${GONELIST_ROOT}
@@ -93,7 +93,8 @@ fi
 mkdir -p ${GONELIST_ROOT}/release/
 [ ! -d "${GONELIST_ROOT}/release/dist" ] && {
   cd ${GONELIST_ROOT}/release/
-  curl -sL https://github.com/Sillywa/gonelist-web/releases/download/${TAG}/dist.tar.gz | tar -zvxf -
+  [ -z "$DIST_VERSION" ] && DIST_VERSION=$TAG
+  curl -sL https://github.com/Sillywa/gonelist-web/releases/download/${DIST_VERSION}/dist.tar.gz | tar -zvxf -
   cd $GONELIST_ROOT
 }
 
@@ -110,6 +111,11 @@ for file in ${FILE_LIST[@]};do
     fi
 done
 
+echo go build -o ${GONELIST_ROOT}/gonelist -ldflags " -X main.Version=${BUILD_VERSION}
+            -X main.buildDate=${BUILD_DATE}
+            -X main.gitCommit=${COMMIT_ID}
+            -X main.gitTreeState=${GIT_TREE_STATE}"  ${GONELIST_ROOT}/main.go
+
 
 for os in ${OS_LIST[@]};do
     arch_array="${os}[@]"             # 间接引用数组
@@ -123,7 +129,7 @@ for os in ${OS_LIST[@]};do
         save_dir=${OUTPUT}/${dir_name}
         mkdir -p $save_dir
         cd $GONELIST_ROOT
-        GOOS=$os GOARCH=$arch go build -o ${save_dir}/${bin_file} -ldflags "main.Version=${BUILD_VERSION}
+        GOOS=$os GOARCH=$arch go build -o ${save_dir}/${bin_file} -ldflags " -X main.Version=${BUILD_VERSION}
             -X main.buildDate=${BUILD_DATE}
             -X main.gitCommit=${COMMIT_ID}
             -X main.gitTreeState=${GIT_TREE_STATE}"  ${GONELIST_ROOT}/main.go 2>/dev/null
@@ -143,4 +149,4 @@ for os in ${OS_LIST[@]};do
     done
 done
 
-"${git[@]}" checkout $HEAD 2>/dev/null
+#"${git[@]}" checkout $HEAD 2>/dev/null
