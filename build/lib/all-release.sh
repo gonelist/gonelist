@@ -148,8 +148,3 @@ for os in ${OS_LIST[@]};do
         echo -e "\t\033[1;32m[success]\033[0m"
     done
 done
-<<<<<<< HEAD
-=======
-
-#"${git[@]}" checkout $HEAD 2>/dev/null
->>>>>>> f878ec6e0099a96bce99a7881d27824e2d8ca9c6
