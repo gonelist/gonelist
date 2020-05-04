@@ -1,5 +1,7 @@
 # GONEList
 
+[![Build Status](https://travis-ci.com/cugxuan/gonelist.svg)](https://travis-ci.com/cugxuan/gonelist)
+
 这是一款使用 `golang + vue` 编写的基于 onedrive 的**在线共享网盘**  
 效果展示：https://gonelist.cugxuan.cn  
 前端项目地址：https://github.com/Sillywa/gonelist-web  
