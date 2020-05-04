@@ -2,6 +2,7 @@ language: go
 go:
   - '1.14.2'
 script:
+  - "bash -n build/build.sh release"
   - "bash  build/build.sh release"
 before_install:
   - ls -l
