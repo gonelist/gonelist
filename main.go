@@ -54,7 +54,7 @@ var (
 	Version      string
 	gitCommit    string
 	gitTreeState = ""                    // state of git tree, either "clean" or "dirty"
-	buildDate    = "1970-01-01T00:00:00" // build date, output of $(date +'%Y-%m-%dT%H:%M:%S')
+	buildDate    = "1970-01-01T00:00:00Z" // build date, output of $(date +'%Y-%m-%dT%H:%M:%S')
 )
 
 func versionPrint() {

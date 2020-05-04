@@ -1,6 +1,6 @@
 # GONEList
 
-[![Build Status](https://travis-ci.com/cugxuan/gonelist.svg)](https://travis-ci.com/cugxuan/gonelist)
+[![Build Status](https://travis-ci.org/cugxuan/gonelist.svg)](https://travis-ci.org/cugxuan/gonelist)
 
 这是一款使用 `golang + vue` 编写的基于 onedrive 的**在线共享网盘**  
 效果展示：https://gonelist.cugxuan.cn  
@@ -61,8 +61,8 @@ total 4
 {
   //------建议填入自己的 id 和 secret --------
   "client_id": "88966400-cb81-49cb-89c2-6d09f0a3d9e2",
-  "redirect_url": "http://localhost:8000/auth",
   "client_secret": "/FKad]FPtKNk-=j11aPwEOBSxYUYUU54",
+  "redirect_url": "http://localhost:8000/auth",
   // 设置一个自己喜欢的字符串
   "state": "23333",
   "china_cloud": false,
