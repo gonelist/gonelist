@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-# Original source is located at github.com/cugxuan/gonelist/release/install-release.sh
+# Original source is located at github.com/cugxuan/gonelist/scripts/install-release.sh
 
 # If not specify, default meaning of return value:
 # 0: Success
@@ -373,7 +373,7 @@ remove(){
         fi
     elif [[ -n "${SERVICE_CMD}" ]] && [[ -f "/etc/init.d/gonelist" ]]; then
         if pgrep "gonelist" > /dev/null ; then
-            stopV2ray
+            stop_gonelist
         fi
         rm -rf "/usr/local/gonelist" "/etc/init.d/gonelist"
         if [[ $? -ne 0 ]]; then
