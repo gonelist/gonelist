@@ -1,9 +1,9 @@
-FROM alpine:3.11.5
+FROM alpine:3.11.6
 WORKDIR /root
 ARG VERSION=v0.3
 COPY gonelist /bin/gonelist
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories && \
-    apk add curl && \
+    apk add curl wget && \
     cd /etc && curl -sL https://github.com/Sillywa/gonelist-web/releases/download/${VERSION}/dist.tar.gz | tar -zxvf -
 EXPOSE 8000
 ENTRYPOINT ["/bin/gonelist"]

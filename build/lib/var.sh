@@ -6,18 +6,8 @@ readonly BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
 readonly HEAD=$("${git[@]}" rev-parse "HEAD^{commit}")
 export GONELIST_ROOT BUILD_DATE HEAD
 
-GONELIST::SetVersion(){
 
-  local -a ldflags
-  function add_ldflag() {
-    local key=${1}
-    local val=${2}
-    # If you update these, also update the list component-base/version/def.bzl.
-    ldflags+=(
-      "-X 'main.${key}=${val}'"
-    )
-  }
-
+GONELIST::getVersion(){
   #指定tag版本时候判断存在否
   if [ -n "$TAG" ]; then
     TAG_COMMITID=$("${git[@]}" rev-parse $TAG 2>/dev/null)
@@ -34,9 +24,7 @@ GONELIST::SetVersion(){
   "${git[@]}" checkout $TAG 2>/dev/null
   BUILD_VERSION=${TAG}
 
-  GIT_TREE_STATE=$("${git[@]}" status --porcelain 2>/dev/null)
-
-  if [ -z "${GIT_TREE_STATE}" ];then
+  if [ -z "$("${git[@]}" status --porcelain 2>/dev/null)" ];then
     GIT_TREE_STATE='clean'
   else
     GIT_TREE_STATE='dirty'
@@ -46,18 +34,33 @@ GONELIST::SetVersion(){
 
   if [ "${HEAD}" != "${TAG_COMMITID}" ];then
     #tag的基础上改动，所以tag版本号-dirty
-    BUILD_VERSION=${BUILD_VERSION}-dirty
+    BUILD_VERSION+="-dirty"
     COMMIT_ID=${HEAD}
   else
     COMMIT_ID=${TAG_COMMITID}
   fi
 
   "${git[@]}" checkout $HEAD 2>/dev/null
+}
+
+GONELIST::SetVersion(){
+  GONELIST::getVersion &>/dev/null
+
+  local -a ldflags
+  function add_ldflag() {
+    local key=${1}
+    local val=${2}
+    ldflags+=(
+      "-X 'main.${key}=${val}'"
+    )
+  }
 
   add_ldflag 'Version' ${BUILD_VERSION}
   add_ldflag 'buildDate' ${BUILD_DATE}
   add_ldflag 'gitCommit' ${COMMIT_ID}
   add_ldflag 'gitTreeState' ${GIT_TREE_STATE}
+
+  unset TAG_COMMITID BUILD_VERSION COMMIT_ID GIT_TREE_STATE
 
   # The -ldflags parameter takes a single string, so join the output.
   echo $TAG "${ldflags[*]-}"
