@@ -75,7 +75,7 @@ func LoadUserConfig(filePath string) error {
 
 	log.Infof("当前使用的配置文件为:%s", filePath)
 
-	content = file.ReadFromFile(filePath)
+	content, _ = file.ReadFromFile(filePath)
 	err = json.Unmarshal(content, &UserSet)
 	if err != nil {
 		return fmt.Errorf("导入用户配置出现错误: %w", err)

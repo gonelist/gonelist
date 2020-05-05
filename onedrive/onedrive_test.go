@@ -13,14 +13,14 @@ import (
 const example = "../example/"
 
 func TestOnedriveGetPath(t *testing.T) {
-	data := file.ReadFromFile(example + "root.json")
+	data, _ := file.ReadFromFile(example + "root.json")
 	var ans Answer
 	json.Unmarshal(data, &ans)
 	fmt.Println(ans)
 }
 
 func TestGetAnsErr(t *testing.T) {
-	data := file.ReadFromFile(example + "InvalidToken.json")
+	data, _ := file.ReadFromFile(example + "InvalidToken.json")
 	var ans Answer
 	json.Unmarshal(data, &ans)
 	fmt.Println(ans)
@@ -33,11 +33,11 @@ func TestCheckAnswerValid(t *testing.T) {
 	var ans2 Answer
 	var valid error
 
-	data = file.ReadFromFile(example + "InvalidToken.json")
+	data, _ = file.ReadFromFile(example + "InvalidToken.json")
 	json.Unmarshal(data, &ans1)
 	valid = CheckAnswerValid(ans1, "/example/InvalidToken.json")
 	fmt.Println(valid)
-	data = file.ReadFromFile(example + "root.json")
+	data, _ = file.ReadFromFile(example + "root.json")
 	json.Unmarshal(data, &ans2)
 	valid = CheckAnswerValid(ans2, "/example/root.json")
 	fmt.Println(valid)
@@ -47,7 +47,7 @@ func TestCacheGetPathList(t *testing.T) {
 	var data []byte
 	var filetree *FileNode
 
-	data = file.ReadFromFile(example + "filetree.json")
+	data, _ = file.ReadFromFile(example + "filetree.json")
 	json.Unmarshal(data, &filetree)
 
 	FileTree = filetree
@@ -78,7 +78,7 @@ func TestConvertReturnNode(t *testing.T) {
 
 	mg_auth.SetUserInfo(conf.UserSet)
 
-	data = file.ReadFromFile(example + "filetree.json")
+	data, _ = file.ReadFromFile(example + "filetree.json")
 	json.Unmarshal(data, &filetree)
 
 	reNode := ConvertReturnNode(filetree)
@@ -87,12 +87,12 @@ func TestConvertReturnNode(t *testing.T) {
 
 // 测试一个目录下，上千文件的情况
 func TestThousand(t *testing.T) {
-	data := file.ReadFromFile(example + "pdf.json")
+	data, _ := file.ReadFromFile(example + "pdf.json")
 	var ans Answer
 	var ans1 Answer
 	json.Unmarshal(data, &ans)
 	fmt.Println(len(ans.Value))
-	data1 := file.ReadFromFile(example + "pdf1.json")
+	data1, _ := file.ReadFromFile(example + "pdf1.json")
 	json.Unmarshal([]byte(data1), &ans1)
 	fmt.Println(len(ans1.Value))
 }
