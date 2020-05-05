@@ -24,36 +24,26 @@
 
 # 安装配置
 
+## 自助安装
+
 如果您的 onedrive 网盘内，**没有隐私内容**，可以按照下面的流程快速配置体验效果，完整的下载安装流程请看 [安装文档](https://github.com/cugxuan/gonelist/wiki/Install)  
 
-## 实体服务运行
-下载 [Github Release](https://github.com/cugxuan/GOIndex/releases) 或者 [gonelist-release](https://gonelist.cugxuan.cn/#/gonelist-release) 中对应的包，直接运行即可启动，以 Linux 系统本地启动为例
-```
-// 下载对应的安装包，也可下载 gonelist-release 中的包
-$ wget https://github.com/cugxuan/gonelist/releases/download/v0.3/gonelist_linux_amd64.tar.gz
-// 如果速度过慢，可以使用 CDN 链接下载
-$ wget http://g.cugxuan.cn/v0.3/gonelist_linux_amd64.tar.gz
-$ tar -zxf gonelist_linux_amd64.tar.gz && cd gonelist_linux_amd64
-$ ./gonelist_linux_amd64
-```
-打开 http://localhost:8000 按照提示登录后即可。如果是在本地部署，登陆成功会跳转到首页，此时已经完成部署。  
-如果是在服务器部署，登陆成功会跳转到 http://localhost:8000/auth?code=xxx ，将当前网址改成 http://yoursite:8000/auth?code=xxx 再回车等待文件加载后，会自动跳转你的网站 http://yoursite:8000 。如果登陆后一直没有反应，可能是因为文件夹数量过多导致，建议设置「子文件夹」选项  
-默认情况下读取当前路径的 `config.json` 作为配置文件，或加参数 `--conf=dir1/file.json` 指定配置文件路径
+## 实体systemd服务安装
+
+视频教程(包含了Azure应用程序的配置) https://www.bilibili.com/video/BV1PA411t7Jw/
+
 
 ## docker运行
+视频教程 https://www.bilibili.com/video/BV1Vz4y1R7EK/
 
 直接使用项目的`docker-compose.yml`去`docker-compose up -d`即可，建议把配置文件放在一个文件夹里，把文件夹挂载进去。否则直挂文件docker挂载的是inode
-
 ```
-$ ls -l *
--rw-r--r-- 1 root root  515 Apr 22 18:55 docker-compose.yml
-
-config:
-total 4
--rw-r--r-- 1 root root 329 Apr 16 20:02 config.json
+.
+├── config
+│   └── config.json
+└── docker-compose.yml
 ```
-
-容器的话配置文件的`dist_path`值得改为`/etc/dist/`
+配置文件最好是切到对应的tag那去下载，容器的话配置文件的`dist_path`值得改为`/etc/dist/`
 
 ## config.json
 
