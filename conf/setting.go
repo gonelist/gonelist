@@ -66,7 +66,7 @@ type UserSetting struct {
 var UserSet = &UserSetting{}
 
 func LoadUserConfig(filePath string) error {
-	var content string
+	var content []byte
 	var err error
 
 	if len(filePath) == 0 {
@@ -76,7 +76,7 @@ func LoadUserConfig(filePath string) error {
 	log.Infof("当前使用的配置文件为:%s", filePath)
 
 	content = file.ReadFromFile(filePath)
-	err = json.Unmarshal([]byte(content), &UserSet)
+	err = json.Unmarshal(content, &UserSet)
 	if err != nil {
 		return fmt.Errorf("导入用户配置出现错误: %w", err)
 	}

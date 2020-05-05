@@ -6,11 +6,11 @@ import (
 )
 
 // 从某个文件读取内容
-func ReadFromFile(filename string) string {
+func ReadFromFile(filename string) []byte {
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		fmt.Println(err)
 		//return
 	}
-	return string(data)
+	return data
 }
