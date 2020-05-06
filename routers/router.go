@@ -29,6 +29,7 @@ func InitRouter() *gin.Engine {
 	r.GET("/login", api.Login)
 	r.GET("/loginmg", api.LoginMG)
 	r.GET("/auth", api.GetCode)
+	r.GET("/README", api.GetREADME)
 	//r.GET("/cancelLogin", api.CancelLogin)
 	// 直接下载接口
 	r.GET("/d/*path", middleware.CheckLogin(), api.Download)

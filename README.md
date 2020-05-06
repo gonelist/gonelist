@@ -2,6 +2,11 @@
 
 [![Build Status](https://travis-ci.org/cugxuan/gonelist.svg)](https://travis-ci.org/cugxuan/gonelist)
 [![Latest Release](https://img.shields.io/github/release/cugxuan/gonelist.svg)](../../releases)
+[![All Releases Download](https://img.shields.io/github/downloads/cugxuan/gonelist/total.svg)](../../releases)
+
+
+<img align="right" width="240" src="https://github.com/cugxuan/gonelist/wiki/img/logo/logo.png">
+
 
 这是一款使用 `golang + vue` 编写的基于 onedrive 的**在线共享网盘**  
 效果展示：https://gonelist.cugxuan.cn  
@@ -73,3 +78,10 @@
   }
 }
 ```
+
+# Contributors
+
+- 开发：<a href="https://github.com/cugxuan"><img src="https://avatars1.githubusercontent.com/u/23120372?s=400&v=4" width="30"></a>
+<a href="https://github.com/Sillywa/"><img src="https://avatars0.githubusercontent.com/u/22909601?s=400&v=4" width="30"></a>
+<a href="https://github.com/zhangguanzhang"><img src="https://avatars3.githubusercontent.com/u/18641678?s=400&v=4" width="30"></a>
+- logo 设计：<a href="http://lambertchan.me/"><img src="https://avatars0.githubusercontent.com/u/39192150?s=400&v=4" width="30"></a>
