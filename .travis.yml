@@ -2,8 +2,9 @@ language: go
 go:
   - '1.14.2'
 script:
-  - "bash -n build/build.sh release"
-  - "bash  build/build.sh release"
+  # https://docs.travis-ci.com/user/environment-variables/
+  - 'bash -n build/build.sh'
+  - '[ -z "$TRAVIS_TAG" ] && bash build/build.sh build || bash build/build.sh release'
 before_install:
   - ls -l
 after_script:
