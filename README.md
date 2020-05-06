@@ -2,6 +2,11 @@
 
 [![Build Status](https://travis-ci.org/cugxuan/gonelist.svg)](https://travis-ci.org/cugxuan/gonelist)
 [![Latest Release](https://img.shields.io/github/release/cugxuan/gonelist.svg)](../../releases)
+[![All Releases Download](https://img.shields.io/github/downloads/cugxuan/gonelist/total.svg)](../../releases)
+
+
+<img align="right" width="240" src="https://github.com/cugxuan/gonelist/wiki/img/logo/logo.png">
+
 
 这是一款使用 `golang + vue` 编写的基于 onedrive 的**在线共享网盘**  
 效果展示：https://gonelist.cugxuan.cn  
