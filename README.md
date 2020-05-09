@@ -21,6 +21,7 @@
 - 「在线播放」，支持在线播放音频和视频
 - 「海量文件」，支持单目录下上千个文件，正常使用
 - 「多平台」，支持个人版、教育账号、世纪互联等
+- 「README」，支持页面添加 README
 - ...
 
 注：支持绝大部分教育账号，部分 **教育账号** 因为需要管理员同意无法使用
@@ -35,9 +36,9 @@
 下载 [Github Release](https://github.com/cugxuan/GOIndex/releases) 或者 [gonelist-release](https://gonelist.cugxuan.cn/#/gonelist-release) 中对应的包，直接运行即可启动，以 Linux 系统本地启动为例
 ```
 // 下载对应的安装包，也可下载 gonelist-release 中的包
-$ wget https://github.com/cugxuan/gonelist/releases/download/v0.3/gonelist_linux_amd64.tar.gz
-// 如果速度过慢，可以使用 CDN 链接下载
-$ wget http://g.cugxuan.cn/v0.3/gonelist_linux_amd64.tar.gz
+$ wget https://github.com/cugxuan/gonelist/releases/download/v0.3.2/gonelist_linux_amd64.tar.gz
+// 如果速度过慢，还可以使用 CDN 链接下载
+$ wget http://g.cugxuan.cn/v0.3.2/gonelist_linux_amd64.tar.gz
 $ tar -zxf gonelist_linux_amd64.tar.gz && cd gonelist_linux_amd64
 $ ./gonelist_linux_amd64
 ```
