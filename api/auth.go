@@ -52,6 +52,9 @@ func GetCode(c *gin.Context) {
 		// 初始化 onedrive 的连接，读取内容
 		onedrive.GetAllFiles()
 		onedrive.IsLogin = true
+		// 如果首页有 README.md 则下载到本地
+		onedrive.DownloadREADME()
+		// 启动自动刷新
 		go onedrive.SetAutoRefresh()
 		// 登陆成功跳转到网站首页
 		c.Redirect(http.StatusTemporaryRedirect, conf.UserSet.Server.SiteUrl)
