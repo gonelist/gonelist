@@ -2,7 +2,7 @@ package markdown
 
 import (
 	"errors"
-	"github.com/russross/blackfriday"
+	"github.com/russross/blackfriday/v2"
 	"gonelist/pkg/file"
 )
 
@@ -17,6 +17,6 @@ func MarkdownToHTML(filePath string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	output := blackfriday.MarkdownBasic(input)
+	output := blackfriday.Run(input)
 	return output, nil
 }
