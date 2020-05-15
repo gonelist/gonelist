@@ -1,12 +1,10 @@
 # GONEList
 
+<img align="right" width="240" src="https://github.com/cugxuan/gonelist/wiki/img/logo/logo.png">
+
 [![Build Status](https://travis-ci.org/cugxuan/gonelist.svg)](https://travis-ci.org/cugxuan/gonelist)
 [![Latest Release](https://img.shields.io/github/release/cugxuan/gonelist.svg)](../../releases)
 [![All Releases Download](https://img.shields.io/github/downloads/cugxuan/gonelist/total.svg)](../../releases)
-
-
-<img align="right" width="240" src="https://github.com/cugxuan/gonelist/wiki/img/logo/logo.png">
-
 
 这是一款使用 `golang + vue` 编写的基于 onedrive 的**在线共享网盘**  
 效果展示：https://gonelist.cugxuan.cn  
@@ -23,20 +21,34 @@
 - 「在线播放」，支持在线播放音频和视频
 - 「海量文件」，支持单目录下上千个文件，正常使用
 - 「多平台」，支持个人版、教育账号、世纪互联等
+- 「README」，支持页面添加 README
 - ...
 
 注：支持绝大部分教育账号，部分 **教育账号** 因为需要管理员同意无法使用
 
+
 # 安装配置
 
-## 自助安装
+# 实体服务安装教程
+如果您的**整个微软账号和 onedrive 网盘**内，**没有隐私内容**，可以按照下面的流程快速配置体验效果，完整的下载安装流程请看 [安装文档](https://github.com/cugxuan/gonelist/wiki/Install)  
 
-如果您的 onedrive 网盘内，**没有隐私内容**，可以按照下面的流程快速配置体验效果，完整的下载安装流程请看 [安装文档](https://github.com/cugxuan/gonelist/wiki/Install)  
+## 快速配置体验
+下载 [Github Release](https://github.com/cugxuan/GOIndex/releases) 或者 [gonelist-release](https://gonelist.cugxuan.cn/#/gonelist-release) 中对应的包，直接运行即可启动，以 Linux 系统本地启动为例
+```
+// 下载对应的安装包，也可下载 gonelist-release 中的包
+$ wget https://github.com/cugxuan/gonelist/releases/download/v0.3.2/gonelist_linux_amd64.tar.gz
+// 如果速度过慢，还可以使用 CDN 链接下载
+$ wget http://g.cugxuan.cn/v0.3.2/gonelist_linux_amd64.tar.gz
+$ tar -zxf gonelist_linux_amd64.tar.gz && cd gonelist_linux_amd64
+$ ./gonelist_linux_amd64
+```
+打开 http://localhost:8000 按照提示登录后即可。如果是在本地部署，登陆成功会跳转到首页，此时已经完成部署。  
+如果是在服务器部署，登陆成功会跳转到 http://localhost:8000/auth?code=xxx ，将当前网址改成 http://yoursite:8000/auth?code=xxx 再回车等待文件加载后，会自动跳转你的网站 http://yoursite:8000 。如果登陆后一直没有反应，可能是因为文件夹数量过多导致，建议设置「子文件夹」选项  
+默认情况下读取当前路径的 `config.json` 作为配置文件，或加参数 `--conf=dir1/file.json` 指定配置文件路径
 
 ## 实体systemd服务安装
 
 视频教程(包含了Azure应用程序的配置) https://www.bilibili.com/video/BV1PA411t7Jw/
-
 
 ## docker运行
 视频教程 https://www.bilibili.com/video/BV1Vz4y1R7EK/

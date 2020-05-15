@@ -16,6 +16,6 @@ func GetREADME(c *gin.Context) {
 	if err != nil {
 		app.Response(c, http.StatusOK, e.ITEM_NOT_FOUND, nil)
 	} else {
-		c.String(http.StatusOK, string(output))
+		app.Response(c, http.StatusOK, e.SUCCESS, string(output))
 	}
 }
