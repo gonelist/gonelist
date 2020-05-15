@@ -7,7 +7,7 @@ services:
 script:
   # https://docs.travis-ci.com/user/environment-variables/
   - 'bash -n build/build.sh'
-  - '[ -z "$TRAVIS_TAG" ] && { bash build/build.sh build; ./gonelist --version; } || { bash build/build.sh release;bash build/build.sh docker }'
+  - '[ -z "$TRAVIS_TAG" ] && { bash build/build.sh build; ./gonelist --version; } || { bash build/build.sh release;bash build/build.sh docker; }'
 before_install:
   - ls -l
 after_script:
