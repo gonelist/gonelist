@@ -33,6 +33,10 @@ case "$1" in
     [ -n "$TAG_NUM" ] && build_arg="--build-arg VERSION=$DIST_VERSION"
     docker build -t zhangguanzhang/gonelist:$TAG_NUM $build_arg \
       --build-arg LDFLAGS="${LDFLAGS}" -f ${Dockerfile:=Dockerfile} .
+    [ -n "${DockerUser}" ] && {
+      docker login -u "${DockerUser}" "${DockerPass}"
+      docker push zhangguanzhang/gonelist:$TAG_NUM
+    }
     ;;
   "clean")
     rm -rf ${GONELIST_ROOT:=/tmp}/release/*
