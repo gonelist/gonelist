@@ -16,7 +16,7 @@ import (
 // 获取授权代码
 // https://login.microsoftonline.com/common/oauth2/authorize?response_type=code&client_id=${client_id}&redirect_uri=${redirect_uri}
 
-var oauthConfig oauth2.Config
+var oauthConfig Config
 var oauthStateString string
 var client *http.Client
 
@@ -33,14 +33,25 @@ func SetUserInfo(user *conf.UserSetting) {
 			TokenURL: "https://login.microsoftonline.com/common/oauth2/v2.0/token",
 		}
 	}
-	oauthConfig = oauth2.Config{
-		Endpoint:     endPoint,
-		Scopes:       []string{"offline_access", "files.read"}, // 只申请读权限，避免应用程序进行修改，但使用 config.json 给的默认 id 还是不太安全
-		ClientID:     user.ClientID,
-		ClientSecret: user.ClientSecret,
-		RedirectURL:  user.RedirectURL,
+	oauthConfig = Config{
+		Config: &oauth2.Config{
+			Endpoint:     endPoint,
+			Scopes:       []string{"offline_access", "files.read"}, // 只申请读权限，避免应用程序进行修改，但使用 config.json 给的默认 id 还是不太安全
+			ClientID:     user.ClientID,
+			ClientSecret: user.ClientSecret,
+			RedirectURL:  user.RedirectURL,
+		},
+		Storage: &FileStorage{Path: "token.txt"},
 	}
 	oauthStateString = user.State
+	ctx := context.Background()
+	tok, err := oauthConfig.Storage.GetToken()
+	if err == nil {
+		IsLogin = true
+		client = oauthConfig.Client(ctx, tok)
+		log.WithField("token", tok.RefreshToken).Info("从文件读取refresh_token成功")
+		return
+	}
 	client = nil
 }
 
@@ -62,8 +73,8 @@ func GetAccessToken(code ReceiveCode) error {
 	if code.State != oauthStateString {
 		return errors.New("state 字符串与设置的不一致，请检查设置")
 	}
-	// 获取 AccessToken
-	tok, err := oauthConfig.Exchange(ctx, code.Code)
+
+	tok, err := GetToken(ctx, oauthConfig, code.Code)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"token": tok,

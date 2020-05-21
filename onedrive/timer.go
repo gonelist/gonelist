@@ -25,7 +25,7 @@ func timer(AutoRefresh func()) {
 	for {
 		select {
 		case <-ticker.C:
-			if IsLogin == false {
+			if IsLogin() == false {
 				log.Info("停止刷新缓存")
 				return
 			} else {

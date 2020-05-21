@@ -11,6 +11,7 @@ release/
 gonelist
 main.exe
 main
+self.json
 
 # User-specific stuff
 .idea/**/workspace.xml
