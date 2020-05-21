@@ -17,6 +17,7 @@ func main() {
 
 	confPath := flag.String("conf", "config.json", "指定配置文件路径")
 	versionB := flag.Bool("version", false, "Show current version of gonelist.")
+	debugB := flag.Bool("debug", false, "debug log level")
 	flag.Parse()
 
 	log.SetFormatter(&log.TextFormatter{
@@ -26,6 +27,9 @@ func main() {
 	if *versionB {
 		versionPrint()
 		return
+	}
+	if *debugB {
+		log.SetLevel(log.DebugLevel)
 	}
 	// 加载用户配置
 	if err := conf.LoadUserConfig(*confPath); err != nil {

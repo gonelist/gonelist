@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	log "github.com/sirupsen/logrus"
+	"gonelist/mg_auth"
 	"time"
 )
 
@@ -115,8 +116,12 @@ type FileNode struct {
 	Children       []*FileNode `json:"children"`
 }
 
-var IsLogin bool
+
 var FileTree *FileNode
+
+func IsLogin() bool {
+	return mg_auth.IsLogin
+}
 
 // Answer 是请求接口返回内容，里面包含的 Value 是一个列表
 func ConvertAnsToFileNodes(oldPath string, ans Answer) []*FileNode {

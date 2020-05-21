@@ -11,11 +11,12 @@ import (
 	"net/http"
 )
 
+
 // 通过监听一个地址，跳转打开 login
 func Login(c *gin.Context) {
 	conf.UserSet.Server.SiteUrl = c.GetHeader("Host")
 	// 判断是否登录
-	if onedrive.IsLogin == true {
+	if onedrive.IsLogin() == true {
 		// 有 Client 则重定向到首页
 		c.Redirect(http.StatusFound, "/onedrive/getpath?path=/")
 	} else {
@@ -51,7 +52,7 @@ func GetCode(c *gin.Context) {
 	} else {
 		// 初始化 onedrive 的连接，读取内容
 		onedrive.GetAllFiles()
-		onedrive.IsLogin = true
+		mg_auth.IsLogin = true
 		// 如果首页有 README.md 则下载到本地
 		onedrive.DownloadREADME()
 		// 启动自动刷新
@@ -65,7 +66,7 @@ func GetCode(c *gin.Context) {
 // 注销登陆
 func CancelLogin(c *gin.Context) {
 	//mg_auth.ClearCLient()
-	onedrive.IsLogin = false
+	mg_auth.IsLogin = false
 
 	app.Response(c, http.StatusOK, e.SUCCESS, "注销成功")
 }

@@ -138,7 +138,11 @@ func RequestAnswer(url string, relativePath string) (Answer, error) {
 		return ans, err
 	}
 	// 解析内容
-	json.Unmarshal(body, &ans)
+
+	if err := json.Unmarshal(body, &ans); err != nil {
+		return ans, err
+	}
+	log.Debugf("url:%s relativePath:%s | body:%s", url, relativePath, string(body))
 	err = CheckAnswerValid(ans, relativePath)
 	if err != nil { //如果获取内容
 		return ans, err
@@ -150,6 +154,7 @@ func RequestOneUrl(url string) (body []byte, err error) {
 
 	client := mg_auth.GetClient()
 	resp, err := client.Get(url)
+
 	if err != nil {
 		log.WithFields(log.Fields{
 			"url":  url,
