@@ -1,4 +1,4 @@
-package mg_auth
+package onedrive
 
 import (
 	"context"
@@ -9,6 +9,8 @@ import (
 
 	"golang.org/x/oauth2"
 )
+
+//参考 https://www.kancloud.cn/mutouzhang/gocookbook/702034
 
 // Storage 是我们的通用存储接口
 type Storage interface {
@@ -25,8 +27,6 @@ func GetToken(ctx context.Context, conf Config, code string) (*oauth2.Token, err
 
 	return conf.Exchange(ctx, code)
 }
-
-
 
 // FileStorage 满足storage 接口
 type FileStorage struct {

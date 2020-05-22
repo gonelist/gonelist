@@ -1,4 +1,4 @@
-package mg_auth
+package onedrive
 
 import (
 	"context"
@@ -6,8 +6,6 @@ import (
 
 	"golang.org/x/oauth2"
 )
-
-var IsLogin bool
 
 // Config 包含了 oauth2.Config和 Storage接口
 type Config struct {

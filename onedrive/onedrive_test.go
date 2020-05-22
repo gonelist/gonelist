@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"gonelist/conf"
-	"gonelist/mg_auth"
 	"gonelist/pkg/file"
 	"log"
 	"testing"
@@ -76,7 +75,7 @@ func TestConvertReturnNode(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	mg_auth.SetUserInfo(conf.UserSet)
+	SetUserInfo(conf.UserSet)
 
 	data, _ = file.ReadFromFile(example + "filetree.json")
 	json.Unmarshal(data, &filetree)
