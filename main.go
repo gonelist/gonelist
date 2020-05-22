@@ -5,7 +5,6 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"gonelist/conf"
-	"gonelist/mg_auth"
 	"gonelist/onedrive"
 	"gonelist/routers"
 	"net/http"
@@ -36,7 +35,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	mg_auth.SetUserInfo(conf.UserSet)
+	onedrive.SetUserInfo(conf.UserSet)
 	onedrive.SetROOTUrl(conf.UserSet.ChinaCloud.Enable)
 
 	// 处理端口绑定

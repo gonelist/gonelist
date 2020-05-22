@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	log "github.com/sirupsen/logrus"
 	"gonelist/conf"
-	"gonelist/mg_auth"
 	"io/ioutil"
 	"time"
 )
@@ -76,7 +75,7 @@ func GetTreeFileNode(prefix, relativePath string) (list []*FileNode, err error) 
 		log.WithFields(log.Fields{
 			"ans": ans,
 			"err": err,
-		}).Info("请求 graph.microsoft.com 出现错误")
+		}).Errorf("请求 graph.microsoft.com 出现错误: prefix:%v, relativePath:%v", prefix, relativePath)
 		return nil, err
 	}
 
@@ -152,7 +151,7 @@ func RequestAnswer(url string, relativePath string) (Answer, error) {
 
 func RequestOneUrl(url string) (body []byte, err error) {
 
-	client := mg_auth.GetClient()
+	client := GetClient()
 	resp, err := client.Get(url)
 
 	if err != nil {

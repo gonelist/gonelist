@@ -1,4 +1,4 @@
-package mg_auth
+package onedrive
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 	"golang.org/x/oauth2"
 	"gonelist/conf"
 	"net/http"
+	"sync"
 )
 
 // 使用代码流的方式获取授权，文档
@@ -19,6 +20,7 @@ import (
 var oauthConfig Config
 var oauthStateString string
 var client *http.Client
+var cacheGoOnce sync.Once
 
 func SetUserInfo(user *conf.UserSetting) {
 	var endPoint oauth2.Endpoint
@@ -41,15 +43,24 @@ func SetUserInfo(user *conf.UserSetting) {
 			ClientSecret: user.ClientSecret,
 			RedirectURL:  user.RedirectURL,
 		},
-		Storage: &FileStorage{Path: "token.txt"},
+		Storage: &FileStorage{Path: "token"},
 	}
 	oauthStateString = user.State
 	ctx := context.Background()
 	tok, err := oauthConfig.Storage.GetToken()
 	if err == nil {
-		IsLogin = true
 		client = oauthConfig.Client(ctx, tok)
+		SetROOTUrl(conf.UserSet.ChinaCloud.Enable)
 		log.WithField("token", tok.RefreshToken).Info("从文件读取refresh_token成功")
+		if _, err := GetAllFiles(); err != nil {
+			log.Fatal(err)
+		}
+		SetLogin(true)
+		// 如果首页有 README.md 则下载到本地
+		DownloadREADME()
+		cacheGoOnce.Do(func() {
+			go SetAutoRefresh()
+		})
 		return
 	}
 	client = nil

@@ -51,7 +51,7 @@ func ConvertReturnNode(node *FileNode) *FileNode {
 	}
 
 	reNode := CopyFileNode(node)
-	for key, _ := range node.Children {
+	for key := range node.Children {
 		tmpNode := node.Children[key]
 		reNode.Children = append(reNode.Children, CopyFileNode(tmpNode))
 	}
@@ -87,11 +87,11 @@ func CopyFileNode(node *FileNode) *FileNode {
 
 func GetDownloadUrl(filePath string) (string, error) {
 	var (
-		file *FileNode
-		err  error
+		fileInfo *FileNode
+		err      error
 	)
 
-	if file, err = CacheGetPathList(filePath); err != nil || file == nil || file.IsFolder == true {
+	if fileInfo, err = CacheGetPathList(filePath); err != nil || fileInfo == nil || fileInfo.IsFolder == true {
 		log.WithFields(log.Fields{
 			"filePath": filePath,
 			"err":      err,
@@ -99,23 +99,22 @@ func GetDownloadUrl(filePath string) (string, error) {
 		return "", err
 	}
 
-	return file.DownloadUrl, nil
+	return fileInfo.DownloadUrl, nil
 }
 
-func DownloadREADME() error {
+func DownloadREADME() {
 	README := "README.md"
 	log.Info("下载", README)
 
 	// 判断是否有 README.md 这个文件
 	if file.IsExistFile(README) {
 		log.Info("已有 README.md 不进行下载")
-		return nil
 	}
+
 	if err := DownloadRootPathFile(README); err != nil {
 		log.Warn("下载 README.md 失败")
-		return err
 	}
-	return nil
+
 }
 
 // 传入 filePath 来下载对应文件，暂时保存到根目录
