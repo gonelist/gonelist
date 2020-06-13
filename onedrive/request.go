@@ -156,10 +156,10 @@ func RequestAnswer(url string, relativePath string) (Answer, error) {
 func RequestOneUrl(url string) (body []byte, err error) {
 
 	var (
-		client http.Client // 获取全局的 client 来请求接口
+		client *http.Client // 获取全局的 client 来请求接口
 		resp   *http.Response
 	)
-	if client := GetClient(); client == nil {
+	if client = GetClient(); client == nil {
 		log.Errorln("cannot get client to start request.")
 		return nil, fmt.Errorf("cannot get client")
 	}
