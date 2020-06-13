@@ -2,9 +2,12 @@ package onedrive
 
 import (
 	"encoding/json"
+	"fmt"
 	log "github.com/sirupsen/logrus"
 	"gonelist/conf"
 	"io/ioutil"
+	"net/http"
+	"strings"
 	"time"
 )
 
@@ -104,6 +107,7 @@ func GetUrlToAns(relativePath string) (Answer, error) {
 	)
 
 	if relativePath != "" {
+		// 每次获取 3000 个文件
 		// eg. /test -> https://graph.microsoft.com/v1.0/me/drive/root:/test:/children
 		url = UrlBegin + relativePath + UrlEnd + "?$top=3000"
 	}
@@ -151,8 +155,23 @@ func RequestAnswer(url string, relativePath string) (Answer, error) {
 
 func RequestOneUrl(url string) (body []byte, err error) {
 
-	client := GetClient()
-	resp, err := client.Get(url)
+	var (
+		client http.Client // 获取全局的 client 来请求接口
+		resp   *http.Response
+	)
+	if client := GetClient(); client == nil {
+		log.Errorln("cannot get client to start request.")
+		return nil, fmt.Errorf("cannot get client")
+	}
+
+	// 如果超时，重试两次
+	for retryCount := 2; retryCount > 0; retryCount-- {
+		if resp, err = client.Get(url); err != nil && strings.Contains(err.Error(), "timeout") {
+			<-time.After(time.Second)
+		} else {
+			break
+		}
+	}
 
 	if err != nil {
 		log.WithFields(log.Fields{

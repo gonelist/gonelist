@@ -12,11 +12,9 @@ func SetAutoRefresh() {
 }
 
 func AutoRefresh() {
-	log.WithFields(log.Fields{
-		"time": time.Now(),
-	}).Info("自动刷新所有缓存")
+	log.Info("开始自动刷新所有缓存")
 	if _, err := GetAllFiles(); err != nil { // 获取所有文件并且刷新树结构
-		log.Fatal(err)
+		log.Error(err)
 	}
 	log.Debug(FileTree)
 }
