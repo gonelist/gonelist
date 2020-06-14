@@ -6,6 +6,7 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"gonelist/pkg/file"
+	"strings"
 	"time"
 )
 
@@ -53,29 +54,30 @@ type UserSetting struct {
 	State        string `json:"state"` // 用户设置的标识
 	// 获取 access_token
 	ClientSecret string      `json:"client_secret"`
-	Code         string      `json:"-"`             // 服务器收到的中间内容
-	GrantType    string      `json:"-"`             // 值为 authorization_code
-	Scope        string      `json:"-"`             // 值为 offline_access files.readwrite.all
-	AccessToken  string      `json:"-"`             // 令牌
-	RefreshToken string      `json:"refresh_token"` // 刷新令牌
+	Code         string      `json:"-"` // 服务器收到的中间内容
+	GrantType    string      `json:"-"` // 值为 authorization_code
+	Scope        string      `json:"-"` // 值为 offline_access files.readwrite.all
+	AccessToken  string      `json:"-"` // 令牌
+	RefreshToken string      `json:"-"` // 刷新令牌
 	ChinaCloud   *ChinaCloud `json:"china_cloud"`
+	TokenPath    string      `json:"token_path"` // token 文件位置
 	// 用户设置
 	Server *Server `json:"server"`
 }
 
 var UserSet = &UserSetting{}
 
-func LoadUserConfig(filePath string) error {
+func LoadUserConfig(configPath string) error {
 	var content []byte
 	var err error
 
-	if len(filePath) == 0 {
+	if len(configPath) == 0 {
 		return errors.New("配置文件名不能为空")
 	}
 
-	log.Infof("当前使用的配置文件为:%s", filePath)
+	log.Infof("当前使用的配置文件为:%s", configPath)
 
-	content, _ = file.ReadFromFile(filePath)
+	content, _ = file.ReadFromFile(configPath)
 	err = json.Unmarshal(content, &UserSet)
 	if err != nil {
 		return fmt.Errorf("导入用户配置出现错误: %w", err)
@@ -90,6 +92,11 @@ func LoadUserConfig(filePath string) error {
 	if UserSet.ChinaCloud.Enable == true {
 		UserSet.ClientID = UserSet.ChinaCloud.ClientID
 		UserSet.ClientSecret = UserSet.ChinaCloud.ClientSecret
+	}
+	// TokenPath 不为 ""，token 保存在用户设置的目录
+	// 否则 token 将保存在用户 config.json 所在的目录
+	if UserSet.TokenPath == "" {
+		UserSet.TokenPath = GetTokenPath(configPath)
 	}
 	log.Info("成功导入用户配置")
 	return nil
@@ -110,4 +117,9 @@ func GetBindAddr(bind bool, port int) string {
 
 func GetDistPATH() string {
 	return UserSet.Server.DistPATH
+}
+
+func GetTokenPath(configPath string) string {
+	lastIndex := strings.LastIndex(configPath, "/")
+	return configPath[:lastIndex+1] + ".token"
 }

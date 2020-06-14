@@ -30,13 +30,12 @@ func main() {
 	if *debugB {
 		log.SetLevel(log.DebugLevel)
 	}
-	// 加载用户配置
+	// 加载 config.json
 	if err := conf.LoadUserConfig(*confPath); err != nil {
 		log.Fatal(err)
 	}
-
+	// 设置 onedrive 的相关配置
 	onedrive.SetUserInfo(conf.UserSet)
-	onedrive.SetROOTUrl(conf.UserSet.ChinaCloud.Enable)
 
 	// 处理端口绑定
 	Addr := conf.GetBindAddr(conf.UserSet.Server.BindGlobal, conf.UserSet.Server.Port)

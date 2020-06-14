@@ -20,7 +20,6 @@ func AutoRefresh() {
 }
 
 func timer(AutoRefresh func()) {
-	AutoRefresh()
 	ticker := time.NewTicker(conf.GetRefreshTime())
 	for {
 		select {

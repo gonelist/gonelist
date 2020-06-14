@@ -24,6 +24,7 @@ var cacheGoOnce sync.Once
 
 func SetUserInfo(user *conf.UserSetting) {
 	var endPoint oauth2.Endpoint
+	// 设置 ChinaCloud 相关
 	if user.ChinaCloud.Enable == true {
 		endPoint = oauth2.Endpoint{
 			AuthURL:  "https://login.chinacloudapi.cn/common/oauth2/v2.0/authorize",
@@ -35,6 +36,9 @@ func SetUserInfo(user *conf.UserSetting) {
 			TokenURL: "https://login.microsoftonline.com/common/oauth2/v2.0/token",
 		}
 	}
+	SetROOTUrl(conf.UserSet.ChinaCloud.Enable)
+
+	// 初始化 oauth 的 config
 	oauthConfig = Config{
 		Config: &oauth2.Config{
 			Endpoint:     endPoint,
@@ -43,15 +47,14 @@ func SetUserInfo(user *conf.UserSetting) {
 			ClientSecret: user.ClientSecret,
 			RedirectURL:  user.RedirectURL,
 		},
-		Storage: &FileStorage{Path: "token"},
+		Storage: &FileStorage{Path: user.TokenPath},
 	}
 	oauthStateString = user.State
 	ctx := context.Background()
 	tok, err := oauthConfig.Storage.GetToken()
 	if err == nil {
 		client = oauthConfig.Client(ctx, tok)
-		SetROOTUrl(conf.UserSet.ChinaCloud.Enable)
-		log.WithField("token", tok.RefreshToken).Info("从文件读取refresh_token成功")
+		log.WithField("refresh_token", tok.RefreshToken).Info("从文件读取refresh_token成功")
 		if _, err := GetAllFiles(); err != nil {
 			log.Fatal(err)
 		}
@@ -61,6 +64,7 @@ func SetUserInfo(user *conf.UserSetting) {
 		cacheGoOnce.Do(func() {
 			go SetAutoRefresh()
 		})
+
 		return
 	}
 	client = nil
