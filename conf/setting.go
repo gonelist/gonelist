@@ -6,6 +6,7 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"gonelist/pkg/file"
+	"os"
 	"strings"
 	"time"
 )
@@ -120,6 +121,6 @@ func GetDistPATH() string {
 }
 
 func GetTokenPath(configPath string) string {
-	lastIndex := strings.LastIndex(configPath, "/")
+	lastIndex := strings.LastIndex(configPath, string(os.PathSeparator))
 	return configPath[:lastIndex+1] + ".token"
 }

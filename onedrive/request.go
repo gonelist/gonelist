@@ -141,7 +141,6 @@ func RequestAnswer(url string, relativePath string) (Answer, error) {
 		return ans, err
 	}
 	// 解析内容
-
 	if err := json.Unmarshal(body, &ans); err != nil {
 		return ans, err
 	}
