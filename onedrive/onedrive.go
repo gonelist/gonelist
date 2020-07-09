@@ -4,18 +4,17 @@ import (
 	"errors"
 	log "github.com/sirupsen/logrus"
 	"gonelist/conf"
-	"gonelist/pkg/file"
 	"strings"
 )
 
-// 从缓存获取
+// 从缓存获取某个路径下的所有内容
 func CacheGetPathList(oPath string) (*FileNode, error) {
 	var (
 		root    *FileNode
 		isFound bool
 	)
 
-	root = FileTree
+	root = FileTree.GetRoot()
 	pArray := strings.Split(oPath, "/")
 
 	if oPath == "" || oPath == "/" || len(pArray) < 2 {
@@ -100,34 +99,4 @@ func GetDownloadUrl(filePath string) (string, error) {
 	}
 
 	return fileInfo.DownloadUrl, nil
-}
-
-func DownloadREADME() {
-	README := "README.md"
-	log.Info("下载", README)
-
-	// 判断是否有 README.md 这个文件
-	if file.IsExistFile(README) {
-		log.Info("已有 README.md 不进行下载")
-	}
-
-	if err := DownloadRootPathFile(README); err != nil {
-		log.Warn("下载 README.md 失败")
-	}
-
-}
-
-// 传入 filePath 来下载对应文件，暂时保存到根目录
-func DownloadRootPathFile(filePath string) error {
-	root := FileTree
-	for _, item := range root.Children {
-		if item.Name == filePath {
-			err := file.DownloadFile(item.DownloadUrl, filePath)
-			if err != nil {
-				return err
-			}
-			break
-		}
-	}
-	return nil
 }

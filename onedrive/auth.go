@@ -58,7 +58,7 @@ func SetUserInfo(user *conf.UserSetting) {
 		if _, err := GetAllFiles(); err != nil {
 			log.Fatal(err)
 		}
-		SetLogin(true)
+		FileTree.SetLogin(true)
 		// 如果首页有 README.md 则下载到本地
 		DownloadREADME()
 		cacheGoOnce.Do(func() {

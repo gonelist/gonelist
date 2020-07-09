@@ -51,23 +51,26 @@ func GetAllFiles() (*FileNode, error) {
 	} else {
 		prefix = conf.UserSet.Server.FolderSub
 	}
-	list, err := GetTreeFileNode(prefix, "")
+	list, readmeUrl, err := GetTreeFileNode(prefix, "")
 	if err != nil {
 		log.Info(err)
 		return nil, err
-	} else {
-		root.Children = list
-		if root.Children != nil {
-			root.IsFolder = true
-		}
 	}
+	root.Children = list
+	root.READMEURL = readmeUrl
+	if root.Children != nil {
+		root.IsFolder = true
+	}
+
 	// 更新树结构
-	FileTree = root
+	FileTree.SetRoot(root)
 	return root, nil
 }
 
 // 获取树的一个节点
-func GetTreeFileNode(prefix, relativePath string) (list []*FileNode, err error) {
+// list 返回
+//
+func GetTreeFileNode(prefix, relativePath string) (list []*FileNode, readmeUrl string, err error) {
 	var (
 		ans   Answer
 		oPath = prefix + relativePath
@@ -79,18 +82,21 @@ func GetTreeFileNode(prefix, relativePath string) (list []*FileNode, err error) 
 			"ans": ans,
 			"err": err,
 		}).Errorf("请求 graph.microsoft.com 出现错误: prefix:%v, relativePath:%v", prefix, relativePath)
-		return nil, err
+		return nil, "", err
 	}
 
 	// 解析对应 list
 	list = ConvertAnsToFileNodes(oPath, ans)
-	for i, _ := range list {
+	for i := range list {
 		// 如果下一层是文件夹则继续
 		if list[i].IsFolder == true {
-			tmpList, err := GetTreeFileNode(list[i].Path, "")
+			tmpList, tmpReadmeUrl, err := GetTreeFileNode(list[i].Path, "")
 			if err == nil {
 				list[i].Children = tmpList
+				list[i].READMEURL = tmpReadmeUrl
 			}
+		} else if list[i].Name == "README.md" {
+			readmeUrl = list[i].DownloadUrl
 		}
 	}
 	return list, nil
@@ -164,7 +170,7 @@ func RequestOneUrl(url string) (body []byte, err error) {
 	}
 
 	// 如果超时，重试两次
-	for retryCount := 2; retryCount > 0; retryCount-- {
+	for retryCount := 3; retryCount > 0; retryCount-- {
 		if resp, err = client.Get(url); err != nil && strings.Contains(err.Error(), "timeout") {
 			<-time.After(time.Second)
 		} else {

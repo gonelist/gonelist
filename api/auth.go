@@ -14,7 +14,7 @@ import (
 func Login(c *gin.Context) {
 	conf.UserSet.Server.SiteUrl = c.GetHeader("Host")
 	// 判断是否登录
-	if onedrive.IsLogin() == true {
+	if onedrive.FileTree.IsLogin() == true {
 		// 有 Client 则重定向到首页
 		c.Redirect(http.StatusFound, "/onedrive/getpath?path=/")
 	} else {
@@ -52,7 +52,7 @@ func GetCode(c *gin.Context) {
 		if _, err := onedrive.GetAllFiles(); err != nil {
 			log.Fatal(err)
 		}
-		onedrive.SetLogin(true)
+		onedrive.FileTree.SetLogin(true)
 		// 如果首页有 README.md 则下载到本地
 		onedrive.DownloadREADME()
 		// 启动自动刷新
@@ -66,6 +66,6 @@ func GetCode(c *gin.Context) {
 // 注销登陆
 func CancelLogin(c *gin.Context) {
 	//mg_auth.ClearCLient()
-	onedrive.SetLogin(false)
+	onedrive.FileTree.SetLogin(false)
 	app.Response(c, http.StatusOK, e.SUCCESS, "注销成功")
 }

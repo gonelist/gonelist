@@ -49,7 +49,8 @@ func TestCacheGetPathList(t *testing.T) {
 	data, _ = file.ReadFromFile(example + "filetree.json")
 	json.Unmarshal(data, &filetree)
 
-	FileTree = filetree
+	FileTree.SetRoot(filetree)
+	FileTree.SetLogin(true)
 
 	root, err := CacheGetPathList("/ttt")
 	if err != nil {

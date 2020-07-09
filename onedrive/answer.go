@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	log "github.com/sirupsen/logrus"
+	"sync"
 	"time"
 )
 
@@ -108,24 +109,12 @@ func CheckAnswerValid(ans Answer, relativePath string) error {
 type FileNode struct {
 	Name           string      `json:"name"`
 	Path           string      `json:"path"`
+	READMEURL      string      `json:"-"`
 	IsFolder       bool        `json:"is_folder"`
 	DownloadUrl    string      `json:"download_url"`
 	LastModifyTime time.Time   `json:"last_modify_time"`
 	Size           int64       `json:"size"`
 	Children       []*FileNode `json:"children"`
-}
-
-var (
-	FileTree *FileNode
-	isLogin  bool
-)
-
-func SetLogin(status bool) {
-	isLogin = status
-}
-
-func IsLogin() bool {
-	return isLogin
 }
 
 // Answer 是请求接口返回内容，里面包含的 Value 是一个列表
@@ -147,4 +136,37 @@ func ConvertAnsToFileNodes(oldPath string, ans Answer) []*FileNode {
 		list = append(list, node)
 	}
 	return list
+}
+
+type Tree struct {
+	sync.Mutex
+	root    *FileNode
+	isLogin bool
+}
+
+var FileTree = &Tree{}
+
+func (t *Tree) SetLogin(status bool) {
+	t.Lock()
+	defer t.Unlock()
+
+	t.isLogin = status
+}
+
+func (t *Tree) IsLogin() bool {
+	return t.isLogin
+}
+
+func (t *Tree) GetRoot() *FileNode {
+	t.Lock()
+	defer t.Unlock()
+
+	return t.root
+}
+
+func (t *Tree) SetRoot(root *FileNode) {
+	t.Lock()
+	defer t.Unlock()
+
+	t.root = root
 }
