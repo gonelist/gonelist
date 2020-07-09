@@ -99,7 +99,7 @@ func GetTreeFileNode(prefix, relativePath string) (list []*FileNode, readmeUrl s
 			readmeUrl = list[i].DownloadUrl
 		}
 	}
-	return list, nil
+	return list, "", nil
 }
 
 // 获取某个路径的内容，如果 token 失效或没有正常结果返回 err

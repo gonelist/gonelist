@@ -43,6 +43,10 @@ func TestCheckAnswerValid(t *testing.T) {
 }
 
 func TestCacheGetPathList(t *testing.T) {
+	if err := conf.LoadUserConfig("../config.json"); err != nil {
+		log.Fatal(err)
+	}
+
 	var data []byte
 	var filetree *FileNode
 
