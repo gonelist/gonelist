@@ -48,15 +48,8 @@ func GetCode(c *gin.Context) {
 	if err != nil {
 		app.Response(c, http.StatusOK, e.GetErrorCode(err), "登陆失败，请重新登陆")
 	} else {
-		// 初始化 onedrive 的连接，读取内容
-		if _, err := onedrive.GetAllFiles(); err != nil {
-			log.Fatal(err)
-		}
-		onedrive.FileTree.SetLogin(true)
-		// 如果首页有 README.md 则下载到本地
-		onedrive.DownloadREADME()
-		// 启动自动刷新
-		go onedrive.SetAutoRefresh()
+		// 初始化 onedrive 的连接
+		onedrive.InitOnedive()
 		// 登陆成功跳转到网站首页
 		c.Redirect(http.StatusTemporaryRedirect, conf.UserSet.Server.SiteUrl)
 		//app.Response(c, http.StatusOK, e.SUCCESS, "登陆成功")

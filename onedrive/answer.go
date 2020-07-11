@@ -109,7 +109,7 @@ func CheckAnswerValid(ans Answer, relativePath string) error {
 type FileNode struct {
 	Name           string      `json:"name"`
 	Path           string      `json:"path"`
-	READMEURL      string      `json:"-"`
+	READMEUrl      string      `json:"readme_url"`
 	IsFolder       bool        `json:"is_folder"`
 	DownloadUrl    string      `json:"download_url"`
 	LastModifyTime time.Time   `json:"last_modify_time"`
@@ -140,8 +140,9 @@ func ConvertAnsToFileNodes(oldPath string, ans Answer) []*FileNode {
 
 type Tree struct {
 	sync.Mutex
-	root    *FileNode
-	isLogin bool
+	root       *FileNode
+	isLogin    bool
+	FirstReady int
 }
 
 var FileTree = &Tree{}

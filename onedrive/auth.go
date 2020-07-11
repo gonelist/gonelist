@@ -55,16 +55,8 @@ func SetUserInfo(user *conf.UserSetting) {
 	if err == nil {
 		client = oauthConfig.Client(ctx, tok)
 		log.WithField("refresh_token", tok.RefreshToken).Info("从文件读取refresh_token成功")
-		if _, err := GetAllFiles(); err != nil {
-			log.Fatal(err)
-		}
-		FileTree.SetLogin(true)
-		// 如果首页有 README.md 则下载到本地
-		DownloadREADME()
-		cacheGoOnce.Do(func() {
-			go SetAutoRefresh()
-		})
-
+		// 初始化 onedrive 的内容
+		InitOnedive()
 		return
 	}
 	client = nil

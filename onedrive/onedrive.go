@@ -7,6 +7,22 @@ import (
 	"strings"
 )
 
+// 初始化登陆状态
+func InitOnedive() {
+	// 获取文件内容和初始化 README 缓存
+	if _, err := GetAllFiles(); err != nil {
+		log.Fatal(err)
+	}
+	if err := RefreshREADME(); err != nil {
+		log.Fatal(err)
+	}
+	// 设置 onedrive 登陆状态
+	FileTree.SetLogin(true)
+	cacheGoOnce.Do(func() {
+		go SetAutoRefresh()
+	})
+}
+
 // 从缓存获取某个路径下的所有内容
 func CacheGetPathList(oPath string) (*FileNode, error) {
 	var (

@@ -6,13 +6,18 @@ import (
 	"gonelist/pkg/file"
 )
 
-// 输入文件路径，给出对应的内容
-func MarkdownToHTML(filePath string) ([]byte, error) {
-	var err error
+// 输入 []byte，得到结果
+func MarkdownToHTMLByBytes(input []byte) ([]byte, error) {
+	output := blackfriday.Run(input)
+	return output, nil
+}
 
+// 输入文件路径，给出对应的内容
+func MarkdownToHTMLByFile(filePath string) ([]byte, error) {
 	if !file.IsExistFile(filePath) {
 		return nil, errors.New("文件不存在")
 	}
+
 	input, err := file.ReadFromFile(filePath)
 	if err != nil {
 		return nil, err

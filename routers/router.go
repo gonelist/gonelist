@@ -29,19 +29,23 @@ func InitRouter() *gin.Engine {
 	r.GET("/login", api.Login)
 	r.GET("/loginmg", api.LoginMG)
 	r.GET("/auth", api.GetCode)
-	r.GET("/README", api.GetREADME)
 	//r.GET("/cancelLogin", api.CancelLogin)
+
 	// 直接下载接口
-	r.GET("/d/*path", middleware.CheckLogin(), api.Download)
+	root := r.Group("/")
+	root.Use(middleware.CheckLogin())
+	{
+		r.GET("/d/*path", api.Download)
+		r.GET("/README", api.GetREADME)
+	}
+
 	onedrive := r.Group("/onedrive")
-	// 中间件判断是否已经登录
 	onedrive.Use(middleware.CheckLogin())
 	{
 		// 主动获取所有文件，返回整个树的目录
 		onedrive.GET("/getallfiles", api.MGGetFileTree)
 		// 根据路径获取对应数据
 		onedrive.GET("/getpath", api.CacheGetPath)
-		// 直接下载文件
 	}
 
 	return r

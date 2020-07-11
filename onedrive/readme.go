@@ -1,14 +1,21 @@
 package onedrive
 
 import (
+	"fmt"
 	gocache "github.com/patrickmn/go-cache"
 	log "github.com/sirupsen/logrus"
-	"gonelist/pkg/file"
 	"time"
 )
 
 // 设置缓存的默认时间为 2 天，每 2 天清空已经失效的缓存
-var reCache = gocache.New(time.Hour*48, time.Hour*48)
+var reCache = gocache.New(DefaultTime, DefaultTime)
+
+// 在缓存中 key 的形式是 README_path
+// eg. README_/, README_/exampleFolder
+const (
+	READEME     = "README_"
+	DefaultTime = time.Hour * 24
+)
 
 // 刷新每个文件夹的 README
 func RefreshREADME() error {
@@ -20,42 +27,40 @@ func RefreshREADME() error {
 	return nil
 }
 
+// 递归所有节点，下载 README
 func GetCurrentAndChildrenREADME(current *FileNode) error {
+	if current == nil {
+		return fmt.Errorf("GetCurrentAndChildrenREADME get a nil pointer")
+	}
+
 	// 当前节点有 READMEURL，就下载存到 cache
-
-	//for _, item := range current {
-	//
-	//}
-	return nil
-}
-
-// 遍历获取所有的 README 文件
-func DownloadREADME() {
-	README := "README.md"
-	log.Info("下载", README)
-
-	// 判断是否有 README.md 这个文件
-	if file.IsExistFile(README) {
-		log.Info("已有 README.md 不进行下载")
+	if current.DownloadUrl != "" {
+		if readmeBytes, err := RequestOneUrl(current.READMEUrl); err != nil {
+			log.WithFields(log.Fields{
+				"path": current.Path,
+				"url":  current.READMEUrl,
+			}).Infof("download readme file to cache error")
+		} else {
+			reCache.Set(READEME+current.Path, readmeBytes, DefaultTime)
+		}
 	}
 
-	if err := DownloadRootPathFile(README); err != nil {
-		log.Warn("下载 README.md 失败")
-	}
-
-}
-
-// 传入 filePath 来下载对应文件，暂时保存到根目录
-func DownloadRootPathFile(filePath string) error {
-	root := FileTree.GetRoot()
-	for _, item := range root.Children {
-		if item.Name == filePath {
-			err := file.DownloadFile(item.DownloadUrl, filePath)
-			if err != nil {
-				return err
-			}
-			break
+	for i := range current.Children {
+		if err := GetCurrentAndChildrenREADME(current.Children[i]); err != nil {
+			return err
 		}
 	}
 	return nil
+}
+
+func GetREADMEInCache(p string) ([]byte, error) {
+	ans, ok := reCache.Get(READEME + p)
+	if ok {
+		log.WithFields(log.Fields{
+			"path": p,
+		}).Info("README not in cache")
+		return nil, fmt.Errorf("README not in cache")
+	}
+
+	return ans.([]byte), nil
 }

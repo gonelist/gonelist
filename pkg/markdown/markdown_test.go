@@ -8,7 +8,7 @@ import (
 const example = "../../example/"
 
 func TestMarkdownToHTML(t *testing.T) {
-	output, err := MarkdownToHTML(example + "README.md")
+	output, err := MarkdownToHTMLByFile(example + "README.md")
 	if err != nil {
 		fmt.Println(err)
 	}

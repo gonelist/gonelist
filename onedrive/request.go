@@ -57,7 +57,7 @@ func GetAllFiles() (*FileNode, error) {
 		return nil, err
 	}
 	root.Children = list
-	root.READMEURL = readmeUrl
+	root.READMEUrl = readmeUrl
 	if root.Children != nil {
 		root.IsFolder = true
 	}
@@ -93,7 +93,7 @@ func GetTreeFileNode(prefix, relativePath string) (list []*FileNode, readmeUrl s
 			tmpList, tmpReadmeUrl, err := GetTreeFileNode(list[i].Path, "")
 			if err == nil {
 				list[i].Children = tmpList
-				list[i].READMEURL = tmpReadmeUrl
+				list[i].READMEUrl = tmpReadmeUrl
 			}
 		} else if list[i].Name == "README.md" {
 			readmeUrl = list[i].DownloadUrl
