@@ -77,17 +77,7 @@ func CopyFileNode(node *FileNode) *FileNode {
 	if node == nil {
 		return nil
 	}
-	var (
-		folderSub string
-		path      string
-	)
-
-	// 替换相对路径
-	if folderSub = conf.UserSet.Server.FolderSub; folderSub != "/" {
-		path = strings.Replace(node.Path, conf.UserSet.Server.FolderSub, "", 1)
-	} else {
-		path = node.Path
-	}
+	path := GetReplacePath(node.Path)
 
 	return &FileNode{
 		Name:           node.Name,
@@ -115,4 +105,14 @@ func GetDownloadUrl(filePath string) (string, error) {
 	}
 
 	return fileInfo.DownloadUrl, nil
+}
+
+// 替换路径
+// 如果设置了 folderSub 为 /public
+// 那么 /public 替换为 /, /public/test 替换为 /test
+func GetReplacePath(pSrc string) string {
+	if conf.UserSet.Server.FolderSub != "/" {
+		pSrc = strings.Replace(pSrc, conf.UserSet.Server.FolderSub, "", 1)
+	}
+	return pSrc
 }

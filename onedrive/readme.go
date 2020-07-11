@@ -34,14 +34,15 @@ func GetCurrentAndChildrenREADME(current *FileNode) error {
 	}
 
 	// 当前节点有 READMEURL，就下载存到 cache
-	if current.DownloadUrl != "" {
+	if current.READMEUrl != "" {
 		if readmeBytes, err := RequestOneUrl(current.READMEUrl); err != nil {
 			log.WithFields(log.Fields{
 				"path": current.Path,
 				"url":  current.READMEUrl,
 			}).Infof("download readme file to cache error")
 		} else {
-			reCache.Set(READEME+current.Path, readmeBytes, DefaultTime)
+			p := GetReplacePath(current.Path)
+			reCache.Set(READEME+p, readmeBytes, DefaultTime)
 		}
 	}
 
@@ -55,7 +56,7 @@ func GetCurrentAndChildrenREADME(current *FileNode) error {
 
 func GetREADMEInCache(p string) ([]byte, error) {
 	ans, ok := reCache.Get(READEME + p)
-	if ok {
+	if !ok {
 		log.WithFields(log.Fields{
 			"path": p,
 		}).Info("README not in cache")

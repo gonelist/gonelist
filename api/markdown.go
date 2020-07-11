@@ -13,6 +13,9 @@ import (
 func GetREADME(c *gin.Context) {
 	path := c.Query("path")
 
+	if path == "" {
+		path = "/"
+	}
 	// 从 cache 中获取对应的 input
 	input, err := onedrive.GetREADMEInCache(path)
 	if err != nil {

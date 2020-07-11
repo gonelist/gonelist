@@ -12,7 +12,7 @@ gonelist
 main.exe
 main
 self.json
-token
+.token
 
 # User-specific stuff
 .idea/**/workspace.xml
