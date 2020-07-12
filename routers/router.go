@@ -36,7 +36,7 @@ func InitRouter() *gin.Engine {
 	root.Use(middleware.CheckLogin())
 	{
 		r.GET("/d/*path", api.Download)
-		r.GET("/README", api.GetREADME)
+		r.GET("/README", middleware.CheckFolderPass(), api.GetREADME)
 	}
 
 	onedrive := r.Group("/onedrive")
@@ -45,7 +45,7 @@ func InitRouter() *gin.Engine {
 		// 主动获取所有文件，返回整个树的目录
 		onedrive.GET("/getallfiles", api.MGGetFileTree)
 		// 根据路径获取对应数据
-		onedrive.GET("/getpath", api.CacheGetPath)
+		onedrive.GET("/getpath", middleware.CheckFolderPass(), api.CacheGetPath)
 	}
 
 	return r

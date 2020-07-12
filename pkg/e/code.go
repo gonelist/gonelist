@@ -13,6 +13,7 @@ const (
 	MG_ERROR           = 10004
 	CACHE_NOT_FIND     = 10005
 	CONVERT_MD_ERROR   = 10006
+	PASS_ERROR         = 10007
 )
 
 var MsgFlags = map[int]string{
@@ -28,6 +29,7 @@ var MsgFlags = map[int]string{
 	MG_ERROR:           "请求graph.microsoft.com错误",
 	CACHE_NOT_FIND:     "缓存中未找到请求内容",
 	CONVERT_MD_ERROR:   "转化markdown出现错误",
+	PASS_ERROR:         "输入密码错误",
 }
 
 func GetMsg(code int) string {

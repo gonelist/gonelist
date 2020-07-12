@@ -34,8 +34,12 @@ func main() {
 	if err := conf.LoadUserConfig(*confPath); err != nil {
 		log.Fatal(err)
 	}
-	// 设置 onedrive 的相关配置
-	onedrive.SetUserInfo(conf.UserSet)
+	// 处理用户定义的 passList
+	onedrive.InitPass(conf.UserSet)
+
+	// 设置 onedrive 的相关配置，如果有 .token 那么会在这儿进行处理初始化
+	// 否则在端口绑定之后通过接口登陆之后初始化
+	onedrive.SetOnedriveInfo(conf.UserSet)
 
 	// 处理端口绑定
 	Addr := conf.GetBindAddr(conf.UserSet.Server.BindGlobal, conf.UserSet.Server.Port)

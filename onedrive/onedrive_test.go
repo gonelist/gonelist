@@ -80,7 +80,7 @@ func TestConvertReturnNode(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	SetUserInfo(conf.UserSet)
+	SetOnedriveInfo(conf.UserSet)
 
 	data, _ = file.ReadFromFile(example + "filetree.json")
 	json.Unmarshal(data, &filetree)

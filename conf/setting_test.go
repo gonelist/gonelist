@@ -7,10 +7,11 @@ import (
 )
 
 func TestLoadUserConfig(t *testing.T) {
-	filePath := "config.json"
+	filePath := "../config.json"
 	LoadUserConfig(filePath)
 	fmt.Println(UserSet)
 	fmt.Println(*UserSet.Server)
+	fmt.Println(UserSet.PassList[0])
 }
 
 func TestGetBindAddr(t *testing.T) {

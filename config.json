@@ -16,5 +16,11 @@
     "enable": false,
     "client_id": "2b54b127-b403-42a3-8b55-d25f3119aa13",
     "client_secret": "a0CGqBT3f_8U5gztxKjxR-LNW-ZnTe.m"
-  }
+  },
+  "pass_list": [
+    {
+      "path": "",
+      "pass": ""
+    }
+  ]
 }

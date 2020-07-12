@@ -54,16 +54,19 @@ type UserSetting struct {
 	RedirectURL  string `json:"redirect_url"`
 	State        string `json:"state"` // 用户设置的标识
 	// 获取 access_token
-	ClientSecret string      `json:"client_secret"`
-	Code         string      `json:"-"` // 服务器收到的中间内容
-	GrantType    string      `json:"-"` // 值为 authorization_code
-	Scope        string      `json:"-"` // 值为 offline_access files.readwrite.all
-	AccessToken  string      `json:"-"` // 令牌
-	RefreshToken string      `json:"-"` // 刷新令牌
-	ChinaCloud   *ChinaCloud `json:"china_cloud"`
-	TokenPath    string      `json:"token_path"` // token 文件位置
+	ClientSecret string `json:"client_secret"`
+	Code         string `json:"-"`          // 服务器收到的中间内容
+	GrantType    string `json:"-"`          // 值为 authorization_code
+	Scope        string `json:"-"`          // 值为 offline_access files.readwrite.all
+	AccessToken  string `json:"-"`          // 令牌
+	RefreshToken string `json:"-"`          // 刷新令牌
+	TokenPath    string `json:"token_path"` // token 文件位置
+	// 世纪互联
+	ChinaCloud *ChinaCloud `json:"china_cloud"`
 	// 用户设置
 	Server *Server `json:"server"`
+	// 目录密码
+	PassList []*Pass `json:"pass_list"`
 }
 
 var UserSet = &UserSetting{}
@@ -83,16 +86,17 @@ func LoadUserConfig(configPath string) error {
 	if err != nil {
 		return fmt.Errorf("导入用户配置出现错误: %w", err)
 	}
-	// 处理 ChinaCloud 和 Server 的设置
+	// Server 的设置
 	if UserSet.Server == nil {
 		UserSet.Server = defaultServerSetting
 	}
+	// PassList 设置
+	if UserSet.PassList == nil {
+		UserSet.PassList = defaultPassListSetting
+	}
+	// ChinaCloud 设置
 	if UserSet.ChinaCloud == nil {
 		UserSet.ChinaCloud = defaultChinaCloudSetting
-	}
-	if UserSet.ChinaCloud.Enable == true {
-		UserSet.ClientID = UserSet.ChinaCloud.ClientID
-		UserSet.ClientSecret = UserSet.ChinaCloud.ClientSecret
 	}
 	// TokenPath 不为 ""，token 保存在用户设置的目录
 	// 否则 token 将保存在用户 config.json 所在的目录
@@ -123,4 +127,16 @@ func GetDistPATH() string {
 func GetTokenPath(configPath string) string {
 	lastIndex := strings.LastIndex(configPath, string(os.PathSeparator))
 	return configPath[:lastIndex+1] + ".token"
+}
+
+type Pass struct {
+	Path string `json:"path"`
+	Pass string `json:"pass"`
+}
+
+var defaultPassListSetting = []*Pass{
+	{
+		Path: "",
+		Pass: "",
+	},
 }

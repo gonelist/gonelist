@@ -2,9 +2,10 @@ package onedrive
 
 import (
 	"errors"
-	log "github.com/sirupsen/logrus"
 	"gonelist/conf"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // 初始化登陆状态

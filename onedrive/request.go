@@ -20,12 +20,12 @@ var (
 )
 
 func SetROOTUrl(chinaCloud bool) {
-	if chinaCloud == false {
-		ROOTUrl = "https://graph.microsoft.com/v1.0/me/drive/root/children"
-		UrlBegin = "https://graph.microsoft.com/v1.0/me/drive/root:"
-	} else {
+	if chinaCloud {
 		ROOTUrl = "https://microsoftgraph.chinacloudapi.cn/v1.0/me/drive/root/children"
 		UrlBegin = "https://microsoftgraph.chinacloudapi.cn/v1.0/me/drive/root:"
+	} else {
+		ROOTUrl = "https://graph.microsoft.com/v1.0/me/drive/root/children"
+		UrlBegin = "https://graph.microsoft.com/v1.0/me/drive/root:"
 	}
 	UrlEnd = ":/children"
 }

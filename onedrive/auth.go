@@ -17,14 +17,28 @@ import (
 // 获取授权代码
 // https://login.microsoftonline.com/common/oauth2/authorize?response_type=code&client_id=${client_id}&redirect_uri=${redirect_uri}
 
-var oauthConfig Config
-var oauthStateString string
-var client *http.Client
-var cacheGoOnce sync.Once
+// 跟 oauth2 有关的内容
+var (
+	clientID         string
+	clientSecret     string
+	oauthConfig      Config
+	oauthStateString string
+	client           *http.Client
+	cacheGoOnce      sync.Once
+)
 
-func SetUserInfo(user *conf.UserSetting) {
-	var endPoint oauth2.Endpoint
+func SetOnedriveInfo(user *conf.UserSetting) {
+
 	// 设置 ChinaCloud 相关
+	if user.ChinaCloud.Enable == true {
+		clientID = user.ChinaCloud.ClientID
+		clientSecret = user.ChinaCloud.ClientSecret
+	} else {
+		clientID = user.ClientID
+		clientSecret = user.ClientSecret
+	}
+
+	var endPoint oauth2.Endpoint
 	if user.ChinaCloud.Enable == true {
 		endPoint = oauth2.Endpoint{
 			AuthURL:  "https://login.chinacloudapi.cn/common/oauth2/v2.0/authorize",
@@ -43,8 +57,8 @@ func SetUserInfo(user *conf.UserSetting) {
 		Config: &oauth2.Config{
 			Endpoint:     endPoint,
 			Scopes:       []string{"offline_access", "files.read"}, // 只申请读权限，避免应用程序进行修改，但使用 config.json 给的默认 id 还是不太安全
-			ClientID:     user.ClientID,
-			ClientSecret: user.ClientSecret,
+			ClientID:     clientID,
+			ClientSecret: clientSecret,
 			RedirectURL:  user.RedirectURL,
 		},
 		Storage: &FileStorage{Path: user.TokenPath},
