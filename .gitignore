@@ -5,9 +5,9 @@
 .idea/*
 .DS_Store
 tmp/
-example/
 dist/
 release/
+myself/
 gonelist
 main.exe
 main

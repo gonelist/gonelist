@@ -1,0 +1,10 @@
+{
+  "error": {
+    "code": "InvalidAuthenticationToken",
+    "message": "Access token validation failure.",
+    "innerError": {
+      "request-id": "67840226-e0c9-4d7f-a112-8da9c7892ed1",
+      "date": "2020-03-05T13:30:10"
+    }
+  }
+}

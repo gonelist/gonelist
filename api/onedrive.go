@@ -20,7 +20,7 @@ func MGGetFileTree(c *gin.Context) {
 	}
 
 	str, _ := json.Marshal(root)
-	log.Info("*root", string(str))
+	log.Debug("*root", string(str))
 
 	app.Response(c, http.StatusOK, e.SUCCESS, root)
 }

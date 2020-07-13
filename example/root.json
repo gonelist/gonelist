@@ -1,0 +1,194 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('c146148e-36c1-4aa2-843b-f34469185e60')/drive/root/children",
+  "value": [
+    {
+      "createdDateTime": "2020-05-14T15:07:20Z",
+      "eTag": "\"{0696DA8E-236C-4060-9BD1-6E68443CDFB0},2\"",
+      "id": "01K5TUUC4O3KLAM3BDMBAJXULONBCDZX5Q",
+      "lastModifiedDateTime": "2020-04-16T04:05:38Z",
+      "name": "chrome-plugin",
+      "webUrl": "https://gonelist-my.sharepoint.com/personal/xuan_gonelist_onmicrosoft_com/Documents/public/chrome-plugin",
+      "cTag": "\"c:{0696DA8E-236C-4060-9BD1-6E68443CDFB0},0\"",
+      "size": 2839378,
+      "createdBy": {
+        "user": {
+          "email": "xuan@gonelist.onmicrosoft.com",
+          "id": "c146148e-36c1-4aa2-843b-f34469185e60",
+          "displayName": "Xuan"
+        }
+      },
+      "lastModifiedBy": {
+        "user": {
+          "email": "xuan@gonelist.onmicrosoft.com",
+          "id": "c146148e-36c1-4aa2-843b-f34469185e60",
+          "displayName": "Xuan"
+        }
+      },
+      "parentReference": {
+        "driveId": "b!vxOLHe4ycUqBpipXU8ZlhzGQG1Ks-sZBgkJcWf73nt0QTrvExL2yTal1qMLYKr-6",
+        "driveType": "business",
+        "id": "01K5TUUC6FOH7U2FOXTFGLISGRRSDQBSIH",
+        "path": "/drive/root:/public"
+      },
+      "fileSystemInfo": {
+        "createdDateTime": "2020-05-14T15:07:20Z",
+        "lastModifiedDateTime": "2020-04-16T04:05:38Z"
+      },
+      "folder": {
+        "childCount": 2
+      }
+    },
+    {
+      "createdDateTime": "2020-05-14T15:07:18Z",
+      "eTag": "\"{5CB31285-1A02-465A-B8D9-CE0E4EF4CA82},2\"",
+      "id": "01K5TUUC4FCKZVYAQ2LJDLRWOOBZHPJSUC",
+      "lastModifiedDateTime": "2020-04-27T09:46:11Z",
+      "name": "exampleType",
+      "webUrl": "https://gonelist-my.sharepoint.com/personal/xuan_gonelist_onmicrosoft_com/Documents/public/exampleType",
+      "cTag": "\"c:{5CB31285-1A02-465A-B8D9-CE0E4EF4CA82},0\"",
+      "size": 2736654191,
+      "createdBy": {
+        "user": {
+          "email": "xuan@gonelist.onmicrosoft.com",
+          "id": "c146148e-36c1-4aa2-843b-f34469185e60",
+          "displayName": "Xuan"
+        }
+      },
+      "lastModifiedBy": {
+        "user": {
+          "email": "xuan@gonelist.onmicrosoft.com",
+          "id": "c146148e-36c1-4aa2-843b-f34469185e60",
+          "displayName": "Xuan"
+        }
+      },
+      "parentReference": {
+        "driveId": "b!vxOLHe4ycUqBpipXU8ZlhzGQG1Ks-sZBgkJcWf73nt0QTrvExL2yTal1qMLYKr-6",
+        "driveType": "business",
+        "id": "01K5TUUC6FOH7U2FOXTFGLISGRRSDQBSIH",
+        "path": "/drive/root:/public"
+      },
+      "fileSystemInfo": {
+        "createdDateTime": "2020-05-14T15:07:18Z",
+        "lastModifiedDateTime": "2020-04-27T09:46:11Z"
+      },
+      "folder": {
+        "childCount": 5
+      }
+    },
+    {
+      "createdDateTime": "2020-05-14T15:07:19Z",
+      "eTag": "\"{2546053F-2CA5-4088-800D-841E84AA5D0E},2\"",
+      "id": "01K5TUUCZ7AVDCLJJMRBAIADMED2CKUXIO",
+      "lastModifiedDateTime": "2020-05-09T12:58:23Z",
+      "name": "gonelist-release",
+      "webUrl": "https://gonelist-my.sharepoint.com/personal/xuan_gonelist_onmicrosoft_com/Documents/public/gonelist-release",
+      "cTag": "\"c:{2546053F-2CA5-4088-800D-841E84AA5D0E},0\"",
+      "size": 166802150,
+      "createdBy": {
+        "user": {
+          "email": "xuan@gonelist.onmicrosoft.com",
+          "id": "c146148e-36c1-4aa2-843b-f34469185e60",
+          "displayName": "Xuan"
+        }
+      },
+      "lastModifiedBy": {
+        "user": {
+          "email": "xuan@gonelist.onmicrosoft.com",
+          "id": "c146148e-36c1-4aa2-843b-f34469185e60",
+          "displayName": "Xuan"
+        }
+      },
+      "parentReference": {
+        "driveId": "b!vxOLHe4ycUqBpipXU8ZlhzGQG1Ks-sZBgkJcWf73nt0QTrvExL2yTal1qMLYKr-6",
+        "driveType": "business",
+        "id": "01K5TUUC6FOH7U2FOXTFGLISGRRSDQBSIH",
+        "path": "/drive/root:/public"
+      },
+      "fileSystemInfo": {
+        "createdDateTime": "2020-05-14T15:07:19Z",
+        "lastModifiedDateTime": "2020-05-09T12:58:23Z"
+      },
+      "folder": {
+        "childCount": 19
+      }
+    },
+    {
+      "createdDateTime": "2020-07-13T11:03:12Z",
+      "eTag": "\"{2310013C-5472-4BFA-B422-3ACB40BCA0F7},2\"",
+      "id": "01K5TUUCZ4AEICG4SU7JF3IIR2ZNALZIHX",
+      "lastModifiedDateTime": "2020-07-13T06:13:28Z",
+      "name": "test-pass",
+      "webUrl": "https://gonelist-my.sharepoint.com/personal/xuan_gonelist_onmicrosoft_com/Documents/public/test-pass",
+      "cTag": "\"c:{2310013C-5472-4BFA-B422-3ACB40BCA0F7},0\"",
+      "size": 15,
+      "createdBy": {
+        "user": {
+          "email": "xuan@gonelist.onmicrosoft.com",
+          "id": "c146148e-36c1-4aa2-843b-f34469185e60",
+          "displayName": "Xuan"
+        }
+      },
+      "lastModifiedBy": {
+        "user": {
+          "email": "xuan@gonelist.onmicrosoft.com",
+          "id": "c146148e-36c1-4aa2-843b-f34469185e60",
+          "displayName": "Xuan"
+        }
+      },
+      "parentReference": {
+        "driveId": "b!vxOLHe4ycUqBpipXU8ZlhzGQG1Ks-sZBgkJcWf73nt0QTrvExL2yTal1qMLYKr-6",
+        "driveType": "business",
+        "id": "01K5TUUC6FOH7U2FOXTFGLISGRRSDQBSIH",
+        "path": "/drive/root:/public"
+      },
+      "fileSystemInfo": {
+        "createdDateTime": "2020-07-13T11:03:12Z",
+        "lastModifiedDateTime": "2020-07-13T06:13:28Z"
+      },
+      "folder": {
+        "childCount": 1
+      }
+    },
+    {
+      "@microsoft.graph.downloadUrl": "https://gonelist-my.sharepoint.com/personal/xuan_gonelist_onmicrosoft_com/_layouts/15/download.aspx?UniqueId=4699f738-e91a-4499-a535-c91331d5fcc4&Translate=false&tempauth=eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvZ29uZWxpc3QtbXkuc2hhcmVwb2ludC5jb21AZjhmNTY3YWMtZjY1OC00ZWM0LWE5ZTEtZmZhODQ5ZDFjM2M3IiwiaXNzIjoiMDAwMDAwMDMtMDAwMC0wZmYxLWNlMDAtMDAwMDAwMDAwMDAwIiwibmJmIjoiMTU5NDY1NTYyOSIsImV4cCI6IjE1OTQ2NTkyMjkiLCJlbmRwb2ludHVybCI6Ikpta2NENVNLck8zNDNJVGhkWlh6U0hqSklTWmx4ckZvR0I1ZDRKeEtRUWs9IiwiZW5kcG9pbnR1cmxMZW5ndGgiOiIxNjEiLCJpc2xvb3BiYWNrIjoiVHJ1ZSIsImNpZCI6Ik1URTFPVEUxT0dRdFlUQTROQzAwT1RRekxXSTNZbVl0WkRFeVptRmhOakV4WlRVeiIsInZlciI6Imhhc2hlZHByb29mdG9rZW4iLCJzaXRlaWQiOiJNV1E0WWpFelltWXRNekpsWlMwMFlUY3hMVGd4WVRZdE1tRTFOelV6WXpZMk5UZzMiLCJhcHBfZGlzcGxheW5hbWUiOiJnb25lbGlzdC5jdWd4dWFuLmNuIiwiZ2l2ZW5fbmFtZSI6IueRniIsImZhbWlseV9uYW1lIjoi5aecIiwiYXBwaWQiOiJjMDcwYTQ0Yy1mMjVkLTQ1ZGYtOTAxNy03YTUwNjkzNjNmOTQiLCJ0aWQiOiJmOGY1NjdhYy1mNjU4LTRlYzQtYTllMS1mZmE4NDlkMWMzYzciLCJ1cG4iOiJ4dWFuQGdvbmVsaXN0Lm9ubWljcm9zb2Z0LmNvbSIsInB1aWQiOiIxMDAzMjAwMEFGMEU2MjgzIiwiY2FjaGVrZXkiOiIwaC5mfG1lbWJlcnNoaXB8MTAwMzIwMDBhZjBlNjI4M0BsaXZlLmNvbSIsInNjcCI6Im15ZmlsZXMucmVhZCIsInR0IjoiMiIsInVzZVBlcnNpc3RlbnRDb29raWUiOm51bGx9.azdGaEJmdmZ6dGNlTzhYM1N4YnNYSCtNSjNOMjQzck4ySXVSV1hZaVcwRT0&ApiVersion=2.0",
+      "createdDateTime": "2020-05-09T12:10:12Z",
+      "eTag": "\"{4699F738-E91A-4499-A535-C91331D5FCC4},2\"",
+      "id": "01K5TUUCZY66MUMGXJTFCKKNOJCMY5L7GE",
+      "lastModifiedDateTime": "2020-05-09T12:32:32Z",
+      "name": "README.md",
+      "webUrl": "https://gonelist-my.sharepoint.com/personal/xuan_gonelist_onmicrosoft_com/Documents/public/README.md",
+      "cTag": "\"c:{4699F738-E91A-4499-A535-C91331D5FCC4},2\"",
+      "size": 5013,
+      "createdBy": {
+        "user": {
+          "email": "xuan@gonelist.onmicrosoft.com",
+          "id": "c146148e-36c1-4aa2-843b-f34469185e60",
+          "displayName": "Xuan"
+        }
+      },
+      "lastModifiedBy": {
+        "user": {
+          "email": "xuan@gonelist.onmicrosoft.com",
+          "id": "c146148e-36c1-4aa2-843b-f34469185e60",
+          "displayName": "Xuan"
+        }
+      },
+      "parentReference": {
+        "driveId": "b!vxOLHe4ycUqBpipXU8ZlhzGQG1Ks-sZBgkJcWf73nt0QTrvExL2yTal1qMLYKr-6",
+        "driveType": "business",
+        "id": "01K5TUUC6FOH7U2FOXTFGLISGRRSDQBSIH",
+        "path": "/drive/root:/public"
+      },
+      "file": {
+        "mimeType": "application/octet-stream",
+        "hashes": {
+          "quickXorHash": "psOzQenRwDGubW+Nt8IHmG16dJg="
+        }
+      },
+      "fileSystemInfo": {
+        "createdDateTime": "2020-05-09T12:10:12Z",
+        "lastModifiedDateTime": "2020-05-09T12:32:32Z"
+      }
+    }
+  ]
+}

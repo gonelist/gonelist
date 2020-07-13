@@ -1,0 +1,26 @@
+{
+  "client_id": "16e320f7-e427-4612-88da-f3d03e944d40",
+  "client_secret": "lURpL3U@bBlmJ0:_dnU.LeLOGNGdVT30",
+  "redirect_url": "http://localhost:8000/auth",
+  "state": "23333",
+  "token_path": "",
+  "server": {
+    "port": 8000,
+    "refresh_time": 10,
+    "bind_global": true,
+    "dist_path": "./dist/",
+    "site_url": "http://localhost:8000",
+    "folder_sub": "/public"
+  },
+  "china_cloud": {
+    "enable": false,
+    "client_id": "2b54b127-b403-42a3-8b55-d25f3119aa13",
+    "client_secret": "a0CGqBT3f_8U5gztxKjxR-LNW-ZnTe.m"
+  },
+  "pass_list": [
+    {
+      "path": "/test-pass",
+      "pass": "123456"
+    }
+  ]
+}
