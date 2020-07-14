@@ -1,6 +1,6 @@
 # GONEList
 
-<img align="right" width="240" src="https://github.com/cugxuan/gonelist/wiki/img/logo/logo.png">
+<img align="right" width="240" src="https://gonelist-doc.cugxuan.cn/img/logo/logo.png">
 
 [![Build Status](https://travis-ci.org/cugxuan/gonelist.svg)](https://travis-ci.org/cugxuan/gonelist)
 [![Latest Release](https://img.shields.io/github/release/cugxuan/gonelist.svg)](../../releases)
@@ -30,7 +30,7 @@
 # 安装配置
 
 # 实体服务安装教程
-如果您的**整个微软账号和 onedrive 网盘**内，**没有隐私内容**，可以按照下面的流程快速配置体验效果，完整的下载安装流程请看 [安装文档](https://github.com/cugxuan/gonelist/wiki/Install)  
+如果您的**整个微软账号和 onedrive 网盘**内，**没有隐私内容**，可以按照下面的流程快速配置体验效果，完整的下载安装流程请看 [安装文档](https://gonelist-doc.cugxuan.cn)
 
 ## 快速配置体验
 下载 [Github Release](https://github.com/cugxuan/GOIndex/releases) 或者 [gonelist-release](https://gonelist.cugxuan.cn/#/gonelist-release) 中对应的包，直接运行即可启动，以 Linux 系统本地启动为例
@@ -68,8 +68,8 @@ $ ./gonelist_linux_amd64
 ```
 {
   //------建议填入自己的 id 和 secret --------
-  "client_id": "88966400-cb81-49cb-89c2-6d09f0a3d9e2",
-  "client_secret": "/FKad]FPtKNk-=j11aPwEOBSxYUYUU54",
+  "client_id": "16e320f7-e427-4612-88da-f3d03e944d40",
+  "client_secret": "lURpL3U@bBlmJ0:_dnU.LeLOGNGdVT30",
   "redirect_url": "http://localhost:8000/auth",
   // 设置一个自己喜欢的字符串
   "state": "23333",
