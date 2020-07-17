@@ -40,7 +40,7 @@ func GetCode(c *gin.Context) {
 	err = c.ShouldBind(code)
 	if err != nil {
 		log.Warn(err)
-		app.Response(c, http.StatusOK, e.INVALID_PARAMS, e.GetMsg(e.INVALID_PARAMS))
+		app.Response(c, http.StatusOK, e.INVALID_PARAMS, nil)
 		return
 	}
 	// 获取 AccessToken

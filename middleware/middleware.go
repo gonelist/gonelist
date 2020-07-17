@@ -13,7 +13,7 @@ func CheckLogin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if onedrive.GetClient() == nil {
 			// 没有 Client 则重定向到登陆
-			app.Response(c, http.StatusOK, e.REDIRECT_LOGIN, e.GetMsg(e.REDIRECT_LOGIN))
+			app.Response(c, http.StatusOK, e.REDIRECT_LOGIN, nil)
 			//c.Redirect(http.StatusFound, "/login")
 			c.Abort()
 		}
@@ -26,7 +26,7 @@ func CheckOnedriveInit() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if !onedrive.FileTree.IsLogin() {
 			// 判断是否初始化完成
-			app.Response(c, http.StatusOK, e.LOAD_NOT_READY, e.GetMsg(e.LOAD_NOT_READY))
+			app.Response(c, http.StatusOK, e.LOAD_NOT_READY, nil)
 			//c.Redirect(http.StatusFound, "/login")
 			c.Abort()
 		}
@@ -40,7 +40,7 @@ func CheckFolderPass() gin.HandlerFunc {
 		pa := c.GetHeader("pass")
 		if !onedrive.CheckPassCorrect(p, pa) {
 			// 如果密码错误，则返回
-			app.Response(c, http.StatusOK, e.PASS_ERROR, e.GetMsg(e.PASS_ERROR))
+			app.Response(c, http.StatusOK, e.PASS_ERROR, nil)
 			c.Abort()
 		}
 	}

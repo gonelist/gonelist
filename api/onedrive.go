@@ -16,7 +16,7 @@ func MGGetFileTree(c *gin.Context) {
 	root, err := onedrive.GetAllFiles()
 	if err != nil {
 		log.Warn("请求 graph.microsoft.com 错误")
-		app.Response(c, http.StatusOK, e.MG_ERROR, e.GetMsg(e.MG_ERROR))
+		app.Response(c, http.StatusOK, e.MG_ERROR, nil)
 		return
 	}
 
@@ -33,9 +33,9 @@ func CacheGetPath(c *gin.Context) {
 
 	root, err := onedrive.CacheGetPathList(oPath)
 	if err != nil {
-		app.Response(c, http.StatusOK, e.ITEM_NOT_FOUND, e.GetMsg(e.ITEM_NOT_FOUND))
+		app.Response(c, http.StatusOK, e.ITEM_NOT_FOUND, nil)
 	} else if root.Password != "" && pass != root.Password {
-		app.Response(c, http.StatusOK, e.PASS_ERROR, e.GetMsg(e.PASS_ERROR))
+		app.Response(c, http.StatusOK, e.PASS_ERROR, nil)
 	} else {
 		app.Response(c, http.StatusOK, e.SUCCESS, root)
 	}
@@ -48,13 +48,13 @@ func Download(c *gin.Context) {
 	// 屏蔽 .password 文件的下载
 	list := strings.Split(filePath, "/")
 	if list[len(list)-1] == ".password" {
-		app.Response(c, http.StatusOK, e.PASSWORD_FORBIT_DOWNLOAD, e.GetMsg(e.PASSWORD_FORBIT_DOWNLOAD))
+		app.Response(c, http.StatusOK, e.PASSWORD_FORBIT_DOWNLOAD, nil)
 		c.Abort()
 	}
 
 	downloadURL, err := onedrive.GetDownloadUrl(filePath)
 	if err != nil {
-		app.Response(c, http.StatusOK, e.ITEM_NOT_FOUND, e.GetMsg(e.ITEM_NOT_FOUND))
+		app.Response(c, http.StatusOK, e.ITEM_NOT_FOUND, nil)
 	} else {
 		c.Redirect(http.StatusFound, downloadURL)
 		c.Abort()
