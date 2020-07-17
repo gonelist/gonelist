@@ -88,6 +88,7 @@ func CopyFileNode(node *FileNode) *FileNode {
 		LastModifyTime: node.LastModifyTime,
 		Size:           node.Size,
 		Children:       nil,
+		Password:       node.Password,
 	}
 }
 

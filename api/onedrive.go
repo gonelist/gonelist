@@ -45,9 +45,13 @@ func CacheGetPath(c *gin.Context) {
 func Download(c *gin.Context) {
 	filePath := c.Param("path")
 
-	if strings.Contains(filePath, ".password") {
-
+	// 屏蔽 .password 文件的下载
+	list := strings.Split(filePath, "/")
+	if list[len(list)-1] == ".password" {
+		app.Response(c, http.StatusOK, e.PASSWORD_FORBIT_DOWNLOAD, e.GetMsg(e.PASSWORD_FORBIT_DOWNLOAD))
+		c.Abort()
 	}
+
 	downloadURL, err := onedrive.GetDownloadUrl(filePath)
 	if err != nil {
 		app.Response(c, http.StatusOK, e.ITEM_NOT_FOUND, e.GetMsg(e.ITEM_NOT_FOUND))

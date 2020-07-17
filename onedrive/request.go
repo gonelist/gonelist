@@ -102,6 +102,9 @@ func GetTreeFileNode(prefix, relativePath string) (list []*FileNode, readmeUrl, 
 			readmeUrl = list[i].DownloadUrl
 		} else if list[i].Name == ".password" {
 			passUrl = list[i].DownloadUrl
+			// 隐藏 .password 文件的 url 和 size
+			list[i].DownloadUrl = ""
+			list[i].Size = 0
 		}
 	}
 	return list, readmeUrl, passUrl, nil

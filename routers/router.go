@@ -37,7 +37,7 @@ func InitRouter() *gin.Engine {
 	root := r.Group("/")
 	root.Use(middleware.CheckLogin())
 	{
-		r.GET("/d/:path", api.Download)
+		r.GET("/d/*path", api.Download)
 		r.GET("/README", middleware.CheckFolderPass(), api.GetREADME)
 	}
 
