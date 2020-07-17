@@ -8,6 +8,7 @@ import (
 	"gonelist/pkg/app"
 	"gonelist/pkg/e"
 	"net/http"
+	"strings"
 )
 
 // 测试接口，从 MG 获取整个树结构
@@ -15,7 +16,7 @@ func MGGetFileTree(c *gin.Context) {
 	root, err := onedrive.GetAllFiles()
 	if err != nil {
 		log.Warn("请求 graph.microsoft.com 错误")
-		app.Response(c, http.StatusOK, e.MG_ERROR, nil)
+		app.Response(c, http.StatusOK, e.MG_ERROR, e.GetMsg(e.MG_ERROR))
 		return
 	}
 
@@ -28,10 +29,13 @@ func MGGetFileTree(c *gin.Context) {
 // 获取对应路径的文件
 func CacheGetPath(c *gin.Context) {
 	oPath := c.Query("path")
+	pass := c.GetHeader("pass")
 
 	root, err := onedrive.CacheGetPathList(oPath)
 	if err != nil {
-		app.Response(c, http.StatusOK, e.ITEM_NOT_FOUND, nil)
+		app.Response(c, http.StatusOK, e.ITEM_NOT_FOUND, e.GetMsg(e.ITEM_NOT_FOUND))
+	} else if root.Password != "" && pass != root.Password {
+		app.Response(c, http.StatusOK, e.PASS_ERROR, e.GetMsg(e.PASS_ERROR))
 	} else {
 		app.Response(c, http.StatusOK, e.SUCCESS, root)
 	}
@@ -41,9 +45,12 @@ func CacheGetPath(c *gin.Context) {
 func Download(c *gin.Context) {
 	filePath := c.Param("path")
 
+	if strings.Contains(filePath, ".password") {
+
+	}
 	downloadURL, err := onedrive.GetDownloadUrl(filePath)
 	if err != nil {
-		app.Response(c, http.StatusOK, e.ITEM_NOT_FOUND, nil)
+		app.Response(c, http.StatusOK, e.ITEM_NOT_FOUND, e.GetMsg(e.ITEM_NOT_FOUND))
 	} else {
 		c.Redirect(http.StatusFound, downloadURL)
 		c.Abort()

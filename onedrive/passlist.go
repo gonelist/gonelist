@@ -24,10 +24,16 @@ func InitPass(user *conf.UserSetting) {
 
 // 判断输入目录和密码是否正确
 func CheckPassCorrect(path, pass string) bool {
-	isCorrect := true
+	// 如果没有设置密码，那么直接返回成功
+	if len(passList) == 0 {
+		return true
+	}
+	// 如果刚好访问的是设置密码的路径
 	if pa, ok := passList[path]; ok && pa == pass {
 		return true
 	}
+	// 如果访问的是子路径和其他路径
+	isCorrect := true
 	// 对输入路径进行拆分
 	list := GetPathArray(path)
 	// 判断每一个路径

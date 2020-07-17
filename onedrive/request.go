@@ -51,13 +51,14 @@ func GetAllFiles() (*FileNode, error) {
 	} else {
 		prefix = conf.UserSet.Server.FolderSub
 	}
-	list, readmeUrl, err := GetTreeFileNode(prefix, "")
+	list, readmeUrl, passUrl, err := GetTreeFileNode(prefix, "")
 	if err != nil {
 		log.Info(err)
 		return nil, err
 	}
 	root.Children = list
 	root.READMEUrl = readmeUrl
+	root.PasswordUrl = passUrl
 	if root.Children != nil {
 		root.IsFolder = true
 	}
@@ -71,7 +72,7 @@ func GetAllFiles() (*FileNode, error) {
 // list 返回当前文件夹中的所有文件夹和文件
 // readmeUrl 这个是当前文件夹 readme 文件的下载链接
 // err 返回错误
-func GetTreeFileNode(prefix, relativePath string) (list []*FileNode, readmeUrl string, err error) {
+func GetTreeFileNode(prefix, relativePath string) (list []*FileNode, readmeUrl, passUrl string, err error) {
 	var (
 		ans   Answer
 		oPath = prefix + relativePath
@@ -83,7 +84,7 @@ func GetTreeFileNode(prefix, relativePath string) (list []*FileNode, readmeUrl s
 			"ans": ans,
 			"err": err,
 		}).Errorf("请求 graph.microsoft.com 出现错误: prefix:%v, relativePath:%v", prefix, relativePath)
-		return nil, "", err
+		return nil, "", "", err
 	}
 
 	// 解析对应 list
@@ -91,16 +92,19 @@ func GetTreeFileNode(prefix, relativePath string) (list []*FileNode, readmeUrl s
 	for i := range list {
 		// 如果下一层是文件夹则继续
 		if list[i].IsFolder == true {
-			tmpList, tmpReadmeUrl, err := GetTreeFileNode(list[i].Path, "")
+			tmpList, tmpReadmeUrl, tmpPassUrl, err := GetTreeFileNode(list[i].Path, "")
 			if err == nil {
 				list[i].Children = tmpList
 				list[i].READMEUrl = tmpReadmeUrl
+				list[i].PasswordUrl = tmpPassUrl
 			}
 		} else if list[i].Name == "README.md" {
 			readmeUrl = list[i].DownloadUrl
+		} else if list[i].Name == ".password" {
+			passUrl = list[i].DownloadUrl
 		}
 	}
-	return list, readmeUrl, nil
+	return list, readmeUrl, passUrl, nil
 }
 
 // 获取某个路径的内容，如果 token 失效或没有正常结果返回 err

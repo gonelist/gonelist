@@ -4,6 +4,7 @@ import (
 	"fmt"
 	gocache "github.com/patrickmn/go-cache"
 	log "github.com/sirupsen/logrus"
+	"strings"
 	"time"
 )
 
@@ -17,18 +18,18 @@ const (
 	DefaultTime = time.Hour * 24
 )
 
-// 刷新每个文件夹的 README
+// 刷新每个文件夹的 README 和 Password
 func RefreshREADME() error {
 	// 获取根节点开始
 	root := FileTree.GetRoot()
-	if err := GetCurrentAndChildrenREADME(root); err != nil {
+	if err := GetAllREADMEAndPass(root); err != nil {
 		return err
 	}
 	return nil
 }
 
 // 递归所有节点，下载 README
-func GetCurrentAndChildrenREADME(current *FileNode) error {
+func GetAllREADMEAndPass(current *FileNode) error {
 	if current == nil {
 		return fmt.Errorf("GetCurrentAndChildrenREADME get a nil pointer")
 	}
@@ -46,8 +47,20 @@ func GetCurrentAndChildrenREADME(current *FileNode) error {
 		}
 	}
 
+	// 当前节点有 .password，下载并且赋值
+	if current.PasswordUrl != "" {
+		if readmeBytes, err := RequestOneUrl(current.PasswordUrl); err != nil {
+			log.WithFields(log.Fields{
+				"path": current.Path,
+				"url":  current.PasswordUrl,
+			}).Infof("download password file error")
+		} else {
+			current.Password = strings.TrimSpace(string(readmeBytes))
+		}
+	}
+
 	for i := range current.Children {
-		if err := GetCurrentAndChildrenREADME(current.Children[i]); err != nil {
+		if err := GetAllREADMEAndPass(current.Children[i]); err != nil {
 			return err
 		}
 	}

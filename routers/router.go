@@ -15,7 +15,9 @@ func InitRouter() *gin.Engine {
 
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
-	r.Use(cors.Default())
+	r.Use(cors.New(cors.Options{
+		AllowedHeaders: []string{"pass"}, // 允许 header
+	}))
 
 	r.Use(static.Serve("/", static.LocalFile(conf.GetDistPATH(), false)))
 
@@ -35,7 +37,7 @@ func InitRouter() *gin.Engine {
 	root := r.Group("/")
 	root.Use(middleware.CheckLogin())
 	{
-		r.GET("/d/*path", api.Download)
+		r.GET("/d/:path", api.Download)
 		r.GET("/README", middleware.CheckFolderPass(), api.GetREADME)
 	}
 

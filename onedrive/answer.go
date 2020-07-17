@@ -115,6 +115,9 @@ type FileNode struct {
 	LastModifyTime time.Time   `json:"last_modify_time"`
 	Size           int64       `json:"size"`
 	Children       []*FileNode `json:"children"`
+	// .password 内容
+	Password    string `json:"-"`
+	PasswordUrl string `json:"-"`
 }
 
 // Answer 是请求接口返回内容，里面包含的 Value 是一个列表
