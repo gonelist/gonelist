@@ -34,7 +34,7 @@ case "$1" in
     docker build -t zhangguanzhang/gonelist:$TAG_NUM $build_arg \
       --build-arg LDFLAGS="${LDFLAGS}" -f ${Dockerfile:=Dockerfile} .
     [ -n "${DockerUser}" ] && {
-      docker login -u "${DockerUser}" "${DockerPass}"
+      docker login -u "${DockerUser}" -p "${DockerPass}"
       docker push zhangguanzhang/gonelist:$TAG_NUM
     }
     ;;
