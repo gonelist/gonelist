@@ -68,6 +68,9 @@ func ConvertReturnNode(node *FileNode) *FileNode {
 
 	reNode := CopyFileNode(node)
 	for key := range node.Children {
+		if node.Children[key].Name == ".password" {
+			continue
+		}
 		tmpNode := node.Children[key]
 		reNode.Children = append(reNode.Children, CopyFileNode(tmpNode))
 	}
