@@ -17,9 +17,9 @@ OS_LIST=(
     darwin
     linux
     windows
-    freebsd
-    netbsd
-    openbsd
+    #freebsd
+    #netbsd
+    #openbsd
 )
 darwin=(
     386
@@ -34,10 +34,10 @@ linux=(
     386
     amd64
     arm
-    mips
-    mips64
-    mpis64le
-    mipsle
+    #mips
+    #mips64
+    #mpis64le
+    #mipsle
 )
 netbsd=(
     386
