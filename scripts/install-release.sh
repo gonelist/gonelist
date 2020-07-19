@@ -280,6 +280,7 @@ install_gonelist(){
     local file=$1
     local arch=$2
     mkdir -p '/etc/gonelist/' '/usr/local/gonelist/' && \
+    [ -d /usr/local/gonelist/dist ] && rm -rf /usr/local/gonelist/dist
     tar zxf ${file} -C '/usr/local/gonelist/' --strip-components=1 && \
     mv /usr/local/gonelist/gonelist_linux_${arch} /usr/local/gonelist/gonelist && \
     chmod +x '/usr/local/gonelist/gonelist' || {
