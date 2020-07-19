@@ -17,7 +17,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o gonelist -ldflags "${LDFLA
 
 FROM alpine:3.11.6
 WORKDIR /root
-ARG VERSION=v0.3.2
+ARG VERSION=v0.4
 COPY --from=builder /root/myapp/gonelist /bin/gonelist
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories && \
     apk add curl wget && \
