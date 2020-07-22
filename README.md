@@ -53,14 +53,16 @@ $ ./gonelist_linux_amd64
 ## docker运行
 视频教程 https://www.bilibili.com/video/BV1Vz4y1R7EK/
 
-直接使用项目的`docker-compose.yml`去`docker-compose up -d`即可，建议把配置文件放在一个文件夹里，把文件夹挂载进去。否则直挂文件docker挂载的是inode
+直接使用项目的`docker-compose.yml`去`docker-compose up -d`即可，建议把配置文件放在一个文件夹里，把文件夹挂载进去，否则直挂文件docker挂载的是inode。
+如果是群晖的docker上运行的话会不支持docker的command似乎，可以把配置文件的目录挂载到容器里，例如`/etc/config`，创建容器的时候加上环境变量`CONF_PATH=/etc/config/config.json`。
+token_path写`/etc/config/`，然后创建容器的最后地方的`Entrypoint`和`命令`空着
 ```
 .
 ├── config
 │   └── config.json
 └── docker-compose.yml
 ```
-配置文件最好是切到对应的tag那去下载，容器的话配置文件的`dist_path`值得改为`/etc/dist/`
+
 
 ## config.json
 

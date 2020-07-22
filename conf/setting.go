@@ -78,6 +78,11 @@ func LoadUserConfig(configPath string) error {
 	if len(configPath) == 0 {
 		return errors.New("配置文件名不能为空")
 	}
+	envValue := os.Getenv("CONF_PATH")
+
+	if envValue != "" {
+		configPath = envValue
+	}
 
 	log.Infof("当前使用的配置文件为:%s", configPath)
 

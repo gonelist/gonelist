@@ -21,6 +21,6 @@ ARG VERSION=v0.4.1
 COPY --from=builder /root/myapp/gonelist /bin/gonelist
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories && \
     apk add curl wget && \
-    cd /etc && curl -sL https://github.com/Sillywa/gonelist-web/releases/download/${VERSION}/dist.tar.gz | tar -zxvf -
+    cd /bin && curl -sL https://github.com/Sillywa/gonelist-web/releases/download/${VERSION}/dist.tar.gz | tar -zxvf -
 EXPOSE 8000
 ENTRYPOINT ["/bin/gonelist"]
