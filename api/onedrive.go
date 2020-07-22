@@ -34,6 +34,8 @@ func CacheGetPath(c *gin.Context) {
 	root, err := onedrive.CacheGetPathList(oPath)
 	if err != nil {
 		app.Response(c, http.StatusOK, e.ITEM_NOT_FOUND, nil)
+	} else if root == nil {
+		app.Response(c, http.StatusOK, e.LOAD_NOT_READY, nil)
 	} else if root.Password != "" && pass != root.Password {
 		app.Response(c, http.StatusOK, e.PASS_ERROR, nil)
 	} else {
