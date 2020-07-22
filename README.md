@@ -9,6 +9,7 @@
 这是一款使用 `golang + vue` 编写的基于 onedrive 的**在线共享网盘**  
 效果展示：https://gonelist.cugxuan.cn  
 前端项目地址：https://github.com/Sillywa/gonelist-web  
+详细文档地址：https://gonelist-doc.cugxuan.cn  
 有问题请提 issue，也可以进入 QQ 群交流，群号：1083165608
 
 # 功能特性
@@ -35,10 +36,10 @@
 如果您的**整个微软账号和 onedrive 网盘**内，**没有隐私内容**，可以按照下面的流程快速配置体验效果，完整的下载安装流程请看 [安装文档](https://gonelist-doc.cugxuan.cn)
 
 ## 快速配置体验
-下载 [Github Release](https://github.com/cugxuan/GOIndex/releases) 或者 [gonelist-release](https://gonelist.cugxuan.cn/#/gonelist-release) 中对应的包，直接运行即可启动，以 Linux 系统本地启动为例
+下载 [Github Release](https://github.com/cugxuan/gonelist/releases) 或者 [gonelist-release](https://gonelist.cugxuan.cn/#/gonelist-release) 中对应的包，Linux 系统下载 gonelist_linux_amd64.tar.gz，直接运行即可启动，以 Linux 系统本地启动为例
 ```
-// 下载对应的安装包，也可下载 gonelist-release 中的包
-$ wget https://github.com/cugxuan/gonelist/releases/download/v0.4/gonelist_linux_amd64.tar.gz
+// 下载对应的安装包，也可下载 gonelist-release 中的包，下面命令不一定是最新版本
+$ wget https://github.com/cugxuan/gonelist/releases/download/v0.4.1/gonelist_linux_amd64.tar.gz
 $ tar -zxf gonelist_linux_amd64.tar.gz && cd gonelist_linux_amd64
 $ ./gonelist_linux_amd64
 ```
