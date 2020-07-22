@@ -1,6 +1,6 @@
 FROM alpine:3.11.6
 WORKDIR /root
-ARG VERSION=v0.4
+ARG VERSION=v0.4.1
 COPY gonelist /bin/gonelist
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories && \
     apk add curl wget && \
