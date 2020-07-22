@@ -9,6 +9,7 @@ dist/
 release/
 myself/
 gonelist
+gonelist.exe
 main.exe
 main
 self.json
