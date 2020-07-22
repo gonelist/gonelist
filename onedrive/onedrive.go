@@ -9,16 +9,20 @@ import (
 )
 
 // 初始化登陆状态
+// 如果初始化时获取失败直接退出
+// 如果在自动刷新时失败给出 error 警告，见 onedrive/timer.go
 func InitOnedive() {
 	// 获取文件内容和初始化 README 缓存
+	log.Info("开始初始化，获取文件列表")
 	if _, err := GetAllFiles(); err != nil {
-		log.Fatal(err)
+		log.WithField("err",err).Fatal("获取文件失败")
 	}
 	if err := RefreshREADME(); err != nil {
-		log.Fatal(err)
+		log.WithField("err",err).Fatal("获取 README 失败")
 	}
 	// 设置 onedrive 登陆状态
 	FileTree.SetLogin(true)
+	log.Info("初始化完成，获取文件列表")
 	cacheGoOnce.Do(func() {
 		go SetAutoRefresh()
 	})
