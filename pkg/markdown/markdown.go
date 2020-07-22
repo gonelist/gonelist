@@ -7,9 +7,9 @@ import (
 )
 
 // 输入 []byte，得到结果
-func MarkdownToHTMLByBytes(input []byte) ([]byte, error) {
+func MarkdownToHTMLByBytes(input []byte) []byte {
 	output := blackfriday.Run(input)
-	return output, nil
+	return output
 }
 
 // 输入文件路径，给出对应的内容

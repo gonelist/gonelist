@@ -4,6 +4,7 @@ import (
 	"fmt"
 	gocache "github.com/patrickmn/go-cache"
 	log "github.com/sirupsen/logrus"
+	"gonelist/pkg/markdown"
 	"strings"
 	"time"
 )
@@ -43,7 +44,9 @@ func GetAllREADMEAndPass(current *FileNode) error {
 			}).Infof("download readme file to cache error")
 		} else {
 			p := GetReplacePath(current.Path)
-			reCache.Set(READEME+p, readmeBytes, DefaultTime)
+			// 转化成 HTML 的结果
+			finalBytes := markdown.MarkdownToHTMLByBytes(readmeBytes)
+			reCache.Set(READEME+p, finalBytes, DefaultTime)
 		}
 	}
 

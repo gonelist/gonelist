@@ -2,7 +2,6 @@ package onedrive
 
 import (
 	"encoding/json"
-	"fmt"
 	"gonelist/conf"
 	"gonelist/pkg/file"
 	"log"
@@ -15,14 +14,14 @@ func TestOnedriveGetPath(t *testing.T) {
 	data, _ := file.ReadFromFile(example + "root.json")
 	var ans Answer
 	json.Unmarshal(data, &ans)
-	fmt.Println(ans)
+	t.Log(ans)
 }
 
 func TestGetAnsErr(t *testing.T) {
 	data, _ := file.ReadFromFile(example + "InvalidToken.json")
 	var ans Answer
 	json.Unmarshal(data, &ans)
-	fmt.Println(ans)
+	t.Log(ans)
 }
 
 func TestCheckAnswerValid(t *testing.T) {
@@ -35,11 +34,11 @@ func TestCheckAnswerValid(t *testing.T) {
 	data, _ = file.ReadFromFile(example + "InvalidToken.json")
 	json.Unmarshal(data, &ans1)
 	valid = CheckAnswerValid(ans1, "/example/InvalidToken.json")
-	fmt.Println(valid)
+	t.Log(valid)
 	data, _ = file.ReadFromFile(example + "root.json")
 	json.Unmarshal(data, &ans2)
 	valid = CheckAnswerValid(ans2, "/example/root.json")
-	fmt.Println(valid)
+	t.Log(valid)
 }
 
 func TestCacheGetPathList(t *testing.T) {
@@ -58,16 +57,16 @@ func TestCacheGetPathList(t *testing.T) {
 
 	root, err := CacheGetPathList("/ttt")
 	if err != nil {
-		fmt.Println(err)
+		t.Log(err)
 		return
 	}
 	if root.IsFolder == false {
 		// 是一个文件
 		b, _ := json.Marshal(root)
-		fmt.Println(string(b))
+		t.Log(string(b))
 	} else {
 		for _, item := range root.Children {
-			fmt.Println(item)
+			t.Log(item)
 		}
 	}
 }
@@ -86,7 +85,7 @@ func TestConvertReturnNode(t *testing.T) {
 	json.Unmarshal(data, &filetree)
 
 	reNode := ConvertReturnNode(filetree)
-	fmt.Println(reNode)
+	t.Log(reNode)
 }
 
 // 测试一个目录下，上千文件的情况
@@ -95,8 +94,8 @@ func TestThousand(t *testing.T) {
 	var ans Answer
 	var ans1 Answer
 	json.Unmarshal(data, &ans)
-	fmt.Println(len(ans.Value))
+	t.Log(len(ans.Value))
 	data1, _ := file.ReadFromFile(example + "pdf1.json")
 	json.Unmarshal([]byte(data1), &ans1)
-	fmt.Println(len(ans1.Value))
+	t.Log(len(ans1.Value))
 }
