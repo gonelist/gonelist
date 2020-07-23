@@ -7,6 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"gonelist/pkg/file"
 	"os"
+	"path"
 	"strings"
 	"time"
 )
@@ -107,6 +108,11 @@ func LoadUserConfig(configPath string) error {
 	// 否则 token 将保存在用户 config.json 所在的目录
 	if UserSet.TokenPath == "" {
 		UserSet.TokenPath = GetTokenPath(configPath)
+	} else {
+		//用户一般写目录，此处转成文件
+		if !strings.HasSuffix(UserSet.TokenPath, ".token") {
+			UserSet.TokenPath = path.Join(UserSet.TokenPath, ".token")
+		}
 	}
 	log.Info("成功导入用户配置")
 	return nil
