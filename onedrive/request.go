@@ -126,6 +126,7 @@ func GetUrlToAns(relativePath string) (Answer, error) {
 		url = UrlBegin + relativePath + UrlEnd + "?$top=3000"
 	}
 
+	log.Debugf("RequestAnswer 开始获取 %s", url)
 	for {
 		tmpAns, err = RequestAnswer(url, relativePath)
 		// 判断是否合并两次请求
@@ -142,6 +143,7 @@ func GetUrlToAns(relativePath string) (Answer, error) {
 		}
 		url = ans.OdataNextLink
 	}
+	log.Debugf("RequestAnswer 获取完成 %s", url)
 
 	return ans, nil
 }
