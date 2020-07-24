@@ -15,10 +15,10 @@ func InitOnedive() {
 	// 获取文件内容和初始化 README 缓存
 	log.Info("开始初始化，获取文件列表")
 	if _, err := GetAllFiles(); err != nil {
-		log.WithField("err",err).Fatal("获取文件失败")
+		log.WithField("err", err).Fatal("获取文件失败")
 	}
 	if err := RefreshREADME(); err != nil {
-		log.WithField("err",err).Fatal("获取 README 失败")
+		log.WithField("err", err).Fatal("获取 README 失败")
 	}
 	// 设置 onedrive 登陆状态
 	FileTree.SetLogin(true)

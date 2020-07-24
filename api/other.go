@@ -5,6 +5,7 @@ import (
 	"gonelist/onedrive"
 	"gonelist/pkg/app"
 	"gonelist/pkg/e"
+	"gonelist/pkg/index"
 	"net/http"
 )
 
@@ -22,4 +23,12 @@ func GetREADME(c *gin.Context) {
 	} else {
 		app.Response(c, http.StatusOK, e.SUCCESS, string(readmeBytes))
 	}
+}
+
+// 搜索功能
+func Search(c *gin.Context) {
+	key := c.Query("key")
+
+	ans := index.IndexImpl.Search(key)
+	app.Response(c, http.StatusOK, e.SUCCESS, ans)
 }

@@ -39,6 +39,7 @@ func InitRouter() *gin.Engine {
 	{
 		r.GET("/d/*path", api.Download)
 		r.GET("/README", middleware.CheckFolderPass(), api.GetREADME)
+		r.GET("/search", api.Search)
 	}
 
 	onedrive := r.Group("/onedrive")
