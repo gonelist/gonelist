@@ -13,19 +13,35 @@ import (
 // 如果在自动刷新时失败给出 error 警告，见 onedrive/timer.go
 func InitOnedive() {
 	// 获取文件内容和初始化 README 缓存
-	log.Info("开始初始化，获取文件列表")
-	if _, err := GetAllFiles(); err != nil {
-		log.WithField("err", err).Fatal("获取文件失败")
-	}
-	if err := RefreshREADME(); err != nil {
-		log.WithField("err", err).Fatal("获取 README 失败")
+	err := RefreshOnedriveAll()
+	if err != nil {
+		log.WithField("err", err).Fatal("InitOnedrive 出现错误")
 	}
 	// 设置 onedrive 登陆状态
 	FileTree.SetLogin(true)
-	log.Info("初始化完成，获取文件列表")
 	cacheGoOnce.Do(func() {
 		go SetAutoRefresh()
 	})
+}
+
+// 刷新所有 onedrive 的内容
+// 包括 文件列表，README，password，搜索索引
+func RefreshOnedriveAll() error {
+	log.Info("开始刷新文件缓存")
+	if _, err := GetAllFiles(); err != nil { // 获取所有文件并且刷新树结构
+		log.WithField("err", err).Error("刷新文件缓存遇到错误")
+		return err
+	}
+	log.Infof("结束刷新文件缓存")
+	log.Debug(FileTree)
+	log.Info("开始刷新 README 缓存")
+	if err := RefreshREADME(); err != nil {
+		log.WithField("err", err).Error("刷新 README 缓存遇到错误")
+		return err
+	}
+	log.Info("结束刷新 README 缓存")
+	// 构建搜索
+	return nil
 }
 
 // 从缓存获取某个路径下的所有内容
@@ -101,8 +117,9 @@ func CopyFileNode(node *FileNode) *FileNode {
 
 func GetDownloadUrl(filePath string) (string, error) {
 	var (
-		fileInfo *FileNode
-		err      error
+		fileInfo    *FileNode
+		err         error
+		downloadUrl string
 	)
 
 	if fileInfo, err = CacheGetPathList(filePath); err != nil || fileInfo == nil || fileInfo.IsFolder == true {
@@ -113,7 +130,10 @@ func GetDownloadUrl(filePath string) (string, error) {
 		return "", err
 	}
 
-	return fileInfo.DownloadUrl, nil
+	// 如果有重定向前缀，就加上
+	downloadUrl = conf.UserSet.DownloadRedirectPrefix + fileInfo.DownloadUrl
+
+	return downloadUrl, nil
 }
 
 // 替换路径

@@ -4,6 +4,7 @@
   "redirect_url": "http://localhost:8000/auth",
   "state": "23333",
   "token_path": "",
+  "download_redirect_prefix": "",
   "server": {
     "port": 8000,
     "refresh_time": 10,

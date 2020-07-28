@@ -55,13 +55,14 @@ type UserSetting struct {
 	RedirectURL  string `json:"redirect_url"`
 	State        string `json:"state"` // 用户设置的标识
 	// 获取 access_token
-	ClientSecret string `json:"client_secret"`
-	Code         string `json:"-"`          // 服务器收到的中间内容
-	GrantType    string `json:"-"`          // 值为 authorization_code
-	Scope        string `json:"-"`          // 值为 offline_access files.readwrite.all
-	AccessToken  string `json:"-"`          // 令牌
-	RefreshToken string `json:"-"`          // 刷新令牌
-	TokenPath    string `json:"token_path"` // token 文件位置
+	ClientSecret           string `json:"client_secret"`
+	Code                   string `json:"-"`                        // 服务器收到的中间内容
+	GrantType              string `json:"-"`                        // 值为 authorization_code
+	Scope                  string `json:"-"`                        // 值为 offline_access files.readwrite.all
+	AccessToken            string `json:"-"`                        // 令牌
+	RefreshToken           string `json:"-"`                        // 刷新令牌
+	TokenPath              string `json:"token_path"`               // token 文件位置
+	DownloadRedirectPrefix string `json:"download_redirect_prefix"` // 下载重定向前缀
 	// 世纪互联
 	ChinaCloud *ChinaCloud `json:"china_cloud"`
 	// 用户设置
