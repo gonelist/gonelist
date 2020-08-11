@@ -23,7 +23,7 @@ func MGGetFileTree(c *gin.Context) {
 	str, _ := json.Marshal(root)
 	log.Debug("*root", string(str))
 
-	app.Response(c, http.StatusOK, e.SUCCESS, root)
+	app.Response(c, http.StatusOK, e.SUCCESS, "已刷新缓存")
 }
 
 // 获取对应路径的文件

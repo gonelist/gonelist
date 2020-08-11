@@ -76,9 +76,10 @@ token_path写`/etc/config/`，然后创建容器的最后地方的`Entrypoint`�
   "redirect_url": "http://localhost:8000/auth",
   // 设置一个自己喜欢的字符串
   "state": "23333",
-  "china_cloud": false,
   // token 的路径，推荐默认
   "token_path": "",
+  // 下载链接重定向前缀
+  "download_redirect_prefix": "",
   "server": {
     // 监听的端口
     "port": 8000,
@@ -92,6 +93,12 @@ token_path写`/etc/config/`，然后创建容器的最后地方的`Entrypoint`�
     "dist_path": "./dist/",
     // 是否绑定到 0.0.0.0
     "bind_global": true
+  },
+  // 世纪互联设置
+  "china_cloud": {
+    "enable": false,
+    "client_id": "2b54b127-b403-42a3-8b55-d25f3119aa13",
+    "client_secret": "a0CGqBT3f_8U5gztxKjxR-LNW-ZnTe.m"
   },
   // 给文件夹设置密码，相比此方法，更加建议直接在文件夹下的创建 .password 设置密码
   "pass_list": [
