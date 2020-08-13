@@ -37,11 +37,19 @@ func CheckOnedriveInit() gin.HandlerFunc {
 func CheckFolderPass() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		p := c.Query("path")
-		pa := c.GetHeader("pass")
-		if !onedrive.CheckPassCorrect(p, pa) {
+		pass := c.GetHeader("pass")
+		// 判断 config.json 中的密码
+		if !onedrive.CheckPassCorrect(p, pass) {
 			// 如果密码错误，则返回
 			app.Response(c, http.StatusOK, e.PASS_ERROR, nil)
 			c.Abort()
+		}
+		// 判断路径下是否有 .password 文件
+		if root, err := onedrive.CacheGetPathList(p); root != nil && err == nil {
+			if root.Password != "" && pass != root.Password {
+				app.Response(c, http.StatusOK, e.PASS_ERROR, nil)
+				c.Abort()
+			}
 		}
 	}
 }
