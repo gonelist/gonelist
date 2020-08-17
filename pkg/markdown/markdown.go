@@ -9,7 +9,8 @@ import (
 // 输入 []byte，得到结果
 func MarkdownToHTMLByBytes(input []byte) []byte {
 	// blackfriday.HardLineBreak，将 markdown 中的换行直接替换为 <br />
-	output := blackfriday.Run(input, blackfriday.WithExtensions(blackfriday.HardLineBreak))
+	output := blackfriday.Run(input,
+		blackfriday.WithExtensions(blackfriday.HardLineBreak|blackfriday.Autolink|blackfriday.FencedCode))
 	return output
 }
 
