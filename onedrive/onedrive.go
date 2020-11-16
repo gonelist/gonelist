@@ -34,6 +34,7 @@ func RefreshOnedriveAll() error {
 	}
 	log.Infof("结束刷新文件缓存")
 	log.Debug(FileTree)
+
 	log.Info("开始刷新 README 缓存")
 	if err := RefreshREADME(); err != nil {
 		log.WithField("err", err).Error("刷新 README 缓存遇到错误")

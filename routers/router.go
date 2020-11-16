@@ -39,7 +39,6 @@ func InitRouter() *gin.Engine {
 	{
 		r.GET("/d/*path", api.Download)
 		r.GET("/README", middleware.CheckFolderPass(), api.GetREADME)
-		r.GET("/search", api.Search)
 	}
 
 	onedrive := r.Group("/onedrive")
@@ -49,6 +48,7 @@ func InitRouter() *gin.Engine {
 		onedrive.GET("/getallfiles", api.MGGetFileTree)
 		// 根据路径获取对应数据
 		onedrive.GET("/getpath", middleware.CheckFolderPass(), api.CacheGetPath)
+		onedrive.GET("/search", api.Search)
 	}
 
 	return r

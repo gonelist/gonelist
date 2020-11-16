@@ -5,7 +5,6 @@ import (
 	"gonelist/onedrive"
 	"gonelist/pkg/app"
 	"gonelist/pkg/e"
-	"gonelist/pkg/index"
 	"net/http"
 )
 
@@ -29,6 +28,11 @@ func GetREADME(c *gin.Context) {
 func Search(c *gin.Context) {
 	key := c.Query("key")
 
-	ans := index.IndexImpl.Search(key)
+	if key == "" {
+		app.Response(c, http.StatusOK, e.ITEM_NOT_FOUND, nil)
+		return
+	}
+
+	ans := onedrive.FileTree.Index.Search(key)
 	app.Response(c, http.StatusOK, e.SUCCESS, ans)
 }

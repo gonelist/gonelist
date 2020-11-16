@@ -3,9 +3,12 @@ package onedrive
 import (
 	"encoding/json"
 	"errors"
-	log "github.com/sirupsen/logrus"
+	"gonelist/onedrive/internal"
+	"gonelist/onedrive/normal_index"
 	"sync"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type ErrJson struct {
@@ -146,9 +149,12 @@ type Tree struct {
 	root       *FileNode
 	isLogin    bool
 	FirstReady int
+	Index      internal.Index
 }
 
-var FileTree = &Tree{}
+var FileTree = &Tree{
+	Index: &normal_index.NIndex{},
+}
 
 func (t *Tree) SetLogin(status bool) {
 	t.Lock()
@@ -173,4 +179,28 @@ func (t *Tree) SetRoot(root *FileNode) {
 	defer t.Unlock()
 
 	t.root = root
+}
+
+func (t *Tree) SetIndex() {
+	index := make(map[string]string)
+	dfsIndexTree(t.root, index)
+
+	log.Debug(index)
+	t.Index.SetData(index)
+}
+
+func dfsIndexTree(t *FileNode, index map[string]string) {
+	index[t.Name] = t.Path
+
+	// 如果不是文件夹，那么直接退出
+	if !t.IsFolder {
+		return
+	}
+
+	for _, child := range t.Children {
+		if child.Name == ".password" {
+			continue
+		}
+		dfsIndexTree(child, index)
+	}
 }
