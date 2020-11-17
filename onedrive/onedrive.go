@@ -102,11 +102,11 @@ func CopyFileNode(node *FileNode) *FileNode {
 	if node == nil {
 		return nil
 	}
-	path := GetReplacePath(node.Path)
+	//path := GetReplacePath(node.Path)
 
 	return &FileNode{
 		Name:           node.Name,
-		Path:           path,
+		Path:           node.Path,
 		IsFolder:       node.IsFolder,
 		DownloadUrl:    node.DownloadUrl,
 		LastModifyTime: node.LastModifyTime,

@@ -101,6 +101,9 @@ func LoadUserConfig(configPath string) error {
 	if UserSet.PassList == nil {
 		UserSet.PassList = defaultPassListSetting
 	}
+	if UserSet.Server.FolderSub == "" {
+		UserSet.Server.FolderSub = "/"
+	}
 	// ChinaCloud 设置
 	if UserSet.ChinaCloud == nil {
 		UserSet.ChinaCloud = defaultChinaCloudSetting

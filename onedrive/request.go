@@ -33,9 +33,8 @@ func SetROOTUrl(chinaCloud bool) {
 // 获取所有文件的树
 func GetAllFiles() (*FileNode, error) {
 	var (
-		err    error
-		prefix string
-		root   *FileNode
+		err  error
+		root *FileNode
 	)
 
 	root = &FileNode{
@@ -46,12 +45,7 @@ func GetAllFiles() (*FileNode, error) {
 		Children:       nil,
 	}
 
-	if conf.UserSet.Server.FolderSub == "/" {
-		prefix = ""
-	} else {
-		prefix = conf.UserSet.Server.FolderSub
-	}
-	list, readmeUrl, passUrl, err := GetTreeFileNode(prefix, "")
+	list, readmeUrl, passUrl, err := GetTreeFileNode("/")
 	if err != nil {
 		log.Info(err)
 		return nil, err
@@ -74,27 +68,26 @@ func GetAllFiles() (*FileNode, error) {
 // list 返回当前文件夹中的所有文件夹和文件
 // readmeUrl 这个是当前文件夹 readme 文件的下载链接
 // err 返回错误
-func GetTreeFileNode(prefix, relativePath string) (list []*FileNode, readmeUrl, passUrl string, err error) {
+func GetTreeFileNode(relativePath string) (list []*FileNode, readmeUrl, passUrl string, err error) {
 	var (
-		ans   Answer
-		oPath = prefix + relativePath
+		ans Answer
 	)
 
-	ans, err = GetUrlToAns(oPath)
+	ans, err = GetUrlToAns(relativePath)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"ans": ans,
 			"err": err,
-		}).Errorf("请求 graph.microsoft.com 出现错误: prefix:%v, relativePath:%v", prefix, relativePath)
+		}).Errorf("请求 graph.microsoft.com 出现错误: relativePath:%v", relativePath)
 		return nil, "", "", err
 	}
 
 	// 解析对应 list
-	list = ConvertAnsToFileNodes(oPath, ans)
+	list = ConvertAnsToFileNodes(relativePath, ans)
 	for i := range list {
 		// 如果下一层是文件夹则继续
 		if list[i].IsFolder == true {
-			tmpList, tmpReadmeUrl, tmpPassUrl, err := GetTreeFileNode(list[i].Path, "")
+			tmpList, tmpReadmeUrl, tmpPassUrl, err := GetTreeFileNode(list[i].Path)
 			if err == nil {
 				list[i].Children = tmpList
 				list[i].READMEUrl = tmpReadmeUrl
@@ -116,16 +109,24 @@ func GetTreeFileNode(prefix, relativePath string) (list []*FileNode, readmeUrl, 
 func GetUrlToAns(relativePath string) (Answer, error) {
 	// 默认一次获取 3000 个文件
 	var (
-		url    = ROOTUrl + "?$top=3000"
+		url    string
 		ans    Answer
 		tmpAns Answer
 		err    error
 	)
 
-	if relativePath != "" {
-		// 每次获取 3000 个文件
+	// 每次获取 3000 个文件
+	if relativePath == "/" && conf.UserSet.Server.FolderSub == "/" {
+		// https://graph.microsoft.com/v1.0/me/drive/root/children
+		url = ROOTUrl + "?$top=3000"
+	} else if relativePath == "/" {
 		// eg. /test -> https://graph.microsoft.com/v1.0/me/drive/root:/test:/children
-		url = UrlBegin + relativePath + UrlEnd + "?$top=3000"
+		// UrlBegin: https://graph.microsoft.com/v1.0/me/drive/root:
+		// conf.UserSet.Server.FolderSub: /public
+		// UrlEnd: :/children
+		url = UrlBegin + conf.UserSet.Server.FolderSub + UrlEnd + "?$top=3000"
+	} else {
+		url = UrlBegin + conf.UserSet.Server.FolderSub + relativePath + UrlEnd + "?$top=3000"
 	}
 
 	for {

@@ -125,11 +125,20 @@ type FileNode struct {
 
 // Answer 是请求接口返回内容，里面包含的 Value 是一个列表
 func ConvertAnsToFileNodes(oldPath string, ans Answer) []*FileNode {
-	var list []*FileNode
+	var (
+		list []*FileNode
+		path string
+	)
+
 	for _, item := range ans.Value {
+		if oldPath == "/" {
+			path = oldPath + item.Name
+		} else {
+			path = oldPath + "/" + item.Name
+		}
 		node := &FileNode{
 			Name:           item.Name,
-			Path:           oldPath + "/" + item.Name,
+			Path:           path,
 			LastModifyTime: item.FileSystemInfo.LastModifiedDateTime,
 			DownloadUrl:    item.MicrosoftGraphDownloadURL,
 			IsFolder:       false,
