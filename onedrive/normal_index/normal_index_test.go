@@ -1,35 +1,61 @@
 package normal_index
 
 import (
-	"gonelist/onedrive/internal"
+	internal "gonelist/onedrive/internal"
 	"gopkg.in/go-playground/assert.v1"
 	"testing"
 )
 
 func TestNIndex_InsertArray(t *testing.T) {
 	var (
-		index internal.Index
-		ans   []string
+		index *NIndex
+		ans   []internal.Item
 	)
-	index = &NIndex{}
-	example := make(map[string]string)
-	example["这是一个目录"] = "/测试/这是一个目录"
-	example["123"] = "/public/123"
-	example["a012,我们去大草原的湖边"] = "/a012,我们去大草原的湖边"
+	index = NewNIndex()
+	example := make(map[string][]internal.Item)
+	example["这是一个目录"] = []internal.Item{
+		{
+			Path:     "/测试/这是一个目录",
+			IsFolder: true,
+		},
+	}
+	example["123"] = []internal.Item{
+		{
+			Path:     "/public/123",
+			IsFolder: false,
+		},
+	}
+	example["a012,我们去大草原的湖边"] = []internal.Item{
+		{
+			Path:     "/a012,我们去大草原的湖边",
+			IsFolder: false,
+		},
+	}
 	index.SetData(example)
 
 	ans = index.Search("我")
-	assert.Equal(t, ans, []string{"/a012,我们去大草原的湖边"})
+	assert.Equal(t, ans, []internal.Item{
+		{
+			Path:     "/a012,我们去大草原的湖边",
+			IsFolder: false,
+		},
+	})
 
 	ans = index.Search("/")
-	assert.Equal(t, ans, []string{})
+	assert.Equal(t, ans, []internal.Item{})
 
 	ans = index.Search("1")
 	t.Log(ans)
-	assert.Equal(t, ans, []string{"/public/123", "/a012,我们去大草原的湖边"})
-
-	ans = index.Search("123")
-	assert.Equal(t, ans, []string{"/public/123"})
+	assert.Equal(t, ans, []internal.Item{
+		{
+			Path:     "/public/123",
+			IsFolder: false,
+		},
+		{
+			Path:     "/a012,我们去大草原的湖边",
+			IsFolder: false,
+		},
+	})
 
 }
 
