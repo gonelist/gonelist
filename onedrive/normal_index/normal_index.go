@@ -57,6 +57,10 @@ func (i *NIndex) Clear() {
 func (i *NIndex) Search(key string) []internal.Item {
 	ans := []internal.Item{}
 	for name, items := range i.data {
+		// 只返回 100 个结果
+		if len(ans) >= 100 {
+			break
+		}
 		if strings.Contains(name, key) {
 			ans = append(ans, items...)
 		}
