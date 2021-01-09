@@ -17,11 +17,11 @@ func AutoRefresh() {
 	RefreshOnedriveAll()
 }
 
+// 使用时间间隔，等待上一轮刷新玩之后再过 duration 分钟
 func timer(AutoCallFunction func(), duration time.Duration) {
-	ticker := time.NewTicker(duration)
 	for {
 		select {
-		case <-ticker.C:
+		case <-time.After(duration):
 			if FileTree.IsLogin() == false {
 				log.Info("停止刷新缓存")
 				return
