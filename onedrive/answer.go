@@ -159,10 +159,11 @@ type Tree struct {
 	isLogin    bool
 	FirstReady int
 	Index      internal.Index
+	NewIndex   internal.Index
 }
 
 var FileTree = &Tree{
-	Index: normal_index.NewNIndex(),
+	//Index: normal_index.NewNIndex(),
 }
 
 func (t *Tree) SetLogin(status bool) {
@@ -192,22 +193,23 @@ func (t *Tree) SetRoot(root *FileNode) {
 
 // 搜索索引相关
 func (t *Tree) SetIndex() {
-	index := make(map[string][]internal.Item)
-	dfsIndexTree(t.root, index)
+	t.NewIndex = normal_index.NewNIndex()
+	t.dfsIndexTree(t.root)
 
-	log.Debug(index)
-	t.Index.SetData(index)
+	log.Debug(t.NewIndex)
+	t.Index = t.NewIndex
+	t.NewIndex = nil
 }
 
-func dfsIndexTree(t *FileNode, index map[string][]internal.Item) {
-	index[t.Name] = append(index[t.Name], internal.Item{
-		Path:     t.Path,
-		IsFolder: t.IsFolder,
+func (t *Tree) dfsIndexTree(f *FileNode) {
+	t.NewIndex.Insert(f.Name, internal.Item{
+		Path:     f.Path,
+		IsFolder: f.IsFolder,
 	})
 
 	// 如果不是文件夹或者是一个加密的文件夹
 	// 那么直接退出
-	if !t.IsFolder || t.PasswordUrl != "" {
+	if !f.IsFolder || f.PasswordUrl != "" {
 		return
 	}
 
@@ -215,11 +217,11 @@ func dfsIndexTree(t *FileNode, index map[string][]internal.Item) {
 	//	log.Info(t.Name)
 	//}
 
-	for _, child := range t.Children {
+	for _, child := range f.Children {
 		// 如果该文件夹加密，则直接退出
 		if child.Name == ".password" {
 			return
 		}
-		dfsIndexTree(child, index)
+		t.dfsIndexTree(child)
 	}
 }

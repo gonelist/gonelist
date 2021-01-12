@@ -38,6 +38,13 @@ func (i *NIndex) Insert(name string, item internal.Item) {
 	i.data[name] = append(i.data[name], item)
 }
 
+func (i *NIndex) InsertDatas(name string, item []internal.Item) {
+	i.Lock()
+	defer i.Unlock()
+
+	i.data[name] = append(i.data[name], item...)
+}
+
 func (i *NIndex) InsertDataMap(data map[string][]internal.Item) {
 	i.Lock()
 	defer i.Unlock()

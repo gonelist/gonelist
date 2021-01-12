@@ -7,6 +7,8 @@ type Index interface {
 	SetData(data map[string][]Item)
 	// 插入一条内容
 	Insert(name string, item Item)
+	// 插入多条数据
+	InsertDatas(name string, item []Item)
 	// 插入一组内容
 	InsertDataMap(data map[string][]Item)
 	// 清空内容
