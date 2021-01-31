@@ -34,6 +34,7 @@ linux=(
     386
     amd64
     arm
+    arm64
     #mips
     #mips64
     #mpis64le
