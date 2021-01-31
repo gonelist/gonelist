@@ -13,6 +13,9 @@ import (
 func InitRouter() *gin.Engine {
 
 	r := gin.New()
+	// 对于 router 中多个斜杠（slash）进行兼容
+	// 如 /ping //ping 是同一个接口
+	r.RemoveExtraSlash = true
 
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
