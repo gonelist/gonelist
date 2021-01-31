@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	cors "github.com/rs/cors/wrapper/gin"
@@ -18,6 +19,10 @@ func InitRouter() *gin.Engine {
 	r.Use(cors.New(cors.Options{
 		AllowedHeaders: []string{"pass"}, // 允许 header
 	}))
+
+	if conf.UserSet.Server.Gzip == true {
+		r.Use(gzip.Gzip(gzip.DefaultCompression))
+	}
 
 	r.Use(static.Serve("/", static.LocalFile(conf.GetDistPATH(), false)))
 

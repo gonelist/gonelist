@@ -22,6 +22,7 @@ type Server struct {
 	BindGlobal   bool   `json:"bind_global"`
 	SiteUrl      string `json:"site_url"`   // 网站网址，如 https://gonelist.cugxuan.cn
 	FolderSub    string `json:"folder_sub"` // onedrive 的子文件夹
+	Gzip         bool   `json:"gzip"`       // 是否打开 Gzip 加速
 }
 
 var defaultServerSetting = &Server{
@@ -33,6 +34,7 @@ var defaultServerSetting = &Server{
 	BindGlobal:   true,
 	SiteUrl:      "https://gonelist.cugxuan.cn",
 	FolderSub:    "/",
+	Gzip:         true,
 }
 
 type ChinaCloud struct {

@@ -11,7 +11,8 @@
     "bind_global": true,
     "dist_path": "./dist/",
     "site_url": "http://localhost:8000",
-    "folder_sub": "/"
+    "folder_sub": "/",
+    "gzip": true
   },
   "china_cloud": {
     "enable": false,
