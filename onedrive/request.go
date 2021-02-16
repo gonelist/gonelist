@@ -7,6 +7,7 @@ import (
 	"gonelist/conf"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 )
@@ -109,28 +110,32 @@ func GetTreeFileNode(relativePath string) (list []*FileNode, readmeUrl, passUrl 
 func GetUrlToAns(relativePath string) (Answer, error) {
 	// 默认一次获取 3000 个文件
 	var (
-		url    string
-		ans    Answer
-		tmpAns Answer
-		err    error
+		baseURL string
+		ans     Answer
+		tmpAns  Answer
+		err     error
 	)
 
 	// 每次获取 3000 个文件
 	if relativePath == "/" && conf.UserSet.Server.FolderSub == "/" {
 		// https://graph.microsoft.com/v1.0/me/drive/root/children
-		url = ROOTUrl + "?$top=3000"
+		baseURL = ROOTUrl + "?$top=3000"
 	} else if relativePath == "/" {
 		// eg. /test -> https://graph.microsoft.com/v1.0/me/drive/root:/test:/children
 		// UrlBegin: https://graph.microsoft.com/v1.0/me/drive/root:
 		// conf.UserSet.Server.FolderSub: /public
 		// UrlEnd: :/children
-		url = UrlBegin + conf.UserSet.Server.FolderSub + UrlEnd + "?$top=3000"
+		baseURL = UrlBegin + conf.UserSet.Server.FolderSub + UrlEnd + "?$top=3000"
 	} else {
-		url = UrlBegin + conf.UserSet.Server.FolderSub + relativePath + UrlEnd + "?$top=3000"
+		// TODO ，好像会出现多个 / 的情况，但是暂时不影响使用
+		//baseURL = UrlBegin + conf.UserSet.Server.FolderSub + relativePath + UrlEnd + "?$top=3000"
+
+		baseURL = UrlBegin + url.QueryEscape(conf.UserSet.Server.FolderSub+relativePath) + UrlEnd + "?$top=3000"
+		baseURL = strings.Replace(baseURL, "+", "%20", -1)
 	}
 
 	for {
-		tmpAns, err = RequestAnswer(url, relativePath)
+		tmpAns, err = RequestAnswer(baseURL, relativePath)
 		// 判断是否合并两次请求
 		if len(ans.Value) == 0 {
 			ans = tmpAns
@@ -143,27 +148,43 @@ func GetUrlToAns(relativePath string) (Answer, error) {
 		} else if tmpAns.OdataNextLink == "" {
 			break
 		}
-		url = ans.OdataNextLink
+		baseURL = ans.OdataNextLink
 	}
 
 	return ans, nil
 }
 
-func RequestAnswer(url string, relativePath string) (Answer, error) {
+func RequestAnswer(urlstr string, relativePath string) (Answer, error) {
 	var (
 		ans Answer
 	)
-	body, err := RequestOneUrl(url)
+	if strings.Contains(urlstr, "%") {
+		log.Debugf("123")
+	}
+	// 首先对非英文字符进行 encode，兼容出现 %20 和 特殊字符 等情况
+	//encodeURL := url.QueryEscape(urlstr)
+	//body, err := RequestOneUrl(encodeURL)
+	//m, err := url.Parse(urlstr)
+	//if err != nil {
+	//	log.Infof("url 出现问题，url:%s", urlstr)
+	//	return ans, fmt.Errorf("url 出现问题")
+	//}
+	//encodeURL := m.String()
+	//body, err := RequestOneUrl(encodeURL)
+	body, err := RequestOneUrl(urlstr)
 	if err != nil {
 		return ans, err
 	}
+
 	// 解析内容
 	if err := json.Unmarshal(body, &ans); err != nil {
 		return ans, err
 	}
-	log.Debugf("url:%s relativePath:%s | body:%s", url, relativePath, string(body))
+	log.Debugf("url:%s relativePath:%s | body:%s", urlstr, relativePath, string(body))
 	err = CheckAnswerValid(ans, relativePath)
-	if err != nil { //如果获取内容
+
+	//如果获取内容不正常，则返回
+	if err != nil {
 		return ans, err
 	}
 	return ans, nil
@@ -177,13 +198,18 @@ func RequestOneUrl(url string) (body []byte, err error) {
 	)
 	if client = GetClient(); client == nil {
 		log.Errorln("cannot get client to start request.")
-		return nil, fmt.Errorf("cannot get client")
+		return nil, fmt.Errorf("RequestOneURL cannot get client")
 	}
 
 	// 如果超时，重试两次
 	for retryCount := 3; retryCount > 0; retryCount-- {
 		if resp, err = client.Get(url); err != nil && strings.Contains(err.Error(), "timeout") {
-			<-time.After(time.Second)
+			log.WithFields(log.Fields{
+				"url":  url,
+				"resp": resp,
+				"err":  err,
+			}).Info("RequestOneUrl 出现错误，开始重试")
+			<-time.After(time.Second / 3)
 		} else {
 			break
 		}
@@ -194,7 +220,7 @@ func RequestOneUrl(url string) (body []byte, err error) {
 			"url":  url,
 			"resp": resp,
 			"err":  err,
-		}).Info("请求 graph.microsoft.com 失败")
+		}).Info("请求 graph.microsoft.com 失败, request timeout")
 		return body, err
 	}
 

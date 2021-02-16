@@ -5,6 +5,8 @@ import (
 	"gonelist/conf"
 	"gonelist/pkg/file"
 	"log"
+	"net/url"
+	"strings"
 	"testing"
 )
 
@@ -98,4 +100,21 @@ func TestThousand(t *testing.T) {
 	data1, _ := file.ReadFromFile(example + "pdf1.json")
 	json.Unmarshal([]byte(data1), &ans1)
 	t.Log(len(ans1.Value))
+}
+
+func TestRequestOneUrl(t *testing.T) {
+	urlstr := "/test1/测试  123  30%"
+	test1 := url.QueryEscape(urlstr)
+	test1 = strings.Replace(test1, "+", "%20", -1)
+	log.Println(test1)
+	log.Printf("%v", `/test1/%E6%B5%8B%E8%AF%95%20%20123%20%2030%25`)
+
+	//urlstr = "https://graph.microsoft.com/v1.0/me/drive/root:/test1/测试  123  30%:/children?$top=3000"
+	//m, err := url.Parse(urlstr)
+	//if err != nil {
+	//	log.Println(err)
+	//	return
+	//}
+	//encodeURL := m.String()
+	//log.Println(encodeURL)
 }
