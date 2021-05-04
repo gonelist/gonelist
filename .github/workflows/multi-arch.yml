@@ -1,0 +1,77 @@
+name: build multi-arch images
+on:
+  push:
+    branches: 
+    - master
+    - '*ci*'
+    tags:
+    - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DockerUser: zhangguanzhang
+      DockerPass: ${{ secrets.DockerPass }} 
+      # list of architectures for build
+      PLATFORMS: linux/amd64,linux/arm64 # linux/s390x,linux/ppc64le,
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Current info 
+        id: current
+        run: |
+          ls -l
+          echo $GITHUB_REF - $GITHUB_SHA
+
+      - name: Set up Go 1.x
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.16
+
+      - name: Install gh cli and login
+        continue-on-error: true
+        id: gh
+        run: |
+          sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
+          sudo apt-add-repository https://cli.github.com/packages
+          sudo apt update
+          sudo apt install gh
+          gh version
+          gh auth login --with-token <<< ${{ secrets.gh_token }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+        with:
+          driver-opts: network=host
+          install: true
+
+      - name: docker buildx
+        id: build
+        run: |
+          bash -n build/build.sh buildx
+
+      - name: release build 
+        id: build_release
+        run: |
+          BRANCH_NAME=${GITHUB_REF##*/}
+          if echo "$BRANCH_NAME" | grep -qE '^v'; then
+            bash build/build.sh release
+          fi
+          true
+
+      - name: Create release
+        id: create_release
+        if: steps.gh.outcome == 'success'
+        run: |
+          BRANCH_NAME=${GITHUB_REF##*/}
+          if echo "$BRANCH_NAME" | grep -qE '^v'; then
+            gh release create -R ${GITHUB_REPOSITORY} "$BRANCH_NAME" release/*.tar.gz --title ""
+          fi     

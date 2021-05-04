@@ -2,6 +2,10 @@
 
 [ -n "$DEBUG" ] && set -x
 
+: ${PLATFORMS:=linux/amd64,linux/arm64}
+
+BRANCH_NAME=${GITHUB_REF##*/}
+
 #脚本要存放在项目根目录
 readonly GONELIST_ROOT=$(cd $(dirname ${BASH_SOURCE:-$0})/../; pwd -P)
 source "${GONELIST_ROOT}/build/lib/var.sh"
@@ -37,6 +41,21 @@ case "$1" in
       docker login -u "${DockerUser}" -p "${DockerPass}"
       docker push zhangguanzhang/gonelist:$TAG_NUM
     }
+    ;;
+  "buildx") #使用buildx 构建多平台镜像
+    [ -n "$TAG_NUM" ] && build_arg="--build-arg VERSION=$DIST_VERSION"
+    [ -n "${DockerUser}" ] && {
+      docker login -u "${DockerUser}" -p "${DockerPass}"
+      BUILDX_OPTS+='--push'
+    }
+    DOCKER_TAG=$TAG_NUM
+    if [ -n "$BRANCH_NAME" ] && ! echo "$BRANCH_NAME" | grep -qE '^v'; then
+      DOCKER_TAG=latest
+    fi
+    docker buildx build $BUILDX_OPTS -t zhangguanzhang/gonelist:$DOCKER_TAG $build_arg \
+      --build-arg LDFLAGS="${LDFLAGS}" \
+      --platform ${PLATFORMS} \
+      -f ${Dockerfile:=Dockerfile} .
     ;;
   "clean")
     rm -rf ${GONELIST_ROOT:=/tmp}/release/*

@@ -2,8 +2,8 @@
 
 <img align="right" width="240" src="https://gonelist-doc.cugxuan.cn/img/logo/logo.png">
 
-[![Build Status](https://travis-ci.com/gonelist/gonelist.svg)](https://travis-ci.com/gonelist/gonelist)
-[![Latest Release](https://img.shields.io/github/release/cugxuan/gonelist.svg)](../../releases)
+[![Build Status](https://github.com/gonelist/gonelist/actions/workflows/multi-arch.yml/badge.svg)](https://github.com/gonelist/gonelist/actionst)
+[![Latest Release](https://img.shields.io/github/release/gonelist/gonelist.svg)](../../releases)
 [![All Releases Download](https://img.shields.io/github/downloads/cugxuan/gonelist/total.svg)](../../releases)
 
 这是一款使用 `golang + vue` 编写的基于 onedrive 的**在线共享网盘**
@@ -44,7 +44,7 @@ gonelist_linux_amd64.tar.gz，直接运行即可启动，以 Linux 系统本地�
 
 ```
 // 下载对应的安装包，也可下载 gonelist-release 中的包，下面命令不一定是最新版本
-$ wget https://github.com/cugxuan/gonelist/releases/download/v0.4.1/gonelist_linux_amd64.tar.gz
+$ wget https://github.com/cugxuan/gonelist/releases/download/v0.5.2/gonelist_linux_amd64.tar.gz
 $ tar -zxf gonelist_linux_amd64.tar.gz && cd gonelist_linux_amd64
 $ ./gonelist_linux_amd64
 ```
@@ -62,9 +62,9 @@ $ ./gonelist_linux_amd64
 
 视频教程 https://www.bilibili.com/video/BV1Vz4y1R7EK/
 
-直接使用项目的`docker-compose.yml`去`docker-compose up -d`即可，建议把配置文件放在一个文件夹里，把文件夹挂载进去，否则直挂文件docker挂载的是inode。
-如果是群晖的docker上运行的话会不支持docker的command似乎，可以把配置文件的目录挂载到容器里，例如`/etc/config`，创建容器的时候加上环境变量`CONF_PATH=/etc/config/config.json`。
-token_path写`/etc/config/`，然后创建容器的最后地方的`Entrypoint`和`命令`空着
+直接使用项目的`docker-compose.yml`去`docker-compose up -d`即可，建议把配置文件放在一个文件夹里，把文件夹挂载进去，否则直挂文件 docker 挂载的是 inode。
+如果是群晖的 docker 上运行的话会不支持 docker 的 command 似乎，可以把配置文件的目录挂载到容器里，例如`/etc/config`，创建容器的时候加上环境变量`CONF_PATH=/etc/config/config.json`。
+token_path 写`/etc/config/`，然后创建容器的最后地方的`Entrypoint`和`命令`空着
 
 ```
 .

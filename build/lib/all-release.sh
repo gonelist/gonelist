@@ -94,8 +94,13 @@ fi
 mkdir -p ${GONELIST_ROOT}/release/
 [ ! -d "${GONELIST_ROOT}/release/dist" ] && {
   cd ${GONELIST_ROOT}/release/
-  [ -z "$DIST_VERSION" ] && DIST_VERSION=$TAG
-  curl -sL https://github.com/Sillywa/gonelist-web/releases/download/${DIST_VERSION}/dist.tar.gz | tar -zvxf -
+  if [ -z "$DIST_VERSION" ];then
+    DIST_VERSION=$(curl -s   -H "Accept: application/vnd.github.v3+json"   \
+      "https://api.github.com/repos/gonelist/gonelist-web/releases?per_page=1" | awk -F\" '/tag_name/{print $4;exit}' )
+  fi
+
+  curl -sL https://github.com/gonelist/gonelist-web/releases/download/${DIST_VERSION}/dist.tar.gz | tar -zvxf -
+
   cd $GONELIST_ROOT
 }
 

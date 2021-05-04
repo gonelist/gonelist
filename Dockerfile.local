@@ -10,7 +10,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
     apk add curl wget tzdata bind-tools busybox-extras ca-certificates bash strace && \
     ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime && \
     echo ${TZ} > /etc/timezone && \
-    cd /opt && curl -sL https://github.com/Sillywa/gonelist-web/releases/download/${VERSION}/dist.tar.gz | tar -zxvf - && \
+    cd /opt && curl -sL https://github.com/gonelist/gonelist-web/releases/download/${VERSION}/dist.tar.gz | tar -zxvf - && \
     rm -rf /var/cache/apk/*
 
 EXPOSE 8000
