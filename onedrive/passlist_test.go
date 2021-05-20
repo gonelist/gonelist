@@ -9,7 +9,7 @@ import (
 func TestCheckPassCorrect(t *testing.T) {
 	var valid bool
 
-	conf.LoadUserConfig("../example/config.json")
+	conf.LoadUserConfig("../example/config.yml")
 	InitPass(conf.UserSet)
 
 	valid = CheckPassCorrect("/test-pass", "123456")

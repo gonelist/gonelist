@@ -20,15 +20,10 @@ var (
 	UrlEnd   string
 )
 
-func SetROOTUrl(chinaCloud bool) {
-	if chinaCloud {
-		ROOTUrl = "https://microsoftgraph.chinacloudapi.cn/v1.0/me/drive/root/children"
-		UrlBegin = "https://microsoftgraph.chinacloudapi.cn/v1.0/me/drive/root:"
-	} else {
-		ROOTUrl = "https://graph.microsoft.com/v1.0/me/drive/root/children"
-		UrlBegin = "https://graph.microsoft.com/v1.0/me/drive/root:"
-	}
-	UrlEnd = ":/children"
+func SetROOTUrl(user *conf.UserSetting) {
+	ROOTUrl = user.RemoteConf.ROOTUrl
+	UrlBegin = user.RemoteConf.UrlBegin
+	UrlEnd = user.RemoteConf.UrlEnd
 }
 
 // 获取所有文件的树

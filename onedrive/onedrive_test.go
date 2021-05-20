@@ -44,7 +44,7 @@ func TestCheckAnswerValid(t *testing.T) {
 }
 
 func TestCacheGetPathList(t *testing.T) {
-	if err := conf.LoadUserConfig("../config.json"); err != nil {
+	if err := conf.LoadUserConfig("../config.yml"); err != nil {
 		log.Fatal(err)
 	}
 
@@ -77,7 +77,7 @@ func TestConvertReturnNode(t *testing.T) {
 	var data []byte
 	var filetree *FileNode
 
-	if err := conf.LoadUserConfig(example + "config.json"); err != nil {
+	if err := conf.LoadUserConfig(example + "config.yml"); err != nil {
 		log.Fatal(err)
 	}
 

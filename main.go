@@ -14,7 +14,7 @@ import (
 
 func main() {
 
-	confPath := flag.String("conf", "config.json", "指定配置文件路径")
+	confPath := flag.String("conf", "config.yml", "指定配置文件路径")
 	versionB := flag.Bool("version", false, "Show current version of gonelist.")
 	debugB := flag.Bool("debug", false, "debug log level")
 	flag.Parse()

@@ -29,34 +29,18 @@ var (
 
 func SetOnedriveInfo(user *conf.UserSetting) {
 
-	// 设置 ChinaCloud 相关
-	if user.ChinaCloud.Enable == true {
-		clientID = user.ChinaCloud.ClientID
-		clientSecret = user.ChinaCloud.ClientSecret
-	} else {
-		clientID = user.ClientID
-		clientSecret = user.ClientSecret
-	}
+	clientID = user.ClientID
+	clientSecret = user.ClientSecret
 
 	var endPoint oauth2.Endpoint
-	if user.ChinaCloud.Enable == true {
-		endPoint = oauth2.Endpoint{
-			AuthURL:  "https://login.chinacloudapi.cn/common/oauth2/v2.0/authorize",
-			TokenURL: "https://login.chinacloudapi.cn/common/oauth2/v2.0/token",
-		}
-	} else {
-		endPoint = oauth2.Endpoint{
-			AuthURL:  "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
-			TokenURL: "https://login.microsoftonline.com/common/oauth2/v2.0/token",
-		}
-	}
-	SetROOTUrl(conf.UserSet.ChinaCloud.Enable)
+	endPoint = user.RemoteConf.EndPoint
+	SetROOTUrl(user)
 
 	// 初始化 oauth 的 config
 	oauthConfig = Config{
 		Config: &oauth2.Config{
 			Endpoint:     endPoint,
-			Scopes:       []string{"offline_access", "files.read"}, // 只申请读权限，避免应用程序进行修改，但使用 config.json 给的默认 id 还是不太安全
+			Scopes:       []string{"offline_access", "files.read"}, // 只申请读权限，避免应用程序进行修改，但使用 config.yml 给的默认 id 还是不太安全
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
 			RedirectURL:  user.RedirectURL,
@@ -68,7 +52,7 @@ func SetOnedriveInfo(user *conf.UserSetting) {
 	tok, err := oauthConfig.Storage.GetToken()
 	if err == nil {
 		client = oauthConfig.Client(ctx, tok)
-		log.WithField("refresh_token", tok.RefreshToken).Infof("从文件 %s 读取refresh_token成功",user.TokenPath)
+		log.WithField("refresh_token", tok.RefreshToken).Infof("从文件 %s 读取refresh_token成功", user.TokenPath)
 		// 初始化 onedrive 的内容
 		InitOnedive()
 		return
