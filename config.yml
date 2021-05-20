@@ -22,9 +22,11 @@ server:
   WriteTimeout: 0
   bind_global: true
   dist_path: ./dist/
+  # 子文件夹设置，比如你只想挂载你盘根目录下的 public 文件夹，就使用 /public
   folder_sub: /
   gzip: true # 是否开启 gzip 加速, 默认开启
   port: 8000
+  # 自动刷新时间
   refresh_time: 10
   site_url: http://localhost:8000 # 不建议修改，在启动后会自适应调整
 # 这是一个数组，可以对不同文件夹设置密码

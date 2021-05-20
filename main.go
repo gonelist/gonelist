@@ -30,7 +30,7 @@ func main() {
 	if *debugB {
 		log.SetLevel(log.DebugLevel)
 	}
-	// 加载 config.json
+	// 加载 config.yml
 	if err := conf.LoadUserConfig(*confPath); err != nil {
 		log.Fatal(err)
 	}

@@ -38,7 +38,7 @@ func CheckFolderPass() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		p := c.Query("path")
 		pass := c.GetHeader("pass")
-		// 判断 config.json 中的密码
+		// 判断 config.yml 中的密码
 		if !onedrive.CheckPassCorrect(p, pass) {
 			// 如果密码错误，则返回
 			app.Response(c, http.StatusOK, e.PASS_ERROR, nil)

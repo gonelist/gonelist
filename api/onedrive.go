@@ -32,10 +32,11 @@ func CacheGetPath(c *gin.Context) {
 	oPath := c.Query("path")
 
 	root, err := onedrive.CacheGetPathList(oPath)
+	// 如果没有找到文件则返回 404
 	if err != nil {
-		app.Response(c, http.StatusOK, e.ITEM_NOT_FOUND, nil)
+		app.Response(c, http.StatusNotFound, e.ITEM_NOT_FOUND, nil)
 	} else if root == nil {
-		app.Response(c, http.StatusOK, e.LOAD_NOT_READY, nil)
+		app.Response(c, http.StatusNotFound, e.LOAD_NOT_READY, nil)
 	} else {
 		app.Response(c, http.StatusOK, e.SUCCESS, root)
 	}
