@@ -42,6 +42,7 @@ type UserSetting struct {
 	// Remote to load RemoteConf
 	Remote     string `json:"remote" yaml:"remote"`
 	RemoteConf Remote `json:"-" yaml:"-"`
+	Level      int    `json:"level" yaml:"level"`
 	// 获取授权代码
 	ResponseType string `json:"-" yaml:"-"` // 值为 code
 	ClientID     string `json:"client_id" yaml:"client_id"`

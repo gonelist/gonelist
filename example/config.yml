@@ -1,6 +1,8 @@
 # gonelist 配置文件，注意配置字段和信息中间有个空格
 # Remote name，可选 onedrive, chinacloud
 remote: onedrive
+# onedrive 的获取层级，默认获取两层
+level: 2
 # 提供 onedrive 的应用配置，建议自己创建应用
 client_id: 16e320f7-e427-4612-88da-f3d03e944d40
 client_secret: lURpL3U@bBlmJ0:_dnU.LeLOGNGdVT30
@@ -18,8 +20,8 @@ token_path:
 download_redirect_prefix:
 # gonelist 服务设置，不建议修改
 server:
-  ReadTimeout: 0
-  WriteTimeout: 0
+  ReadTimeout: 60
+  WriteTimeout: 60
   bind_global: true
   dist_path: ./dist/
   folder_sub: /
