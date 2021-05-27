@@ -2,9 +2,9 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	"gonelist/onedrive"
 	"gonelist/pkg/app"
 	"gonelist/pkg/e"
+	"gonelist/service/onedrive"
 	"net/http"
 )
 

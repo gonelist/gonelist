@@ -1,7 +1,7 @@
 package normal_index
 
 import (
-	"gonelist/onedrive/internal"
+	"gonelist/service/onedrive/internal"
 	"strings"
 	"sync"
 )

@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-	"gonelist/onedrive"
 	"gonelist/pkg/app"
 	"gonelist/pkg/e"
+	"gonelist/service/onedrive"
 	"net/http"
 	"strings"
 )

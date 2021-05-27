@@ -5,9 +5,9 @@ import (
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	cors "github.com/rs/cors/wrapper/gin"
-	"gonelist/api"
 	"gonelist/conf"
 	"gonelist/middleware"
+	"gonelist/routers/api"
 )
 
 func InitRouter() *gin.Engine {

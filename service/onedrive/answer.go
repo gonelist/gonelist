@@ -3,8 +3,8 @@ package onedrive
 import (
 	"encoding/json"
 	"errors"
-	"gonelist/onedrive/internal"
-	"gonelist/onedrive/normal_index"
+	"gonelist/service/onedrive/internal"
+	"gonelist/service/onedrive/normal_index"
 	"sync"
 	"time"
 

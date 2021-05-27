@@ -1,7 +1,7 @@
 package normal_index
 
 import (
-	internal "gonelist/onedrive/internal"
+	internal "gonelist/service/onedrive/internal"
 	"gopkg.in/go-playground/assert.v1"
 	"testing"
 )
