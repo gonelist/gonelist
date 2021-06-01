@@ -2,21 +2,9 @@ package onedrive
 
 import (
 	"fmt"
-	gocache "github.com/patrickmn/go-cache"
 	log "github.com/sirupsen/logrus"
 	"gonelist/pkg/markdown"
 	"strings"
-	"time"
-)
-
-// 设置缓存的默认时间为 2 天，每 2 天清空已经失效的缓存
-var reCache = gocache.New(DefaultTime, DefaultTime)
-
-// 在缓存中 key 的形式是 README_path
-// eg. README_/, README_/exampleFolder
-const (
-	READEME     = "README_"
-	DefaultTime = time.Hour * 24
 )
 
 // 刷新每个文件夹的 README 和 Password
@@ -46,7 +34,7 @@ func GetAllREADMEAndPass(current *FileNode) error {
 			p := GetReplacePath(current.Path)
 			// 转化成 HTML 的结果
 			finalBytes := markdown.MarkdownToHTMLByBytes(readmeBytes)
-			reCache.Set(READEME+p, finalBytes, DefaultTime)
+			reCache.Set(README+p, finalBytes, DefaultTime)
 		}
 	}
 
@@ -71,7 +59,7 @@ func GetAllREADMEAndPass(current *FileNode) error {
 }
 
 func GetREADMEInCache(p string) ([]byte, error) {
-	ans, ok := reCache.Get(READEME + p)
+	ans, ok := reCache.Get(README + p)
 	if !ok {
 		log.WithFields(log.Fields{
 			"path": p,
