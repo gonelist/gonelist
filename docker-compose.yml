@@ -8,7 +8,7 @@ services:
       - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
       - ./config/:/etc/config/ #建议把配置文件放当前路径的config下面，不然挂载的是inode
     command:
-      - '--conf=/etc/config/config.json'
+      - '--conf=/etc/config/config.yml'
     #network_mode: "host"
     ports:
       - 8000:8000

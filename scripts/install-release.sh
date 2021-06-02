@@ -289,9 +289,9 @@ install_gonelist(){
     }
 
     # Install gonelist server config to /etc/gonelist
-    if [ ! -f '/etc/gonelist/config.json' ]; then
-        cp /usr/local/gonelist/config.json /etc/gonelist/config.json
-        sed -ri '/dist_path/s#: "[^"]+#: "/usr/local/gonelist/dist/#' /etc/gonelist/config.json
+    if [ ! -f '/etc/gonelist/config.yml' ]; then
+        cp /usr/local/gonelist/config.yml /etc/gonelist/config.yml
+        sed -ri '/dist_path/s#: "[^"]+#: "/usr/local/gonelist/dist/#' /etc/gonelist/config.yml
     fi
     
 }
@@ -313,7 +313,7 @@ Wants=network-online.target
 Type=simple
 #User=root
 NoNewPrivileges=yes
-ExecStart=/usr/local/gonelist/gonelist --conf /etc/gonelist/config.json
+ExecStart=/usr/local/gonelist/gonelist --conf /etc/gonelist/config.yml
 Restart=on-failure
 RestartSec=4s
 LimitNOFILE=65535

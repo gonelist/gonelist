@@ -106,7 +106,7 @@ mkdir -p ${GONELIST_ROOT}/release/
 
 FILE_LIST=(
     ${GONELIST_ROOT}/release/dist
-    ${GONELIST_ROOT}/config.json
+    ${GONELIST_ROOT}/config.yml
 )
 
 for file in ${FILE_LIST[@]};do

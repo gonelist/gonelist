@@ -52,7 +52,7 @@ $ ./gonelist_linux_amd64
 打开 http://localhost:8000 按照提示登录后即可。如果是在本地部署，登陆成功会跳转到首页，此时已经完成部署。  
 如果是在服务器部署，登陆成功会跳转到 http://localhost:8000/auth?code=xxx ，将当前网址改成 http://yoursite:8000/auth?code=xxx
 再回车等待文件加载后，会自动跳转你的网站 http://yoursite:8000 。如果登陆后一直没有反应，可能是因为文件夹数量过多导致，建议设置「子文件夹」选项  
-默认情况下读取当前路径的 `config.json` 作为配置文件，或加参数 `--conf=dir1/file.json` 指定配置文件路径
+默认情况下读取当前路径的 `config.yml` 作为配置文件，或加参数 `--conf=dir1/file.yml` 指定配置文件路径
 
 ## 实体systemd服务安装
 
@@ -63,17 +63,17 @@ $ ./gonelist_linux_amd64
 视频教程 https://www.bilibili.com/video/BV1Vz4y1R7EK/
 
 直接使用项目的`docker-compose.yml`去`docker-compose up -d`即可，建议把配置文件放在一个文件夹里，把文件夹挂载进去，否则直挂文件 docker 挂载的是 inode。
-如果是群晖的 docker 上运行的话会不支持 docker 的 command 似乎，可以把配置文件的目录挂载到容器里，例如`/etc/config`，创建容器的时候加上环境变量`CONF_PATH=/etc/config/config.json`。
+如果是群晖的 docker 上运行的话会不支持 docker 的 command 似乎，可以把配置文件的目录挂载到容器里，例如`/etc/config`，创建容器的时候加上环境变量`CONF_PATH=/etc/config/config.yml`。
 token_path 写`/etc/config/`，然后创建容器的最后地方的`Entrypoint`和`命令`空着
 
 ```
 .
 ├── config
-│   └── config.json
+│   └── config.yml
 └── docker-compose.yml
 ```
 
-## config.json
+## config.yml
 
 如果需要修改配置，在配置文件中填对应内容即可
 
