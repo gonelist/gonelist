@@ -44,7 +44,7 @@ gonelist_linux_amd64.tar.gz，直接运行即可启动，以 Linux 系统本地�
 
 ```
 // 下载对应的安装包，也可下载 gonelist-release 中的包，下面命令不一定是最新版本
-$ wget https://github.com/cugxuan/gonelist/releases/download/v0.5.2/gonelist_linux_amd64.tar.gz
+$ wget https://github.com/cugxuan/gonelist/releases/download/v0.5.3/gonelist_linux_amd64.tar.gz
 $ tar -zxf gonelist_linux_amd64.tar.gz && cd gonelist_linux_amd64
 $ ./gonelist_linux_amd64
 ```

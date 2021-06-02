@@ -17,7 +17,7 @@ FROM alpine:3.12
 
 WORKDIR /opt
 
-ARG VERSION=v0.5.1
+ARG VERSION=v0.5.3
 ARG TZ="Asia/Shanghai"
 
 COPY --from=builder /root/myapp/gonelist /bin/gonelist
