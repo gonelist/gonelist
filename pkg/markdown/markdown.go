@@ -1,6 +1,7 @@
 package markdown
 
 import (
+	"bytes"
 	"errors"
 	"github.com/russross/blackfriday/v2"
 	"gonelist/pkg/file"
@@ -9,8 +10,9 @@ import (
 // 输入 []byte，得到结果
 func MarkdownToHTMLByBytes(input []byte) []byte {
 	// blackfriday.HardLineBreak，将 markdown 中的换行直接替换为 <br />
-	output := blackfriday.Run(input,
-		blackfriday.WithExtensions(blackfriday.HardLineBreak|blackfriday.Autolink|blackfriday.FencedCode))
+	inputWithUnixLineBreaks := bytes.Replace(input, []byte{'\r', '\n'}, []byte{'\n'}, -1)
+	output := blackfriday.Run(inputWithUnixLineBreaks,
+		blackfriday.WithExtensions(blackfriday.HardLineBreak|blackfriday.Autolink|blackfriday.FencedCode|blackfriday.Tables))
 	return output
 }
 
