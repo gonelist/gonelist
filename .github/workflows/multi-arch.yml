@@ -57,6 +57,7 @@ jobs:
         id: build
         run: |
           bash -n build/build.sh buildx
+          bash build/build.sh buildx
 
       - name: release build 
         id: build_release
