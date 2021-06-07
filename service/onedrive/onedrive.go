@@ -45,6 +45,13 @@ func RefreshOnedriveAll() error {
 	return nil
 }
 
+// TODO
+// 刷新逻辑，level 表示刷新文件的层数
+// level = -1 时刷新全部文件
+func RefreshLevel() {
+
+}
+
 // 从缓存获取某个路径下的所有内容
 func CacheGetPathList(oPath string) (*FileNode, error) {
 	var (

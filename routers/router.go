@@ -35,6 +35,7 @@ func InitRouter() *gin.Engine {
 			"message": "hello world",
 		})
 	})
+	r.GET("/info", api.Info)
 
 	r.GET("/login", api.Login)
 	r.GET("/loginmg", api.LoginMG)

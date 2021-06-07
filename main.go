@@ -41,13 +41,15 @@ func main() {
 	// 否则在端口绑定之后通过接口登陆之后初始化
 	onedrive.SetOnedriveInfo(conf.UserSet)
 
+	// 设置 version
+	conf.UserSet.Version = Version
 	// 处理端口绑定
 	Addr := conf.GetBindAddr(conf.UserSet.Server.BindGlobal, conf.UserSet.Server.Port)
 
 	// 启动服务器
 	server := &http.Server{
 		Addr:           Addr,
-		Handler:        routers.InitRouter(),
+		Handler:        routers.InitRouter(Version),
 		ReadTimeout:    60 * time.Second,
 		WriteTimeout:   60 * time.Second,
 		MaxHeaderBytes: 1 << 20,

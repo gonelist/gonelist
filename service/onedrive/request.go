@@ -7,7 +7,6 @@ import (
 	"gonelist/conf"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 	"strings"
 	"time"
 )
@@ -55,8 +54,6 @@ func GetAllFiles() (*FileNode, error) {
 
 	// 更新树结构
 	FileTree.SetRoot(root)
-	// 更新索引结构
-	FileTree.SetIndex()
 	return root, nil
 }
 
@@ -123,10 +120,10 @@ func GetUrlToAns(relativePath string) (Answer, error) {
 		baseURL = UrlBegin + conf.UserSet.Server.FolderSub + UrlEnd + "?$top=3000"
 	} else {
 		// TODO ，好像会出现多个 / 的情况，但是暂时不影响使用
-		//baseURL = UrlBegin + conf.UserSet.Server.FolderSub + relativePath + UrlEnd + "?$top=3000"
-
-		baseURL = UrlBegin + url.QueryEscape(conf.UserSet.Server.FolderSub+relativePath) + UrlEnd + "?$top=3000"
+		baseURL = UrlBegin + conf.UserSet.Server.FolderSub + relativePath + UrlEnd + "?$top=3000"
+		//baseURL = UrlBegin + url.QueryEscape(conf.UserSet.Server.FolderSub+relativePath) + UrlEnd + "?$top=3000"
 		baseURL = strings.Replace(baseURL, "+", "%20", -1)
+		baseURL = strings.Replace(baseURL, "%", "%25", -1)
 	}
 
 	for {
@@ -166,6 +163,10 @@ func RequestAnswer(urlstr string, relativePath string) (Answer, error) {
 	//}
 	//encodeURL := m.String()
 	//body, err := RequestOneUrl(encodeURL)
+
+	//encodeURL := url.QueryEscape(urlstr)
+	//body, err := RequestOneUrl(encodeURL)
+
 	body, err := RequestOneUrl(urlstr)
 	if err != nil {
 		return ans, err
@@ -185,6 +186,7 @@ func RequestAnswer(urlstr string, relativePath string) (Answer, error) {
 	return ans, nil
 }
 
+// 请求 onedrive 的原始 URL 数据
 func RequestOneUrl(url string) (body []byte, err error) {
 
 	var (

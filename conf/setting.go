@@ -39,6 +39,8 @@ var defaultServerSetting = &Server{
 
 // 用户信息设置
 type UserSetting struct {
+	Name    string `json:"name" yaml:"name"`
+	Version string `json:"version" yaml:"version"`
 	// Remote to load RemoteConf
 	Remote     string `json:"remote" yaml:"remote"`
 	RemoteConf Remote `json:"-" yaml:"-"`

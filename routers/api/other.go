@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	"gonelist/conf"
 	"gonelist/pkg/app"
 	"gonelist/pkg/e"
 	"gonelist/service/onedrive"
@@ -33,6 +34,14 @@ func Search(c *gin.Context) {
 		return
 	}
 
-	ans := onedrive.FileTree.Index.Search(key)
+	ans := onedrive.FileTree.Search(key)
+	app.Response(c, http.StatusOK, e.SUCCESS, ans)
+}
+
+// 版本和网盘信息
+func Info(c *gin.Context) {
+	ans := make(map[string]string)
+	ans["name"] = conf.UserSet.Name
+	ans["version"] = conf.UserSet.Version
 	app.Response(c, http.StatusOK, e.SUCCESS, ans)
 }
