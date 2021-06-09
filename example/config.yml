@@ -1,41 +1,65 @@
 # gonelist 配置文件，注意配置字段和信息中间有个空格
-# name 表示你的站点的名字会显示在每个页面的左上角
+
+# name 表示你的站点的名字，会显示在每个页面的左上角
 name: GONEList
-# Remote name，可选 onedrive, chinacloud
-remote: onedrive
-# onedrive 的获取层级，默认获取两层
-level: 2
-# 提供 onedrive 的应用配置，建议自己创建应用
-client_id: 16e320f7-e427-4612-88da-f3d03e944d40
-client_secret: lURpL3U@bBlmJ0:_dnU.LeLOGNGdVT30
-# 提供 chinacloud 的应用配置，建议自己创建应用
-#client_id: 2b54b127-b403-42a3-8b55-d25f3119aa13
-#client_secret: a0CGqBT3f_8U5gztxKjxR-LNW-ZnTe.m
-# 不建议修改，需要和应用中心设置的 redirect_url 一致
-redirect_url: http://localhost:8000/auth
-# 随意设置一个你喜欢的字符串，在 onedrive 认证时会使用
-state: 23333
-# 默认在当前文件夹下，不建议修改
-# token 实现了下次启动时不需要重新登陆验证的功能
-token_path:
-# 可以配置 CDN 加速重定向，url 前缀
-download_redirect_prefix:
+
 # gonelist 服务设置，不建议修改
 server:
   ReadTimeout: 60
   WriteTimeout: 60
   bind_global: true
-  dist_path: ./dist/
-  folder_sub: /
+  dist_path: ./dist/ # 前端文件路径，请不要修改
   gzip: true # 是否开启 gzip 加速, 默认开启
   port: 8000
-  refresh_time: 10
   site_url: http://localhost:8000 # 不建议修改，在启动后会自适应调整
-# 这是一个数组，可以对不同文件夹设置密码
-# 但还是推荐在需要设置密码的文件夹下创建 .password 文件
-# 在该文件中填写密码即可，文件格式最好是 UTF-8
-pass_list:
-  - pass: /test-pass
-    path: 123456
-#  - pass:
-#    path:
+
+# 网盘挂载的类型，当前仅支持 onedrive
+list_type: onedrive
+
+# onedrive 设置选项
+onedrive:
+  # Remote name，可选 onedrive, chinacloud（世纪互联）
+  remote: onedrive
+
+  # onedrive 的刷新模式，all，fresh 两种模式
+  # all 模式下每次都自动刷新所有文件，默认配置
+  # fresh 模式下，对文件数量极多的用户比较友好，只刷新 level 层的文件，其他文件夹在访问后延迟刷新
+  model: all
+
+  # model 为 fresh 才生效，onedrive 的获取层级，默认获取两层
+  level: 2
+
+  # 自动刷新时间，单位分钟
+  refresh_time: 10
+
+  # 提供 onedrive 的应用配置，建议自己创建应用
+  client_id: 16e320f7-e427-4612-88da-f3d03e944d40
+  client_secret: lURpL3U@bBlmJ0:_dnU.LeLOGNGdVT30
+  # 提供 chinacloud 的应用配置，建议自己创建应用
+  #client_id: 2b54b127-b403-42a3-8b55-d25f3119aa13
+  #client_secret: a0CGqBT3f_8U5gztxKjxR-LNW-ZnTe.m
+
+  # 子文件夹设置，比如你只想挂载你盘根目录下的 public 文件夹，就使用 /public
+  folder_sub: /
+
+  # 不建议修改，需要和应用中心设置的 redirect_url 一致
+  redirect_url: http://localhost:8000/auth
+
+  # 随意设置一个你喜欢的字符串，在 onedrive 认证时会使用
+  state: 23333
+
+  # 默认在当前文件夹下，不建议修改
+  # token 实现了下次启动时不需要重新登陆验证的功能
+  token_path:
+
+  # 可以配置 CDN 加速重定向，url 前缀
+  download_redirect_prefix:
+
+  # 这是一个数组，可以对不同文件夹设置密码
+  # 但还是推荐在需要设置密码的文件夹下创建 .password 文件
+  # 在该文件中填写密码即可，文件格式最好是 UTF-8
+  pass_list:
+    - pass:
+      path:
+  #  - pass:
+  #    path:

@@ -9,7 +9,10 @@ import (
 // 用户设置的 目录密码
 var passList = map[string]string{}
 
-func InitPass(user *conf.UserSetting) {
+func InitPass(conf *conf.AllSet) {
+
+	user := conf.Onedrive
+
 	if user.PassList == nil {
 		return
 	}

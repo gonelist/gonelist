@@ -52,8 +52,16 @@ func RefreshLevel() {
 
 }
 
+func CacheGetPathList(oPath string) ([]*FileNode, error) {
+	root, err := GetNode(oPath)
+	if err != nil {
+		return []*FileNode{}, err
+	}
+	return ReturnNode(root), nil
+}
+
 // 从缓存获取某个路径下的所有内容
-func CacheGetPathList(oPath string) (*FileNode, error) {
+func GetNode(oPath string) (*FileNode, error) {
 	var (
 		root    *FileNode
 		isFound bool
@@ -63,7 +71,9 @@ func CacheGetPathList(oPath string) (*FileNode, error) {
 	pArray := strings.Split(oPath, "/")
 
 	if oPath == "" || oPath == "/" || len(pArray) < 2 {
-		return ConvertReturnNode(root), nil
+		//return ConvertReturnNode(root), nil
+		//return root.Children, nil
+		return root, nil
 	}
 
 	for i := 1; i < len(pArray); i++ {
@@ -84,44 +94,54 @@ func CacheGetPathList(oPath string) (*FileNode, error) {
 		}
 	}
 
+	return root, nil
 	// 只返回当前层的内容
-	reNode := ConvertReturnNode(root)
-	return reNode, nil
+	//reNode := ConvertReturnNode(root)
+	//return reNode, nil
 }
 
-func ConvertReturnNode(node *FileNode) *FileNode {
+func ReturnNode(node *FileNode) []*FileNode {
+	var reNode []*FileNode
 	if node == nil {
-		return nil
+		return reNode
 	}
 
-	reNode := CopyFileNode(node)
-	for key := range node.Children {
-		if node.Children[key].Name == ".password" {
-			continue
-		}
-		tmpNode := node.Children[key]
-		reNode.Children = append(reNode.Children, CopyFileNode(tmpNode))
-	}
-	return reNode
+	return node.Children
 }
 
-func CopyFileNode(node *FileNode) *FileNode {
-	if node == nil {
-		return nil
-	}
-	//path := GetReplacePath(node.Path)
-
-	return &FileNode{
-		Name:           node.Name,
-		Path:           node.Path,
-		IsFolder:       node.IsFolder,
-		DownloadUrl:    node.DownloadUrl,
-		LastModifyTime: node.LastModifyTime,
-		Size:           node.Size,
-		Children:       nil,
-		Password:       node.Password,
-	}
-}
+//func ConvertReturnNode(node *FileNode) *FileNode {
+//	if node == nil {
+//		return nil
+//	}
+//
+//	reNode := CopyFileNode(node)
+//	for key := range node.Children {
+//		if node.Children[key].Name == ".password" {
+//			continue
+//		}
+//		tmpNode := node.Children[key]
+//		reNode.Children = append(reNode.Children, CopyFileNode(tmpNode))
+//	}
+//	return reNode
+//}
+//
+//func CopyFileNode(node *FileNode) *FileNode {
+//	if node == nil {
+//		return nil
+//	}
+//	//path := GetReplacePath(node.Path)
+//
+//	return &FileNode{
+//		Name:           node.Name,
+//		Path:           node.Path,
+//		IsFolder:       node.IsFolder,
+//		DownloadUrl:    node.DownloadUrl,
+//		LastModifyTime: node.LastModifyTime,
+//		Size:           node.Size,
+//		Children:       nil,
+//		Password:       node.Password,
+//	}
+//}
 
 func GetDownloadUrl(filePath string) (string, error) {
 	var (
@@ -130,7 +150,7 @@ func GetDownloadUrl(filePath string) (string, error) {
 		downloadUrl string
 	)
 
-	if fileInfo, err = CacheGetPathList(filePath); err != nil || fileInfo == nil || fileInfo.IsFolder == true {
+	if fileInfo, err = GetNode(filePath); err != nil || fileInfo == nil || fileInfo.DownloadUrl == "" {
 		log.WithFields(log.Fields{
 			"filePath": filePath,
 			"err":      err,
@@ -139,7 +159,7 @@ func GetDownloadUrl(filePath string) (string, error) {
 	}
 
 	// 如果有重定向前缀，就加上
-	downloadUrl = conf.UserSet.DownloadRedirectPrefix + fileInfo.DownloadUrl
+	downloadUrl = conf.UserSet.Onedrive.DownloadRedirectPrefix + fileInfo.DownloadUrl
 
 	return downloadUrl, nil
 }
@@ -148,8 +168,8 @@ func GetDownloadUrl(filePath string) (string, error) {
 // 如果设置了 folderSub 为 /public
 // 那么 /public 替换为 /, /public/test 替换为 /test
 func GetReplacePath(pSrc string) string {
-	if conf.UserSet.Server.FolderSub != "/" {
-		pSrc = strings.Replace(pSrc, conf.UserSet.Server.FolderSub, "", 1)
+	if conf.UserSet.Onedrive.FolderSub != "/" {
+		pSrc = strings.Replace(pSrc, conf.UserSet.Onedrive.FolderSub, "", 1)
 	}
 	return pSrc
 }

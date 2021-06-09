@@ -27,20 +27,21 @@ var (
 	cacheGoOnce      sync.Once
 )
 
-func SetOnedriveInfo(user *conf.UserSetting) {
+func SetOnedriveInfo(conf *conf.AllSet) {
 
+	user := conf.Onedrive
 	clientID = user.ClientID
 	clientSecret = user.ClientSecret
 
 	var endPoint oauth2.Endpoint
 	endPoint = user.RemoteConf.EndPoint
-	SetROOTUrl(user)
+	SetROOTUrl(conf)
 
 	// 初始化 oauth 的 config
 	oauthConfig = Config{
 		Config: &oauth2.Config{
 			Endpoint:     endPoint,
-			Scopes:       []string{"offline_access", "files.read"}, // 只申请读权限，避免应用程序进行修改，但使用 config.yml 给的默认 id 还是不太安全
+			Scopes:       []string{"offline_access", "files.read","site.read"}, // 只申请读权限，避免应用程序进行修改，但使用 config.yml 给的默认 id 还是不太安全
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
 			RedirectURL:  user.RedirectURL,

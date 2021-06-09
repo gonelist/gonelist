@@ -45,7 +45,7 @@ func CheckFolderPass() gin.HandlerFunc {
 			c.Abort()
 		}
 		// 判断路径下是否有 .password 文件
-		if root, err := onedrive.CacheGetPathList(p); root != nil && err == nil {
+		if root, err := onedrive.GetNode(p); root != nil && err == nil {
 			if root.Password != "" && pass != root.Password {
 				app.Response(c, http.StatusOK, e.PASS_ERROR, nil)
 				c.Abort()

@@ -19,7 +19,8 @@ var (
 	UrlEnd   string
 )
 
-func SetROOTUrl(user *conf.UserSetting) {
+func SetROOTUrl(conf *conf.AllSet) {
+	user := conf.Onedrive
 	ROOTUrl = user.RemoteConf.ROOTUrl
 	UrlBegin = user.RemoteConf.UrlBegin
 	UrlEnd = user.RemoteConf.UrlEnd
@@ -109,7 +110,7 @@ func GetUrlToAns(relativePath string) (Answer, error) {
 	)
 
 	// 每次获取 3000 个文件
-	if relativePath == "/" && conf.UserSet.Server.FolderSub == "/" {
+	if relativePath == "/" && conf.UserSet.Onedrive.FolderSub == "/" {
 		// https://graph.microsoft.com/v1.0/me/drive/root/children
 		baseURL = ROOTUrl + "?$top=3000"
 	} else if relativePath == "/" {
@@ -117,10 +118,10 @@ func GetUrlToAns(relativePath string) (Answer, error) {
 		// UrlBegin: https://graph.microsoft.com/v1.0/me/drive/root:
 		// conf.UserSet.Server.FolderSub: /public
 		// UrlEnd: :/children
-		baseURL = UrlBegin + conf.UserSet.Server.FolderSub + UrlEnd + "?$top=3000"
+		baseURL = UrlBegin + conf.UserSet.Onedrive.FolderSub + UrlEnd + "?$top=3000"
 	} else {
 		// TODO ，好像会出现多个 / 的情况，但是暂时不影响使用
-		baseURL = UrlBegin + conf.UserSet.Server.FolderSub + relativePath + UrlEnd + "?$top=3000"
+		baseURL = UrlBegin + conf.UserSet.Onedrive.FolderSub + relativePath + UrlEnd + "?$top=3000"
 		//baseURL = UrlBegin + url.QueryEscape(conf.UserSet.Server.FolderSub+relativePath) + UrlEnd + "?$top=3000"
 		baseURL = strings.Replace(baseURL, "+", "%20", -1)
 		baseURL = strings.Replace(baseURL, "%", "%25", -1)

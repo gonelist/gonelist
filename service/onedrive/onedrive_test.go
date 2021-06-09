@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-const example = "../example/"
+const example = "../../example/"
 
 func TestOnedriveGetPath(t *testing.T) {
 	data, _ := file.ReadFromFile(example + "root.json")
@@ -57,7 +57,7 @@ func TestCacheGetPathList(t *testing.T) {
 	FileTree.SetRoot(filetree)
 	FileTree.SetLogin(true)
 
-	root, err := CacheGetPathList("/ttt")
+	root, err := GetNode("/ttt")
 	if err != nil {
 		t.Log(err)
 		return
@@ -86,7 +86,7 @@ func TestConvertReturnNode(t *testing.T) {
 	data, _ = file.ReadFromFile(example + "filetree.json")
 	json.Unmarshal(data, &filetree)
 
-	reNode := ConvertReturnNode(filetree)
+	reNode := ReturnNode(filetree)
 	t.Log(reNode)
 }
 

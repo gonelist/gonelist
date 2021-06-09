@@ -80,6 +80,9 @@ token_path 写`/etc/config/`，然后创建容器的最后地方的`Entrypoint`�
 ```
 # gonelist 配置文件，注意配置字段和信息中间有个空格
 
+# name 表示你的站点的名字，会显示在每个页面的左上角
+name: GONEList
+
 # Remote name，可选 onedrive, chinacloud
 remote: onedrive
 
