@@ -17,7 +17,7 @@ func AutoRefresh() {
 	RefreshOnedriveAll()
 }
 
-// 使用时间间隔，等待上一轮刷新玩之后再过 duration 分钟
+// 定时刷新函数，等待上一轮刷新执行结束，再过 duration 分钟
 func timer(AutoCallFunction func(), duration time.Duration) {
 	for {
 		select {

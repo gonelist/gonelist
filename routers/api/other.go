@@ -9,7 +9,18 @@ import (
 	"net/http"
 )
 
-// 返回 README 的内容
+// swagger:operation GET /README?path= readme
+// ---
+// summary: 获取 README 的内容
+// description: 获取 README 的内容
+// parameters:
+// - name: path
+//   in: path
+//   description: 地址id
+//   type: string
+//   required: true
+// responses:
+//   200: repoResp
 func GetREADME(c *gin.Context) {
 	path := c.Query("path")
 
@@ -38,7 +49,14 @@ func Search(c *gin.Context) {
 	app.Response(c, http.StatusOK, e.SUCCESS, ans)
 }
 
-// 版本和网盘信息
+// swagger:operation GET /info info
+// ---
+// summary: 获取网盘信息
+// description: 获取网盘信息
+// parameters:
+//
+// responses:
+//   200: repoResp
 func Info(c *gin.Context) {
 	ans := make(map[string]string)
 	ans["name"] = conf.UserSet.Name

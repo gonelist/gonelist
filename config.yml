@@ -7,10 +7,10 @@ name: GONEList
 server:
   ReadTimeout: 60
   WriteTimeout: 60
-  bind_global: true
+  bind_global: true  # 是否绑定到全局（0.0.0.0），如果使用 nginx 转发可以设置为 false
   dist_path: ./dist/ # 前端文件路径，请不要修改
-  gzip: true # 是否开启 gzip 加速, 默认开启
-  port: 8000
+  gzip: true         # 是否开启 gzip 加速, 默认开启
+  port: 8000         # 应用监听的端口
   site_url: http://localhost:8000 # 不建议修改，在启动后会自适应调整
 
 # 网盘挂载的类型，当前仅支持 onedrive

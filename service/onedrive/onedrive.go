@@ -8,8 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// 初始化登陆状态
-// 如果初始化时获取失败直接退出
+// 初始化登陆状态, 如果初始化时获取失败直接退出程序
 // 如果在自动刷新时失败给出 error 警告，见 onedrive/timer.go
 func InitOnedive() {
 	// 获取文件内容和初始化 README 缓存
@@ -48,7 +47,7 @@ func RefreshOnedriveAll() error {
 // TODO
 // 刷新逻辑，level 表示刷新文件的层数
 // level = -1 时刷新全部文件
-func RefreshLevel() {
+func RefreshOnedriveByLevel() {
 
 }
 
@@ -60,7 +59,7 @@ func CacheGetPathList(oPath string) ([]*FileNode, error) {
 	return ReturnNode(root), nil
 }
 
-// 从缓存获取某个路径下的所有内容
+// 获取树的某个节点，不论是不是叶子节点
 func GetNode(oPath string) (*FileNode, error) {
 	var (
 		root    *FileNode
@@ -109,6 +108,7 @@ func ReturnNode(node *FileNode) []*FileNode {
 	return node.Children
 }
 
+// 旧版返回逻辑
 //func ConvertReturnNode(node *FileNode) *FileNode {
 //	if node == nil {
 //		return nil
@@ -142,15 +142,37 @@ func ReturnNode(node *FileNode) []*FileNode {
 //		Password:       node.Password,
 //	}
 //}
+//func GetDownloadUrl(filePath string) (string, error) {
+//	var (
+//		fileInfo    *FileNode
+//		err         error
+//		downloadUrl string
+//	)
+//
+//	if fileInfo, err = GetNode(filePath); err != nil || fileInfo == nil || fileInfo.DownloadUrl == "" {
+//		log.WithFields(log.Fields{
+//			"filePath": filePath,
+//			"err":      err,
+//		}).Info("请求的文件未找到")
+//		return "", err
+//	}
+//
+//	// 如果有重定向前缀，就加上
+//	downloadUrl = conf.UserSet.Onedrive.DownloadRedirectPrefix + fileInfo.DownloadUrl
+//
+//	return downloadUrl, nil
+//}
 
 func GetDownloadUrl(filePath string) (string, error) {
+
 	var (
 		fileInfo    *FileNode
 		err         error
 		downloadUrl string
 	)
 
-	if fileInfo, err = GetNode(filePath); err != nil || fileInfo == nil || fileInfo.DownloadUrl == "" {
+	// 判断节点是否文件夹，是否 password 文件
+	if fileInfo, err = GetNode(FatherPath(filePath)); err != nil || fileInfo.IsFolder || fileInfo.PasswordUrl == ".password" {
 		log.WithFields(log.Fields{
 			"filePath": filePath,
 			"err":      err,
@@ -162,14 +184,4 @@ func GetDownloadUrl(filePath string) (string, error) {
 	downloadUrl = conf.UserSet.Onedrive.DownloadRedirectPrefix + fileInfo.DownloadUrl
 
 	return downloadUrl, nil
-}
-
-// 替换路径
-// 如果设置了 folderSub 为 /public
-// 那么 /public 替换为 /, /public/test 替换为 /test
-func GetReplacePath(pSrc string) string {
-	if conf.UserSet.Onedrive.FolderSub != "/" {
-		pSrc = strings.Replace(pSrc, conf.UserSet.Onedrive.FolderSub, "", 1)
-	}
-	return pSrc
 }

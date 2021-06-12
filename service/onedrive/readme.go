@@ -3,6 +3,8 @@ package onedrive
 import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
+	"gonelist/conf"
+	"gonelist/pkg/file"
 	"gonelist/pkg/markdown"
 	"strings"
 )
@@ -31,7 +33,7 @@ func GetAllREADMEAndPass(current *FileNode) error {
 				"url":  current.READMEUrl,
 			}).Infof("download readme file to cache error")
 		} else {
-			p := GetReplacePath(current.Path)
+			p := file.RemoveSubPath(current.Path, conf.UserSet.Onedrive.FolderSub)
 			// 转化成 HTML 的结果
 			finalBytes := markdown.MarkdownToHTMLByBytes(readmeBytes)
 			reCache.Set(README+p, finalBytes, DefaultTime)

@@ -1,8 +1,8 @@
 package onedrive
 
 import (
+	"github.com/go-playground/assert/v2"
 	"gonelist/conf"
-	"gopkg.in/go-playground/assert.v1"
 	"testing"
 )
 

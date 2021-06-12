@@ -14,32 +14,33 @@ import (
 
 // 服务器设置
 type Server struct {
-	Port         int           `json:"port" yaml:"port"`
 	ReadTimeout  time.Duration `yaml:"read_timeout"`
 	WriteTimeout time.Duration `yaml:"write_timeout"`
-	DistPATH     string        `json:"dist_path" yaml:"dist_path"` // 静态文件目录
-	BindGlobal   bool          `json:"bind_global" yaml:"bind_global"`
-	SiteUrl      string        `json:"site_url" yaml:"site_url"` // 网站网址，如 https://gonelist.cugxuan.cn
-	Gzip         bool          `json:"gzip" yaml:"gzip"`         // 是否打开 Gzip 加速
+	BindGlobal   bool          `json:"bind_global" yaml:"bind_global"` // 是否绑定到0.0.0.0
+	DistPATH     string        `json:"dist_path" yaml:"dist_path"`     // 静态文件目录
+	Gzip         bool          `json:"gzip" yaml:"gzip"`               // 是否打开 Gzip 加速
+	Port         int           `json:"port" yaml:"port"`               // 绑定端口
+	SiteUrl      string        `json:"site_url" yaml:"site_url"`       // 网站网址，如 https://gonelist.cugxuan.cn
 }
 
 var defaultServerSetting = &Server{
-	Port:         8000,
 	ReadTimeout:  60,
 	WriteTimeout: 60,
-	DistPATH:     "./dist/",
 	BindGlobal:   true,
-	SiteUrl:      "https://gonelist.cugxuan.cn",
+	DistPATH:     "./dist/",
+	Port:         8000,
 	Gzip:         true,
+	SiteUrl:      "https://gonelist.cugxuan.cn",
 }
 
 type Onedrive struct {
 	// Remote to load RemoteConf
 	Remote     string `json:"remote" yaml:"remote"`
 	RemoteConf Remote `json:"-" yaml:"-"`
-	Level      int    `json:"level" yaml:"level"`
-	// 自动刷新时间，单位为分钟
-	RefreshTime int `json:"refresh_time" yaml:"refresh_time"`
+	// 刷新模式
+	Model       string `json:"model" yaml:"model"`               // 刷新模式
+	Level       int    `json:"level" yaml:"level"`               // 刷新层级
+	RefreshTime int    `json:"refresh_time" yaml:"refresh_time"` // 自动刷新时间，单位为分钟
 	// 获取授权代码
 	ResponseType string `json:"-" yaml:"-"` // 值为 code
 	ClientID     string `json:"client_id" yaml:"client_id"`
@@ -75,8 +76,10 @@ type AllSet struct {
 var UserSet = &AllSet{}
 
 func LoadUserConfig(configPath string) error {
-	var content []byte
-	var err error
+	var (
+		content []byte
+		err     error
+	)
 
 	if len(configPath) == 0 {
 		return errors.New("配置文件名不能为空")
@@ -128,7 +131,7 @@ func LoadUserConfig(configPath string) error {
 		return fmt.Errorf("不支持的网盘挂载类型")
 	}
 
-	log.Info("成功导入用户配置")
+	log.Infof("成功导入用户配置, gonelist 监听端口:%v", UserSet.Server.Port)
 	return nil
 }
 

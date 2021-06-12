@@ -14,6 +14,7 @@ main.exe
 main
 self.json
 .token
+swagger.json
 
 # User-specific stuff
 .idea/**/workspace.xml

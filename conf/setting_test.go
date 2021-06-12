@@ -1,8 +1,8 @@
 package conf
 
 import (
+	"github.com/go-playground/assert/v2"
 	log "github.com/sirupsen/logrus"
-	"gopkg.in/go-playground/assert.v1"
 	"testing"
 )
 
