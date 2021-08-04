@@ -3,6 +3,7 @@ package onedrive
 import (
 	"errors"
 	"gonelist/conf"
+	"gonelist/pkg/file"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -10,7 +11,7 @@ import (
 
 // 初始化登陆状态, 如果初始化时获取失败直接退出程序
 // 如果在自动刷新时失败给出 error 警告，见 onedrive/timer.go
-func InitOnedive() {
+func InitOnedrive() {
 	// 获取文件内容和初始化 README 缓存
 	err := RefreshOnedriveAll()
 	if err != nil {
@@ -172,7 +173,7 @@ func GetDownloadUrl(filePath string) (string, error) {
 	)
 
 	// 判断节点是否文件夹，是否 password 文件
-	if fileInfo, err = GetNode(FatherPath(filePath)); err != nil || fileInfo.IsFolder || fileInfo.PasswordUrl == ".password" {
+	if fileInfo, err = GetNode(file.FatherPath(filePath)); err != nil || fileInfo.IsFolder || fileInfo.PasswordUrl == ".password" {
 		log.WithFields(log.Fields{
 			"filePath": filePath,
 			"err":      err,

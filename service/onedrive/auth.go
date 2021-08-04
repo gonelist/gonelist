@@ -55,7 +55,7 @@ func SetOnedriveInfo(conf *conf.AllSet) {
 		client = oauthConfig.Client(ctx, tok)
 		log.WithField("refresh_token", tok.RefreshToken).Infof("从文件 %s 读取refresh_token成功", user.TokenPath)
 		// 初始化 onedrive 的内容
-		InitOnedive()
+		InitOnedrive()
 		return
 	}
 	client = nil

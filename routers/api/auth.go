@@ -49,7 +49,7 @@ func GetCode(c *gin.Context) {
 		app.Response(c, http.StatusOK, e.GetErrorCode(err), "登陆失败，请重新登陆")
 	} else {
 		// 初始化 onedrive 的连接
-		onedrive.InitOnedive()
+		onedrive.InitOnedrive()
 		// 登陆成功跳转到网站首页
 		c.Redirect(http.StatusTemporaryRedirect, conf.UserSet.Server.SiteUrl)
 		//app.Response(c, http.StatusOK, e.SUCCESS, "登陆成功")
