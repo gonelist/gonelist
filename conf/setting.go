@@ -3,13 +3,15 @@ package conf
 import (
 	"errors"
 	"fmt"
-	log "github.com/sirupsen/logrus"
-	"gonelist/pkg/file"
-	"gopkg.in/yaml.v2"
 	"os"
 	"path"
 	"strings"
 	"time"
+
+	log "github.com/sirupsen/logrus"
+	"gopkg.in/yaml.v2"
+
+	"gonelist/pkg/file"
 )
 
 // 服务器设置
@@ -21,6 +23,7 @@ type Server struct {
 	Gzip         bool          `json:"gzip" yaml:"gzip"`               // 是否打开 Gzip 加速
 	Port         int           `json:"port" yaml:"port"`               // 绑定端口
 	SiteUrl      string        `json:"site_url" yaml:"site_url"`       // 网站网址，如 https://gonelist.cugxuan.cn
+	EnableUpload bool          `json:"enable_upload" yaml:"enable_upload"`
 }
 
 var defaultServerSetting = &Server{
@@ -31,6 +34,7 @@ var defaultServerSetting = &Server{
 	Port:         8000,
 	Gzip:         true,
 	SiteUrl:      "https://gonelist.cugxuan.cn",
+	EnableUpload: false,
 }
 
 type Onedrive struct {

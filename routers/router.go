@@ -5,6 +5,7 @@ import (
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	cors "github.com/rs/cors/wrapper/gin"
+
 	"gonelist/conf"
 	"gonelist/middleware"
 	"gonelist/routers/api"
@@ -53,6 +54,8 @@ func InitRouter() *gin.Engine {
 	onedrive := r.Group("/onedrive")
 	onedrive.Use(middleware.CheckLogin())
 	{
+		// 上传文件，仅支持大小4MB
+		onedrive.POST("/upload", api.Upload())
 		// 主动获取所有文件，返回整个树的目录
 		onedrive.GET("/getallfiles", api.MGGetFileTree)
 		// 根据路径获取对应数据

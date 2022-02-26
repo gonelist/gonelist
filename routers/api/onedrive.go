@@ -2,13 +2,17 @@ package api
 
 import (
 	"encoding/json"
+	"io"
+	"net/http"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
+
+	"gonelist/conf"
 	"gonelist/pkg/app"
 	"gonelist/pkg/e"
 	"gonelist/service/onedrive"
-	"net/http"
-	"strings"
 )
 
 // 测试接口，从 MG 获取整个树结构
@@ -42,10 +46,52 @@ func CacheGetPath(c *gin.Context) {
 	}
 }
 
+// Upload
+/**
+ * @Description: 上传文件
+ * @return gin.HandlerFunc
+ */
+func Upload() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		if !conf.UserSet.Server.EnableUpload {
+			app.Response(ctx, 403, 1403, "the api not open")
+			return
+		}
+		path := ctx.Query("path")
+		file, err := ctx.FormFile("file")
+		if err != nil {
+			app.Response(ctx, http.StatusBadGateway, e.INVALID_PARAMS, e.MsgFlags[e.INVALID_PARAMS])
+			return
+		}
+		// 检查文件大小
+		if file.Size > 4194304 {
+			app.Response(ctx, http.StatusBadGateway, e.INVALID_PARAMS, "文件大小大于4MB")
+		}
+		f, err := file.Open()
+		if err != nil {
+			return
+		}
+		content, err := io.ReadAll(f)
+		if err != nil {
+			return
+		}
+		err = f.Close()
+		if err != nil {
+			return
+		}
+		log.Infoln("开始上传文件：文件名==》"+file.Filename+" 文件大小===》", file.Size/1024/1024, "Mb", " 上传路径==》"+path)
+		err = onedrive.Upload(path, file.Filename, content)
+		if err != nil {
+			app.Response(ctx, http.StatusOK, e.SUCCESS, nil)
+			return
+		}
+		ctx.JSON(200, nil)
+	}
+}
+
 // 分享文件下载链接
 func Download(c *gin.Context) {
 	filePath := c.Param("path")
-
 	// 屏蔽 .password 文件的下载
 	list := strings.Split(filePath, "/")
 	if list[len(list)-1] == ".password" {
@@ -54,7 +100,8 @@ func Download(c *gin.Context) {
 	}
 
 	downloadURL, err := onedrive.GetDownloadUrl(filePath)
-	if err != nil {
+	log.Info(downloadURL)
+	if err != nil || downloadURL == "" {
 		app.Response(c, http.StatusOK, e.ITEM_NOT_FOUND, nil)
 	} else {
 		c.Redirect(http.StatusFound, downloadURL)

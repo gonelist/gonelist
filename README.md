@@ -122,6 +122,7 @@ server:
   # 自动刷新时间
   refresh_time: 10
   site_url: http://localhost:8000 # 不建议修改，在启动后会自适应调整
+  enable_upload: false # 是否允许文件上传
 
 # 这是一个数组，可以对不同文件夹设置密码
 # 但还是推荐在需要设置密码的文件夹下创建 .password 文件

@@ -1,14 +1,18 @@
 package onedrive
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
-	log "github.com/sirupsen/logrus"
-	"gonelist/conf"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
+
+	log "github.com/sirupsen/logrus"
+
+	"gonelist/conf"
 )
 
 var (
@@ -24,6 +28,63 @@ func SetROOTUrl(conf *conf.AllSet) {
 	ROOTUrl = user.RemoteConf.ROOTUrl
 	UrlBegin = user.RemoteConf.UrlBegin
 	UrlEnd = user.RemoteConf.UrlEnd
+}
+
+func Upload(path string, fileName string, content []byte) error {
+	baseURL := "https://graph.microsoft.com/v1.0/me/drive/root:" + path + "/" + url.PathEscape(fileName) + ":/content"
+	log.Infoln(baseURL)
+	_, err := putOneURL(baseURL, content)
+	if err != nil {
+		return err
+	}
+	err = RefreshOnedriveAll()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func putOneURL(url1 string, data []byte) ([]byte, error) {
+	var (
+		resp *http.Response
+		body []byte
+		err  error
+	)
+
+	client := GetClient()
+	if client == nil {
+		log.Errorln("cannot get client to start request.")
+		return nil, fmt.Errorf("RequestOneURL cannot get client")
+	}
+	request, err := http.NewRequest(http.MethodPut, url1, bytes.NewReader(data))
+	// 如果超时，重试两次
+	for retryCount := 3; retryCount > 0; retryCount-- {
+		if resp, err = client.Do(request); err != nil && strings.Contains(err.Error(), "timeout") {
+			log.WithFields(log.Fields{
+				"url":  url1,
+				"resp": resp,
+				"err":  err,
+			}).Info("RequestOneUrl 出现错误，开始重试")
+			<-time.After(time.Second / 3)
+		} else {
+			break
+		}
+	}
+
+	if err != nil {
+		log.WithFields(log.Fields{
+			"url":  url1,
+			"resp": resp,
+			"err":  err,
+		}).Info("请求 graph.microsoft.com 失败, request timeout")
+		return body, err
+	}
+
+	if body, err = ioutil.ReadAll(resp.Body); err != nil {
+		log.WithField("err", err).Info("读取 graph.microsoft.com 返回内容失败")
+		return body, err
+	}
+	return body, nil
 }
 
 // 获取所有文件的树
@@ -189,7 +250,6 @@ func RequestAnswer(urlstr string, relativePath string) (Answer, error) {
 
 // 请求 onedrive 的原始 URL 数据
 func RequestOneUrl(url string) (body []byte, err error) {
-
 	var (
 		client *http.Client // 获取全局的 client 来请求接口
 		resp   *http.Response
