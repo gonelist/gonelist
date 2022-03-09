@@ -12,6 +12,7 @@ server:
   gzip: true         # 是否开启 gzip 加速, 默认开启
   port: 8000         # 应用监听的端口
   site_url: http://localhost:8000 # 不建议修改，在启动后会自适应调整
+  enable_upload: true
 
 # 网盘挂载的类型，当前仅支持 onedrive
 list_type: onedrive

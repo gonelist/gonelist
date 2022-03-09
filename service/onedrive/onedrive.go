@@ -2,9 +2,10 @@ package onedrive
 
 import (
 	"errors"
+	"strings"
+
 	"gonelist/conf"
 	"gonelist/pkg/file"
-	"strings"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -68,9 +69,9 @@ func GetNode(oPath string) (*FileNode, error) {
 	)
 
 	root = FileTree.GetRoot()
+	oPath = strings.TrimRight(oPath, "/")
 	pArray := strings.Split(oPath, "/")
-
-	if oPath == "" || oPath == "/" || len(pArray) < 2 {
+	if oPath == "" || oPath == "/" {
 		//return ConvertReturnNode(root), nil
 		//return root.Children, nil
 		return root, nil
@@ -82,6 +83,7 @@ func GetNode(oPath string) (*FileNode, error) {
 			if pArray[i] == item.Name {
 				root = item
 				isFound = true
+				break
 			}
 		}
 		if isFound == false {
@@ -104,6 +106,9 @@ func ReturnNode(node *FileNode) []*FileNode {
 	var reNode []*FileNode
 	if node == nil {
 		return reNode
+	}
+	if node.Children == nil {
+		return make([]*FileNode, 0)
 	}
 
 	return node.Children
@@ -172,17 +177,23 @@ func GetDownloadUrl(filePath string) (string, error) {
 		downloadUrl string
 	)
 
-	// 判断节点是否文件夹，是否 password 文件
-	if fileInfo, err = GetNode(file.FatherPath(filePath)); err != nil || fileInfo.IsFolder || fileInfo.PasswordUrl == ".password" {
+	// 判断同级目录下是否存在.password
+	if fileInfo, err = GetNode(file.FatherPath(filePath)); err != nil || fileInfo.PasswordUrl == ".password" {
 		log.WithFields(log.Fields{
 			"filePath": filePath,
 			"err":      err,
 		}).Info("请求的文件未找到")
 		return "", err
 	}
+	apath := strings.Split(filePath, "/")
+	fileName := apath[len(apath)-1]
+	for _, item := range fileInfo.Children {
+		if item.Name == fileName {
+			downloadUrl = conf.UserSet.Onedrive.DownloadRedirectPrefix + item.DownloadUrl
+			return downloadUrl, nil
+		}
+	}
 
-	// 如果有重定向前缀，就加上
-	downloadUrl = conf.UserSet.Onedrive.DownloadRedirectPrefix + fileInfo.DownloadUrl
+	return "", err
 
-	return downloadUrl, nil
 }

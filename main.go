@@ -3,17 +3,18 @@ package main
 import (
 	"flag"
 	"fmt"
-	log "github.com/sirupsen/logrus"
-	"gonelist/conf"
-	"gonelist/routers"
-	"gonelist/service/onedrive"
 	"net/http"
 	"runtime"
 	"time"
+
+	log "github.com/sirupsen/logrus"
+
+	"gonelist/conf"
+	"gonelist/routers"
+	"gonelist/service/onedrive"
 )
 
 func main() {
-
 	confPath := flag.String("conf", "config.yml", "指定配置文件路径")
 	versionB := flag.Bool("version", false, "Show current version of gonelist.")
 	debugB := flag.Bool("debug", false, "debug log level")

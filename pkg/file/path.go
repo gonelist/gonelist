@@ -1,7 +1,6 @@
 package file
 
 import (
-	"os"
 	"strings"
 )
 
@@ -21,7 +20,6 @@ func FatherPath(pSrc string) string {
 	if pSrc == "/" || len(pSrc) == 0 {
 		return "/"
 	}
-
-	index := strings.LastIndex(pSrc, string(os.PathSeparator))
+	index := strings.LastIndex(pSrc, "/")
 	return pSrc[:index+1]
 }
