@@ -62,7 +62,8 @@ type Onedrive struct {
 	FolderSub              string `json:"folder_sub" yaml:"folder_sub"`                             // onedrive 的子文件夹
 	DownloadRedirectPrefix string `json:"download_redirect_prefix" yaml:"download_redirect_prefix"` // 下载重定向前缀
 	// 目录密码
-	PassList []*Pass `json:"pass_list" yaml:"pass_list"`
+	PassList     []*Pass `json:"pass_list" yaml:"pass_list"`
+	UploadSecret string  `json:"upload_secret" yaml:"upload_secret"`
 }
 
 // 用户信息设置
