@@ -58,8 +58,10 @@ func Search(c *gin.Context) {
 // responses:
 //   200: repoResp
 func Info(c *gin.Context) {
-	ans := make(map[string]string)
+	ans := make(map[string]interface{})
 	ans["name"] = conf.UserSet.Name
+	ans["page_title"] = conf.UserSet.PageTitle
+	ans["upload"] = conf.UserSet.Server.EnableUpload
 	ans["version"] = conf.UserSet.Version
 	app.Response(c, http.StatusOK, e.SUCCESS, ans)
 }

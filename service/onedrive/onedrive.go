@@ -2,6 +2,7 @@ package onedrive
 
 import (
 	"errors"
+	"net/url"
 	"strings"
 
 	"gonelist/conf"
@@ -189,7 +190,11 @@ func GetDownloadUrl(filePath string) (string, error) {
 	fileName := apath[len(apath)-1]
 	for _, item := range fileInfo.Children {
 		if item.Name == fileName {
-			downloadUrl = conf.UserSet.Onedrive.DownloadRedirectPrefix + item.DownloadUrl
+			if conf.UserSet.Onedrive.DownloadRedirectPrefix == "" {
+				downloadUrl = item.DownloadUrl
+			} else {
+				downloadUrl = conf.UserSet.Onedrive.DownloadRedirectPrefix + url.QueryEscape(item.DownloadUrl)
+			}
 			return downloadUrl, nil
 		}
 	}

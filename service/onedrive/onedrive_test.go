@@ -118,3 +118,10 @@ func TestRequestOneUrl(t *testing.T) {
 	//encodeURL := m.String()
 	//log.Println(encodeURL)
 }
+
+func TestGetDownloadUrl(t *testing.T) {
+	urlStr := "https://gonelist.cugxuan.cn/"
+
+	escapeUrl := url.QueryEscape(urlStr)
+	log.Printf("encode:%s", escapeUrl)
+}

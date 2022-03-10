@@ -18,12 +18,12 @@ import (
 type Server struct {
 	ReadTimeout  time.Duration `yaml:"read_timeout"`
 	WriteTimeout time.Duration `yaml:"write_timeout"`
-	BindGlobal   bool          `json:"bind_global" yaml:"bind_global"` // 是否绑定到0.0.0.0
-	DistPATH     string        `json:"dist_path" yaml:"dist_path"`     // 静态文件目录
-	Gzip         bool          `json:"gzip" yaml:"gzip"`               // 是否打开 Gzip 加速
-	Port         int           `json:"port" yaml:"port"`               // 绑定端口
-	SiteUrl      string        `json:"site_url" yaml:"site_url"`       // 网站网址，如 https://gonelist.cugxuan.cn
-	EnableUpload bool          `json:"enable_upload" yaml:"enable_upload"`
+	BindGlobal   bool          `json:"bind_global" yaml:"bind_global"`     // 是否绑定到0.0.0.0
+	DistPATH     string        `json:"dist_path" yaml:"dist_path"`         // 静态文件目录
+	Gzip         bool          `json:"gzip" yaml:"gzip"`                   // 是否打开 Gzip 加速
+	Port         int           `json:"port" yaml:"port"`                   // 绑定端口
+	SiteUrl      string        `json:"site_url" yaml:"site_url"`           // 网站网址，如 https://gonelist.cugxuan.cn
+	EnableUpload bool          `json:"enable_upload" yaml:"enable_upload"` // 是否开启上传
 }
 
 var defaultServerSetting = &Server{
@@ -68,8 +68,9 @@ type Onedrive struct {
 
 // 用户信息设置
 type AllSet struct {
-	Name    string `json:"name" yaml:"name"`
-	Version string `json:"version" yaml:"version"`
+	Name      string `json:"name" yaml:"name"`
+	PageTitle string `json:"page_title" yaml:"page_title"`
+	Version   string `json:"version" yaml:"version"`
 	// Server 配置，用于定义服务的特性
 	Server *Server `json:"server" yaml:"server"`
 	// 网盘挂载类型
