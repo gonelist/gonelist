@@ -12,7 +12,7 @@ server:
   gzip: true         # 是否开启 gzip 加速, 默认开启
   port: 8000         # 应用监听的端口
   site_url: http://localhost:8000 # 不建议修改，在启动后会自适应调整
-  enable_upload: true
+  enable_upload: false
 
 # 网盘挂载的类型，当前仅支持 onedrive
 list_type: onedrive
@@ -34,8 +34,8 @@ onedrive:
   refresh_time: 10
 
   # 提供 onedrive 的应用配置，建议自己创建应用
-  client_id: 16e320f7-e427-4612-88da-f3d03e944d40
-  client_secret: lURpL3U@bBlmJ0:_dnU.LeLOGNGdVT30
+  client_id: a317e79a-bde9-444b-8264-e32d35e65303
+  client_secret: tCM7Q~5k_4bit-QVyjnPODA_uHFOvdcUsSIJp
   # 提供 chinacloud 的应用配置，建议自己创建应用
   #client_id: 2b54b127-b403-42a3-8b55-d25f3119aa13
   #client_secret: a0CGqBT3f_8U5gztxKjxR-LNW-ZnTe.m
