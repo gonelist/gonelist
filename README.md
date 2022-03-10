@@ -132,6 +132,8 @@ pass_list:
     path:
 #  - pass:
 #    path:
+#上传文件时将会进行密钥验证，验证成功才能上传成功，首次允许建议修改
+upload_secret: 123465
 ```
 
 # Contributors

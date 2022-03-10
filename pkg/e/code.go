@@ -15,6 +15,7 @@ const (
 	CONVERT_MD_ERROR         = 10006
 	PASS_ERROR               = 10007
 	PASSWORD_FORBIT_DOWNLOAD = 10008
+	SECRET_ERROR             = 10009
 )
 
 var MsgFlags = map[int]string{
@@ -32,6 +33,7 @@ var MsgFlags = map[int]string{
 	CONVERT_MD_ERROR:         "转化 markdown 出现错误",
 	PASS_ERROR:               "输入密码错误",
 	PASSWORD_FORBIT_DOWNLOAD: ".password 文件禁止下载",
+	SECRET_ERROR:             "上传文件密钥验证错误",
 }
 
 func GetMsg(code int) string {

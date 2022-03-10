@@ -46,6 +46,23 @@ func CacheGetPath(c *gin.Context) {
 	}
 }
 
+// CheckUploadSecret
+/**
+ * @Description: 用于检查文件上传时的token
+ * @return gin.HandlerFunc
+ */
+func CheckUploadSecret() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		secret := ctx.Query("secret")
+		if secret != conf.UserSet.Onedrive.UploadSecret {
+			app.Response(ctx, http.StatusOK, e.SECRET_ERROR, nil)
+			ctx.Abort()
+			return
+		}
+		ctx.Next()
+	}
+}
+
 // Upload
 /**
  * @Description: 上传文件
