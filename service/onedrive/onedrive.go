@@ -4,11 +4,22 @@ import (
 	"errors"
 	"net/url"
 	"strings"
+	"sync"
 
 	"gonelist/conf"
 	"gonelist/pkg/file"
 
 	log "github.com/sirupsen/logrus"
+)
+
+const (
+	REFRESH_NONE    = 0 // 未在刷新状态
+	REFRESH_RUNNING = 1 // 正在刷新
+)
+
+var (
+	gRefreshStatus = REFRESH_NONE
+	gRefreshLock   sync.Mutex
 )
 
 // 初始化登陆状态, 如果初始化时获取失败直接退出程序
@@ -29,6 +40,16 @@ func InitOnedrive() {
 // 刷新所有 onedrive 的内容
 // 包括 文件列表，README，password，搜索索引
 func RefreshOnedriveAll() error {
+	if gRefreshStatus == REFRESH_RUNNING {
+		log.Info("当前正在刷新中")
+		return nil
+	}
+
+	// TODO，修改为 TryLock，现在有概率阻塞协程
+	gRefreshLock.Lock()
+	defer gRefreshLock.Unlock()
+	gRefreshStatus = REFRESH_RUNNING
+
 	log.Info("开始刷新文件缓存")
 	if _, err := GetAllFiles(); err != nil { // 获取所有文件并且刷新树结构
 		log.WithField("err", err).Error("刷新文件缓存遇到错误")
@@ -43,6 +64,9 @@ func RefreshOnedriveAll() error {
 		return err
 	}
 	log.Info("结束刷新 README 缓存")
+
+	gRefreshStatus = REFRESH_NONE
+
 	// 构建搜索
 	return nil
 }
