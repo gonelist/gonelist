@@ -37,10 +37,7 @@ func Upload(path string, fileName string, content []byte) error {
 	if err != nil {
 		return err
 	}
-	err = RefreshOnedriveAll()
-	if err != nil {
-		return err
-	}
+	go RefreshOnedriveAll()
 	return nil
 }
 

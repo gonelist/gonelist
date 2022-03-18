@@ -1,6 +1,7 @@
 package conf
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -141,7 +142,8 @@ func LoadUserConfig(configPath string) error {
 		return fmt.Errorf("不支持的网盘挂载类型")
 	}
 
-	log.Infof("成功导入用户配置, gonelist 监听端口:%v", UserSet.Server.Port)
+	setting, _ := json.Marshal(UserSet)
+	log.Infof("gonelist 监听端口:%v,成功导入用户配置:%+v", UserSet.Server.Port, string(setting))
 	return nil
 }
 

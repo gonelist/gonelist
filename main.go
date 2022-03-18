@@ -43,7 +43,11 @@ func main() {
 	onedrive.SetOnedriveInfo(conf.UserSet)
 
 	// 设置 version
-	conf.UserSet.Version = Version
+	if Version != "" {
+		conf.UserSet.Version = Version
+	} else {
+		conf.UserSet.Version = gVersion
+	}
 	// 处理端口绑定
 	Addr := conf.GetBindAddr(conf.UserSet.Server.BindGlobal, conf.UserSet.Server.Port)
 
@@ -60,6 +64,7 @@ func main() {
 }
 
 var (
+	gVersion     = "v0.5.4"
 	Version      string
 	gitCommit    string
 	gitTreeState = ""                     // state of git tree, either "clean" or "dirty"
