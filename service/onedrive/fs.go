@@ -2,11 +2,12 @@ package onedrive
 
 import (
 	"fmt"
-	gocache "github.com/patrickmn/go-cache"
-	log "github.com/sirupsen/logrus"
 	"sort"
 	"sync"
 	"time"
+
+	gocache "github.com/patrickmn/go-cache"
+	log "github.com/sirupsen/logrus"
 )
 
 // 设置缓存的默认时间为 2 天，每 2 天清空已经失效的缓存
@@ -23,6 +24,7 @@ const (
 // 存储的目录结构
 // RefreshTime 表示最近一次的刷新时间
 type FileNode struct {
+	ID             string      `json:"id"`
 	Name           string      `json:"name"`
 	Path           string      `json:"path"`
 	READMEUrl      string      `json:"-"`
@@ -51,6 +53,7 @@ func ConvertAnsToFileNodes(oldPath string, ans Answer) []*FileNode {
 			path = oldPath + "/" + item.Name
 		}
 		node := &FileNode{
+			ID:             item.ID,
 			Name:           item.Name,
 			Path:           path,
 			LastModifyTime: item.FileSystemInfo.LastModifiedDateTime,
@@ -82,8 +85,7 @@ type Tree struct {
 	FirstReady int
 }
 
-var FileTree = &Tree{
-}
+var FileTree = &Tree{}
 
 func (t *Tree) SetLogin(status bool) {
 	t.Lock()

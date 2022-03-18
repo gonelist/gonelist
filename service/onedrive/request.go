@@ -33,7 +33,7 @@ func SetROOTUrl(conf *conf.AllSet) {
 func Upload(path string, fileName string, content []byte) error {
 	baseURL := "https://graph.microsoft.com/v1.0/me/drive/root:" + path + "/" + url.PathEscape(fileName) + ":/content"
 	log.Infoln(baseURL)
-	_, err := putOneURL(baseURL, content)
+	_, err := putOneURL("PUT", baseURL, map[string]string{"Content-Type": "application/json"}, content)
 	if err != nil {
 		return err
 	}
@@ -44,7 +44,25 @@ func Upload(path string, fileName string, content []byte) error {
 	return nil
 }
 
-func putOneURL(url1 string, data []byte) ([]byte, error) {
+// Mkdir 文件夹上传
+func Mkdir(path, floderName string) error {
+	node, err := GetNode(path)
+	if err != nil {
+		return err
+	}
+	m := map[string]interface{}{"name": floderName, "folder": map[string]string{}}
+	data, _ := json.Marshal(m)
+	baseURL := fmt.Sprintf("https://graph.microsoft.com/v1.0/me/drive/items/%s/children",
+		node.ID)
+	_, err = putOneURL(http.MethodPost, baseURL, map[string]string{"Content-Type": "application/json"}, data)
+	if err != nil {
+		return err
+	}
+	return err
+
+}
+
+func putOneURL(method, url1 string, headers map[string]string, data []byte) ([]byte, error) {
 	var (
 		resp *http.Response
 		body []byte
@@ -56,7 +74,10 @@ func putOneURL(url1 string, data []byte) ([]byte, error) {
 		log.Errorln("cannot get client to start request.")
 		return nil, fmt.Errorf("RequestOneURL cannot get client")
 	}
-	request, err := http.NewRequest(http.MethodPut, url1, bytes.NewReader(data))
+	request, err := http.NewRequest(method, url1, bytes.NewReader(data))
+	for key, value := range headers {
+		request.Header.Add(key, value)
+	}
 	// 如果超时，重试两次
 	for retryCount := 3; retryCount > 0; retryCount-- {
 		if resp, err = client.Do(request); err != nil && strings.Contains(err.Error(), "timeout") {

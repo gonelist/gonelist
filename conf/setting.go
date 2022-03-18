@@ -62,8 +62,9 @@ type Onedrive struct {
 	FolderSub              string `json:"folder_sub" yaml:"folder_sub"`                             // onedrive 的子文件夹
 	DownloadRedirectPrefix string `json:"download_redirect_prefix" yaml:"download_redirect_prefix"` // 下载重定向前缀
 	// 目录密码
-	PassList     []*Pass `json:"pass_list" yaml:"pass_list"`
-	UploadSecret string  `json:"upload_secret" yaml:"upload_secret"`
+	PassList        []*Pass `json:"pass_list" yaml:"pass_list"`
+	UploadSecret    string  `json:"upload_secret" yaml:"upload_secret"`
+	UploadSliceSize int     `json:"upload_slice_size" yaml:"upload_slice_size"` // 大文件分片上传时得分片大小，默认为32MB,数字为1表示320kb
 }
 
 // 用户信息设置
@@ -132,6 +133,9 @@ func LoadUserConfig(configPath string) error {
 			if !strings.HasSuffix(UserSet.Onedrive.TokenPath, ".token") {
 				UserSet.Onedrive.TokenPath = path.Join(UserSet.Onedrive.TokenPath, ".token")
 			}
+		}
+		if UserSet.Onedrive.UploadSliceSize == 0 {
+			UserSet.Onedrive.UploadSliceSize = 100
 		}
 	default:
 		return fmt.Errorf("不支持的网盘挂载类型")
