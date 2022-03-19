@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"io"
 	"net/http"
 	"strings"
@@ -17,16 +16,10 @@ import (
 
 // 测试接口，从 MG 获取整个树结构
 func MGGetFileTree(c *gin.Context) {
-	root, err := onedrive.GetAllFiles()
+	err := onedrive.RefreshOnedriveAll()
 	if err != nil {
-		log.Warn("请求 graph.microsoft.com 错误")
-		app.Response(c, http.StatusOK, e.MG_ERROR, nil)
 		return
 	}
-	onedrive.RefreshREADME()
-
-	str, _ := json.Marshal(root)
-	log.Debug("*root", string(str))
 
 	app.Response(c, http.StatusOK, e.SUCCESS, "已刷新缓存")
 }
@@ -163,7 +156,6 @@ func Download(c *gin.Context) {
 	}
 
 	downloadURL, err := onedrive.GetDownloadUrl(filePath)
-	log.Info(downloadURL)
 	if err != nil || downloadURL == "" {
 		app.Response(c, http.StatusOK, e.ITEM_NOT_FOUND, nil)
 	} else {

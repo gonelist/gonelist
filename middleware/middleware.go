@@ -1,11 +1,14 @@
 package middleware
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
+
 	"gonelist/pkg/app"
 	"gonelist/pkg/e"
 	"gonelist/service/onedrive"
-	"net/http"
+	"gonelist/service/onedrive/model"
 )
 
 // 判断 onedrive 是否 login
@@ -45,11 +48,16 @@ func CheckFolderPass() gin.HandlerFunc {
 			c.Abort()
 		}
 		// 判断路径下是否有 .password 文件
-		if root, err := onedrive.GetNode(p); root != nil && err == nil {
-			if root.Password != "" && pass != root.Password {
-				app.Response(c, http.StatusOK, e.PASS_ERROR, nil)
-				c.Abort()
-			}
+		node, err := model.FindByPath(p)
+		if err != nil {
+			app.Response(c, http.StatusOK, e.PASS_ERROR, nil)
+			c.Abort()
+		}
+		if node.Password == "" || node.Password == pass {
+			c.Next()
+		} else {
+			app.Response(c, http.StatusOK, e.PASS_ERROR, nil)
+			c.Abort()
 		}
 	}
 }
