@@ -11,6 +11,8 @@ require (
 	github.com/rs/cors v1.7.0
 	github.com/russross/blackfriday/v2 v2.1.0
 	github.com/sirupsen/logrus v1.8.1
+	github.com/tidwall/gjson v1.14.0
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	gopkg.in/yaml.v2 v2.4.0
+	modernc.org/sqlite v1.15.2
 )

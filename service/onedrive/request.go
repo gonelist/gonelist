@@ -11,8 +11,10 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/tidwall/gjson"
 
 	"gonelist/conf"
+	"gonelist/service/onedrive/model"
 )
 
 var (
@@ -33,15 +35,146 @@ func SetROOTUrl(conf *conf.AllSet) {
 func Upload(path string, fileName string, content []byte) error {
 	baseURL := "https://graph.microsoft.com/v1.0/me/drive/root:" + path + "/" + url.PathEscape(fileName) + ":/content"
 	log.Infoln(baseURL)
-	_, err := putOneURL(baseURL, content)
+	resp, err := putOneURL("PUT", baseURL, map[string]string{}, content)
 	if err != nil {
 		return err
 	}
-	go RefreshOnedriveAll()
+	log.Infoln(string(resp))
+	err = RefreshOnedriveAll()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
-func putOneURL(url1 string, data []byte) ([]byte, error) {
+func Delta(token string) (Answer, string, error) {
+	var (
+		ans     Answer
+		tempAns Answer
+		baseURL string
+	)
+	baseURL = token
+	if baseURL == "" {
+		baseURL = "https://graph.microsoft.com/v1.0/me/drive/root/delta"
+	}
+	//if token == "" {
+	//	baseURL = "https://graph.microsoft.com/v1.0/me/drive/root/delta"
+	//} else {
+	//	baseURL = "https://graph.microsoft.com/v1.0/me/drive/root/delta?token=" + token
+	//}
+	for {
+		resp, err := putOneURL(http.MethodGet, baseURL, map[string]string{}, nil)
+		if err != nil {
+			return ans, "", err
+		}
+		HandleDeltaResp(resp)
+		err = json.Unmarshal(resp, &tempAns)
+		if err != nil {
+			log.Errorln(err.Error())
+			return ans, "", err
+		}
+		if len(tempAns.Value) == 0 {
+			break
+		}
+		if len(ans.Value) == 0 {
+			ans = tempAns
+		} else {
+			ans.Value = append(ans.Value, tempAns.Value...)
+		}
+		if tempAns.OdataNextLink == "" {
+			baseURL = tempAns.OdataDeltaLink
+			break
+		} else {
+			baseURL = tempAns.OdataNextLink
+		}
+
+	}
+	return ans, baseURL, nil
+
+}
+
+// HandleDeltaResp
+/**
+ * @Description: 对获取到的变更数据进行处理
+ * @param data
+ */
+func HandleDeltaResp(data []byte) {
+	values := gjson.GetBytes(data, "value").Array()
+	if len(values) == 0 {
+		return
+	}
+	for _, value := range values {
+		node := ValueToNode(value.String())
+		if gjson.Get(value.String(), "deleted.state").String() == "deleted" {
+			if node.Name == ".password" {
+				parentNode, _ := model.Find(node.ParentID)
+				parentNode.Password = ""
+				parentNode.PasswordURL = ""
+				_ = model.UpdateFile(parentNode)
+			}
+			_ = model.DeleteFile(node.ID)
+		} else {
+			node1, err := model.Find(node.ID)
+			if err != nil || node1.ID == "" {
+				_ = model.InsetFile(node)
+			} else {
+				_ = model.UpdateFile(node)
+			}
+		}
+	}
+}
+
+// ValueToNode
+/**
+ * @Description: 将返回的item转化成对应的FileNode对象
+ * @param value
+ * @return *model.FileNode
+ */
+func ValueToNode(value string) *model.FileNode {
+	node := new(model.FileNode)
+	node.ID = gjson.Get(value, "id").String()
+	node.Name = gjson.Get(value, "name").String()
+	if gjson.Get(value, "root").Exists() {
+		node.Path = "/"
+		node.ParentID = ""
+		node.IsFolder = true
+	} else {
+		s := gjson.Get(value, "parentReference.path").String()
+		node.Path = strings.ReplaceAll(s, "/drive/root:", "") + "/" + node.Name
+		node.ParentID = gjson.Get(value, "parentReference.id").String()
+	}
+	if gjson.Get(value, "folder").Exists() {
+		node.IsFolder = true
+	}
+	modifyTime, _ := time.Parse("2006-01-02T15:04:05Z", gjson.Get(value, "lastModifiedDateTime").String())
+	node.LastModifyTime = modifyTime
+	node.Size = gjson.Get(value, "size").Int()
+	return node
+}
+
+// Mkdir 文件夹创建
+func Mkdir(path, floderName string) error {
+	//node, err := GetNode(path)
+	//if err != nil {
+	//	return err
+	//}
+	node, err := model.FindByPath(path)
+	if err != nil {
+		return err
+	}
+	m := map[string]interface{}{"name": floderName, "folder": map[string]string{}}
+	data, _ := json.Marshal(m)
+	baseURL := fmt.Sprintf("https://graph.microsoft.com/v1.0/me/drive/items/%s/children",
+		node.ID)
+	_, err = putOneURL(http.MethodPost, baseURL, map[string]string{"Content-Type": "application/json"}, data)
+	if err != nil {
+		return err
+	}
+	return err
+
+}
+
+func putOneURL(method, url1 string, headers map[string]string, data []byte) ([]byte, error) {
 	var (
 		resp *http.Response
 		body []byte
@@ -53,7 +186,10 @@ func putOneURL(url1 string, data []byte) ([]byte, error) {
 		log.Errorln("cannot get client to start request.")
 		return nil, fmt.Errorf("RequestOneURL cannot get client")
 	}
-	request, err := http.NewRequest(http.MethodPut, url1, bytes.NewReader(data))
+	request, err := http.NewRequest(method, url1, bytes.NewReader(data))
+	for key, value := range headers {
+		request.Header.Add(key, value)
+	}
 	// 如果超时，重试两次
 	for retryCount := 3; retryCount > 0; retryCount-- {
 		if resp, err = client.Do(request); err != nil && strings.Contains(err.Error(), "timeout") {
@@ -85,13 +221,13 @@ func putOneURL(url1 string, data []byte) ([]byte, error) {
 }
 
 // 获取所有文件的树
-func GetAllFiles() (*FileNode, error) {
+func GetAllFiles() (*model.FileNode, error) {
 	var (
 		err  error
-		root *FileNode
+		root *model.FileNode
 	)
 
-	root = &FileNode{
+	root = &model.FileNode{
 		Name:           "root",
 		Path:           "/",
 		IsFolder:       false,
@@ -106,7 +242,7 @@ func GetAllFiles() (*FileNode, error) {
 	}
 	root.Children = list
 	root.READMEUrl = readmeUrl
-	root.PasswordUrl = passUrl
+	root.PasswordURL = passUrl
 	if root.Children != nil {
 		root.IsFolder = true
 	}
@@ -120,7 +256,7 @@ func GetAllFiles() (*FileNode, error) {
 // list 返回当前文件夹中的所有文件夹和文件
 // readmeUrl 这个是当前文件夹 readme 文件的下载链接
 // err 返回错误
-func GetTreeFileNode(relativePath string) (list []*FileNode, readmeUrl, passUrl string, err error) {
+func GetTreeFileNode(relativePath string) (list []*model.FileNode, readmeUrl, passUrl string, err error) {
 	var (
 		ans Answer
 	)
@@ -143,14 +279,14 @@ func GetTreeFileNode(relativePath string) (list []*FileNode, readmeUrl, passUrl 
 			if err == nil {
 				list[i].Children = tmpList
 				list[i].READMEUrl = tmpReadmeUrl
-				list[i].PasswordUrl = tmpPassUrl
+				list[i].PasswordURL = tmpPassUrl
 			}
 		} else if list[i].Name == "README.md" {
-			readmeUrl = list[i].DownloadUrl
+			readmeUrl = list[i].DownloadURL
 		} else if list[i].Name == ".password" {
-			passUrl = list[i].DownloadUrl
+			passUrl = list[i].DownloadURL
 			// 隐藏 .password 文件的 url 和 size
-			list[i].DownloadUrl = ""
+			list[i].DownloadURL = ""
 			list[i].Size = 0
 		}
 	}
@@ -168,21 +304,20 @@ func GetUrlToAns(relativePath string) (Answer, error) {
 	)
 
 	// 每次获取 3000 个文件
-	if relativePath == "/" && conf.UserSet.Onedrive.FolderSub == "/" {
+	switch {
+	case relativePath == "/" && conf.UserSet.Onedrive.FolderSub == "/":
 		// https://graph.microsoft.com/v1.0/me/drive/root/children
 		baseURL = ROOTUrl + "?$top=3000"
-	} else if relativePath == "/" {
+	case relativePath == "/":
 		// eg. /test -> https://graph.microsoft.com/v1.0/me/drive/root:/test:/children
 		// UrlBegin: https://graph.microsoft.com/v1.0/me/drive/root:
 		// conf.UserSet.Server.FolderSub: /public
 		// UrlEnd: :/children
 		baseURL = UrlBegin + conf.UserSet.Onedrive.FolderSub + UrlEnd + "?$top=3000"
-	} else {
-		// TODO ，好像会出现多个 / 的情况，但是暂时不影响使用
+	default:
 		baseURL = UrlBegin + conf.UserSet.Onedrive.FolderSub + relativePath + UrlEnd + "?$top=3000"
-		//baseURL = UrlBegin + url.QueryEscape(conf.UserSet.Server.FolderSub+relativePath) + UrlEnd + "?$top=3000"
-		baseURL = strings.Replace(baseURL, "+", "%20", -1)
-		baseURL = strings.Replace(baseURL, "%", "%25", -1)
+		baseURL = strings.ReplaceAll(baseURL, "+", "%20")
+		baseURL = strings.ReplaceAll(baseURL, "%", "%25")
 	}
 
 	for {

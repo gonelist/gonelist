@@ -2,11 +2,14 @@ package onedrive
 
 import (
 	"fmt"
+	"strings"
+
 	log "github.com/sirupsen/logrus"
+
 	"gonelist/conf"
 	"gonelist/pkg/file"
 	"gonelist/pkg/markdown"
-	"strings"
+	"gonelist/service/onedrive/model"
 )
 
 // 刷新每个文件夹的 README 和 Password
@@ -20,7 +23,7 @@ func RefreshREADME() error {
 }
 
 // 递归所有节点，下载 README
-func GetAllREADMEAndPass(current *FileNode) error {
+func GetAllREADMEAndPass(current *model.FileNode) error {
 	if current == nil {
 		return fmt.Errorf("GetCurrentAndChildrenREADME get a nil pointer")
 	}
@@ -41,11 +44,11 @@ func GetAllREADMEAndPass(current *FileNode) error {
 	}
 
 	// 当前节点有 .password，下载并且赋值
-	if current.PasswordUrl != "" {
-		if readmeBytes, err := RequestOneUrl(current.PasswordUrl); err != nil {
+	if current.PasswordURL != "" {
+		if readmeBytes, err := RequestOneUrl(current.PasswordURL); err != nil {
 			log.WithFields(log.Fields{
 				"path": current.Path,
-				"url":  current.PasswordUrl,
+				"url":  current.PasswordURL,
 			}).Infof("download password file error")
 		} else {
 			current.Password = strings.TrimSpace(string(readmeBytes))

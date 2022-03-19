@@ -72,13 +72,17 @@ type Value struct {
 		Height int `json:"height"`
 		Width  int `json:"width"`
 	} `json:"image,omitempty"`
+	Deleted struct {
+		State string `json:"state"`
+	} `json:"deleted"`
 }
 
 type Answer struct {
-	OdataContext  string  `json:"@odata.context"`
-	OdataNextLink string  `json:"@odata.nextLink"`
-	Value         []Value `json:"value"`
-	Error         ErrJson `json:"error,omitempty"`
+	OdataContext   string  `json:"@odata.context"`
+	OdataNextLink  string  `json:"@odata.nextLink"`
+	OdataDeltaLink string  `json:"@odata.deltaLink"`
+	Value          []Value `json:"value"`
+	Error          ErrJson `json:"error,omitempty"`
 }
 
 // 修改 Folder 的默认值，为 -1 时不是文件夹

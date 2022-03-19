@@ -2,10 +2,14 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
+
 	"gonelist/conf"
 	"gonelist/pkg/app"
 	"gonelist/pkg/e"
 	"gonelist/service/onedrive"
+	"gonelist/service/onedrive/model"
+
 	"net/http"
 )
 
@@ -45,8 +49,13 @@ func Search(c *gin.Context) {
 		return
 	}
 
-	ans := onedrive.FileTree.Search(key)
-	app.Response(c, http.StatusOK, e.SUCCESS, ans)
+	//ans := onedrive.FileTree.Search(key)
+	nodes, err := model.Search(key)
+	if err != nil {
+		log.Errorln(err.Error())
+		return
+	}
+	app.Response(c, http.StatusOK, e.SUCCESS, nodes)
 }
 
 // swagger:operation GET /info info

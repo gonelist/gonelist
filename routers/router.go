@@ -54,6 +54,7 @@ func InitRouter() *gin.Engine {
 	onedrive := r.Group("/onedrive")
 	onedrive.Use(middleware.CheckLogin())
 	{
+		onedrive.GET("/mkdir", api.CheckUploadSecret(), api.MkDir())
 		// 上传文件，仅支持大小4MB
 		onedrive.POST("/upload", api.CheckUploadSecret(), api.Upload())
 		// 主动获取所有文件，返回整个树的目录

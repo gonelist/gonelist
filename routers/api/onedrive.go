@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"io"
 	"net/http"
 	"strings"
@@ -17,16 +16,10 @@ import (
 
 // 测试接口，从 MG 获取整个树结构
 func MGGetFileTree(c *gin.Context) {
-	root, err := onedrive.GetAllFiles()
+	err := onedrive.RefreshOnedriveAll()
 	if err != nil {
-		log.Warn("请求 graph.microsoft.com 错误")
-		app.Response(c, http.StatusOK, e.MG_ERROR, nil)
 		return
 	}
-	onedrive.RefreshREADME()
-
-	str, _ := json.Marshal(root)
-	log.Debug("*root", string(str))
 
 	app.Response(c, http.StatusOK, e.SUCCESS, "已刷新缓存")
 }
@@ -43,6 +36,20 @@ func CacheGetPath(c *gin.Context) {
 		app.Response(c, http.StatusNotFound, e.LOAD_NOT_READY, nil)
 	} else {
 		app.Response(c, http.StatusOK, e.SUCCESS, root)
+	}
+}
+
+// 创建文件夹
+func MkDir() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		path := ctx.Query("path")
+		folderName := ctx.Query("folder_name")
+		err := onedrive.Mkdir(path, folderName)
+		if err != nil {
+			app.Response(ctx, 403, 403, "")
+			return
+		}
+		app.Response(ctx, http.StatusOK, e.SUCCESS, "")
 	}
 }
 
@@ -63,11 +70,20 @@ func CheckUploadSecret() gin.HandlerFunc {
 	}
 }
 
-// Upload
-/**
- * @Description: 上传文件
- * @return gin.HandlerFunc
- */
+// swagger:operation POST /onedrive/upload info
+// ---
+// summary: 上传文件
+// description: 上传一个文件，目前仅支持单文件
+// parameters:
+// 		- name: path
+//   	in: path
+//   	description: 地址id
+//   	type: string
+//   	required: true
+//
+// responses:
+//   200: repoResp
+//   403： the api not open
 func Upload() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		if !conf.UserSet.Server.EnableUpload {
@@ -81,28 +97,51 @@ func Upload() gin.HandlerFunc {
 			return
 		}
 		// 检查文件大小
-		if file.Size > 4194304 {
-			app.Response(ctx, http.StatusBadGateway, e.INVALID_PARAMS, "文件大小大于4MB")
-		}
-		f, err := file.Open()
-		if err != nil {
-			return
-		}
-		content, err := io.ReadAll(f)
-		if err != nil {
-			return
-		}
-		err = f.Close()
-		if err != nil {
-			return
-		}
-		log.Infoln("开始上传文件：文件名==》"+file.Filename+" 文件大小===》", file.Size/1024/1024, "Mb", " 上传路径==》"+path)
-		err = onedrive.Upload(path, file.Filename, content)
-		if err != nil {
+		// 小文件直接上传
+		if file.Size < 4194304 {
+			f, err := file.Open()
+			if err != nil {
+				return
+			}
+			content, err := io.ReadAll(f)
+			if err != nil {
+				return
+			}
+			err = f.Close()
+			if err != nil {
+				return
+			}
+			log.Infoln("开始上传文件：文件名==》"+file.Filename+" 文件大小===》", file.Size/1024/1024, "Mb", " 上传路径==》"+path)
+			err = onedrive.Upload(path, file.Filename, content)
+			if err != nil {
+				app.Response(ctx, http.StatusOK, e.SUCCESS, nil)
+				return
+			}
 			app.Response(ctx, http.StatusOK, e.SUCCESS, nil)
-			return
+			// app.Response(ctx, http.StatusBadGateway, e.INVALID_PARAMS, "文件大小大于4MB")
+		} else {
+			// 大文件通过session进行分片上传
+			uploader := onedrive.NewUploader()
+			// 创建一个上传session,获取到上传url
+			err := uploader.CreateSession(path, file.Filename, file.Size)
+			if err != nil {
+				return
+			}
+			data, err := file.Open()
+			if err != nil {
+				return
+			}
+			temp := make([]byte, conf.UserSet.Onedrive.UploadSliceSize*327680)
+			_, err = io.CopyBuffer(uploader, data, temp)
+			if err != nil {
+				return
+			}
+			err = data.Close()
+			if err != nil {
+				return
+			}
+			app.Response(ctx, http.StatusOK, e.SUCCESS, nil)
 		}
-		ctx.JSON(200, nil)
 	}
 }
 
@@ -117,7 +156,6 @@ func Download(c *gin.Context) {
 	}
 
 	downloadURL, err := onedrive.GetDownloadUrl(filePath)
-	log.Info(downloadURL)
 	if err != nil || downloadURL == "" {
 		app.Response(c, http.StatusOK, e.ITEM_NOT_FOUND, nil)
 	} else {

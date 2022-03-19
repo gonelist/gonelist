@@ -1,25 +1,15 @@
 package onedrive
 
 import (
+	"encoding/json"
 	"errors"
-	"net/url"
+	"net/http"
 	"strings"
-	"sync"
 
-	"gonelist/conf"
-	"gonelist/pkg/file"
+	"gonelist/pkg/markdown"
+	"gonelist/service/onedrive/model"
 
 	log "github.com/sirupsen/logrus"
-)
-
-const (
-	REFRESH_NONE    = 0 // 未在刷新状态
-	REFRESH_RUNNING = 1 // 正在刷新
-)
-
-var (
-	gRefreshStatus = REFRESH_NONE
-	gRefreshLock   sync.Mutex
 )
 
 // 初始化登陆状态, 如果初始化时获取失败直接退出程序
@@ -40,35 +30,95 @@ func InitOnedrive() {
 // 刷新所有 onedrive 的内容
 // 包括 文件列表，README，password，搜索索引
 func RefreshOnedriveAll() error {
-	if gRefreshStatus == REFRESH_RUNNING {
-		log.Info("当前正在刷新中")
-		return nil
-	}
-
-	// TODO，修改为 TryLock，现在有概率阻塞协程
-	gRefreshLock.Lock()
-	defer gRefreshLock.Unlock()
-	gRefreshStatus = REFRESH_RUNNING
-
 	log.Info("开始刷新文件缓存")
-	if _, err := GetAllFiles(); err != nil { // 获取所有文件并且刷新树结构
-		log.WithField("err", err).Error("刷新文件缓存遇到错误")
-		return err
-	}
-	log.Infof("结束刷新文件缓存")
-	log.Debug(FileTree)
-
-	log.Info("开始刷新 README 缓存")
-	if err := RefreshREADME(); err != nil {
-		log.WithField("err", err).Error("刷新 README 缓存遇到错误")
-		return err
-	}
-	log.Info("结束刷新 README 缓存")
-
-	gRefreshStatus = REFRESH_NONE
-
+	_, token, _ := Delta(getToken())
+	setToken(token)
+	log.Infoln("刷新文件缓存结束")
 	// 构建搜索
+	log.Infoln("开始刷新README.md缓存")
+	err := GetReadMeNodes()
+	if err != nil {
+		log.Errorln(err.Error())
+		return err
+	}
+	log.Infoln("README.md缓存刷新结束")
+	log.Infoln("开始刷新password缓存")
+	err = GetPasswordNode()
+	if err != nil {
+		log.Errorln(err.Error())
+		return err
+	}
+	log.Infoln("password缓存刷新结束")
 	return nil
+}
+
+func GetPasswordNode() error {
+	passNodes, err := model.FindByName(".password")
+	if err != nil {
+		log.Errorln("查询password节点出现错误")
+		return err
+	}
+	for _, node := range passNodes {
+		var downloadUrl string
+		if node.DownloadURL != "" {
+			downloadUrl = node.DownloadURL
+		} else {
+			url, err := getDownloadUrl(node)
+			if err != nil {
+				return err
+			}
+			downloadUrl = url
+		}
+		resp, err := putOneURL(http.MethodGet, downloadUrl, map[string]string{}, nil)
+		if err != nil {
+			return err
+		}
+		parentNode, err := model.Find(node.ParentID)
+		if err != nil {
+			return err
+		}
+		log.Infoln(string(resp))
+		parentNode.Password = string(resp)
+		parentNode.PasswordURL = downloadUrl
+		_ = model.UpdateFile(parentNode)
+	}
+	return err
+}
+
+// GetReadMeNodes
+/**
+ * @Description: 解析文件中所有的READEME.md文件
+ * @return error
+ */
+func GetReadMeNodes() error {
+	readmeNodes, err := model.FindByName("README.md")
+	if err != nil {
+		log.Errorln("查询readme节点出现错误")
+		return err
+	}
+	for _, node := range readmeNodes {
+		var downloadUrl string
+		if node.DownloadURL != "" {
+			downloadUrl = node.DownloadURL
+		} else {
+			url, err := getDownloadUrl(node)
+			if err != nil {
+				return err
+			}
+			downloadUrl = url
+		}
+		resp, err := putOneURL(http.MethodGet, downloadUrl, map[string]string{}, nil)
+		if err != nil {
+			return err
+		}
+		parentNode, err := model.Find(node.ParentID)
+		if err != nil {
+			return err
+		}
+		data := markdown.MarkdownToHTMLByBytes(resp)
+		reCache.Set(README+parentNode.Path, data, DefaultTime)
+	}
+	return err
 }
 
 // TODO
@@ -78,18 +128,27 @@ func RefreshOnedriveByLevel() {
 
 }
 
-func CacheGetPathList(oPath string) ([]*FileNode, error) {
-	root, err := GetNode(oPath)
-	if err != nil {
-		return []*FileNode{}, err
+func CacheGetPathList(oPath string) ([]*model.FileNode, error) {
+	//root, err := GetNode(oPath)
+	//if err != nil {
+	//	return []*model.FileNode{}, err
+	//}
+	//return ReturnNode(root), nil
+	node, err := model.FindByPath(oPath)
+	if err != nil || node == nil {
+		return nil, err
 	}
-	return ReturnNode(root), nil
+	nodes, err := model.GetChildrenByID(node.ID)
+	if err != nil {
+		return nil, err
+	}
+	return nodes, err
 }
 
 // 获取树的某个节点，不论是不是叶子节点
-func GetNode(oPath string) (*FileNode, error) {
+func GetNode(oPath string) (*model.FileNode, error) {
 	var (
-		root    *FileNode
+		root    *model.FileNode
 		isFound bool
 	)
 
@@ -127,20 +186,20 @@ func GetNode(oPath string) (*FileNode, error) {
 	//return reNode, nil
 }
 
-func ReturnNode(node *FileNode) []*FileNode {
-	var reNode []*FileNode
+func ReturnNode(node *model.FileNode) []*model.FileNode {
+	var reNode []*model.FileNode
 	if node == nil {
 		return reNode
 	}
 	if node.Children == nil {
-		return make([]*FileNode, 0)
+		return make([]*model.FileNode, 0)
 	}
 
 	return node.Children
 }
 
 // 旧版返回逻辑
-//func ConvertReturnNode(node *FileNode) *FileNode {
+//func ConvertReturnNode(node *model.FileNode) *FileNode {
 //	if node == nil {
 //		return nil
 //	}
@@ -194,35 +253,56 @@ func ReturnNode(node *FileNode) []*FileNode {
 //	return downloadUrl, nil
 //}
 
-func GetDownloadUrl(filePath string) (string, error) {
-
-	var (
-		fileInfo    *FileNode
-		err         error
-		downloadUrl string
-	)
-
-	// 判断同级目录下是否存在.password
-	if fileInfo, err = GetNode(file.FatherPath(filePath)); err != nil || fileInfo.PasswordUrl == ".password" {
-		log.WithFields(log.Fields{
-			"filePath": filePath,
-			"err":      err,
-		}).Info("请求的文件未找到")
+func getDownloadUrl(node *model.FileNode) (string, error) {
+	baseURl := "https://graph.microsoft.com/v1.0/me/drive/items/" + node.ID
+	resp, err := putOneURL(http.MethodGet, baseURl, map[string]string{}, nil)
+	if err != nil {
 		return "", err
 	}
-	apath := strings.Split(filePath, "/")
-	fileName := apath[len(apath)-1]
-	for _, item := range fileInfo.Children {
-		if item.Name == fileName {
-			if conf.UserSet.Onedrive.DownloadRedirectPrefix == "" {
-				downloadUrl = item.DownloadUrl
-			} else {
-				downloadUrl = conf.UserSet.Onedrive.DownloadRedirectPrefix + url.QueryEscape(item.DownloadUrl)
-			}
-			return downloadUrl, nil
-		}
+	v := new(Value)
+	err = json.Unmarshal(resp, v)
+	if err != nil {
+		return "", err
 	}
+	node.DownloadURL = v.MicrosoftGraphDownloadURL
+	_ = model.UpdateFile(node)
+	return v.MicrosoftGraphDownloadURL, err
+}
 
-	return "", err
+func GetDownloadUrl(filePath string) (string, error) {
+
+	node, err := model.FindByPath(filePath)
+	if err != nil {
+		return "", err
+	}
+	return getDownloadUrl(node)
+	//var (
+	//	fileInfo    *model.FileNode
+	//	err         error
+	//	downloadUrl string
+	//)
+	//
+	//// 判断同级目录下是否存在.password
+	//if fileInfo, err = GetNode(file.FatherPath(filePath)); err != nil || fileInfo.PasswordURL == ".password" {
+	//	log.WithFields(log.Fields{
+	//		"filePath": filePath,
+	//		"err":      err,
+	//	}).Info("请求的文件未找到")
+	//	return "", err
+	//}
+	//apath := strings.Split(filePath, "/")
+	//fileName := apath[len(apath)-1]
+	//for _, item := range fileInfo.Children {
+	//	if item.Name == fileName {
+	//		if conf.UserSet.Onedrive.DownloadRedirectPrefix == "" {
+	//			downloadUrl = item.DownloadURL
+	//		} else {
+	//			downloadUrl = conf.UserSet.Onedrive.DownloadRedirectPrefix + url.QueryEscape(item.DownloadURL)
+	//		}
+	//		return downloadUrl, nil
+	//	}
+	//}
+	//
+	//return "", err
 
 }
