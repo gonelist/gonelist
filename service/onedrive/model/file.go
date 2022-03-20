@@ -7,6 +7,15 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var (
+	nodeChan chan *FileNode
+)
+
+func init() {
+	nodeChan = make(chan *FileNode, 100)
+	go insertFile()
+}
+
 // initTable
 /**
  * @Description: 初始化表格
@@ -34,6 +43,29 @@ func initTable() {
 	}
 }
 
+func insertFile() {
+	for {
+		node := <-nodeChan
+		_, err := db.Exec(`insert into file  values (?,?,?,?,?,?,?,?,?,?,?);`,
+			node.ID,
+			node.Name,
+			node.Path,
+			node.READMEUrl,
+			node.IsFolder,
+			node.DownloadURL,
+			node.LastModifyTime.Unix(),
+			node.Size,
+			node.Password,
+			node.PasswordURL,
+			node.ParentID)
+		if err != nil {
+			log.Errorln("数据库插入失败 " + err.Error())
+		}
+	}
+}
+
+var i = 0
+
 // InsetFile
 /**
  * @Description: 单条插入数据
@@ -41,23 +73,10 @@ func initTable() {
  * @return error
  */
 func InsetFile(node *FileNode) error {
-	_, err := db.Exec(`insert into file  values (?,?,?,?,?,?,?,?,?,?,?);`,
-		node.ID,
-		node.Name,
-		node.Path,
-		node.READMEUrl,
-		node.IsFolder,
-		node.DownloadURL,
-		node.LastModifyTime.Unix(),
-		node.Size,
-		node.Password,
-		node.PasswordURL,
-		node.ParentID)
-	if err != nil {
-		log.Errorln("数据库插入失败 " + err.Error())
-		return err
-	}
-	return err
+	i++
+	log.Infoln("添加了一个新的文件 ==》" + node.Path)
+	nodeChan <- node
+	return nil
 }
 
 // BatchInsertFile
@@ -160,7 +179,7 @@ func Find(id string) (*FileNode, error) {
 			&node.DownloadURL, &t, &node.Size, &node.Password,
 			&node.PasswordURL, &node.ParentID)
 	if err != nil {
-		log.Errorln("数据查找出现错误 " + err.Error())
+		// log.Errorln("数据查找出现错误 " + err.Error())
 		return nil, err
 	}
 	node.LastModifyTime = time.Unix(t, 0)
@@ -216,7 +235,6 @@ func FindByPath(path string) (*FileNode, error) {
 			&node.DownloadURL, &t, &node.Size, &node.Password,
 			&node.PasswordURL, &node.ParentID)
 	if err != nil {
-		log.Errorln("数据查找出现错误 " + err.Error())
 		return nil, err
 	}
 	node.LastModifyTime = time.Unix(t, 0)

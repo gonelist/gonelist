@@ -3,6 +3,7 @@ package onedrive
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -14,6 +15,7 @@ import (
 	"github.com/tidwall/gjson"
 
 	"gonelist/conf"
+	"gonelist/service/onedrive/cache"
 	"gonelist/service/onedrive/model"
 )
 
@@ -34,12 +36,11 @@ func SetROOTUrl(conf *conf.AllSet) {
 
 func Upload(path string, fileName string, content []byte) error {
 	baseURL := "https://graph.microsoft.com/v1.0/me/drive/root:" + path + "/" + url.PathEscape(fileName) + ":/content"
-	log.Infoln(baseURL)
 	resp, err := putOneURL("PUT", baseURL, map[string]string{}, content)
 	if err != nil {
 		return err
 	}
-	log.Infoln(string(resp))
+	log.Debugln(gjson.GetBytes(resp, "@this|@pretty"))
 	err = RefreshOnedriveAll()
 	if err != nil {
 		return err
@@ -47,6 +48,14 @@ func Upload(path string, fileName string, content []byte) error {
 	return nil
 }
 
+// Delta
+/**
+ * @Description: 获取文件信息
+ * @param token
+ * @return Answer
+ * @return string
+ * @return error
+ */
 func Delta(token string) (Answer, string, error) {
 	var (
 		ans     Answer
@@ -81,7 +90,7 @@ func Delta(token string) (Answer, string, error) {
 		} else {
 			ans.Value = append(ans.Value, tempAns.Value...)
 		}
-		if tempAns.OdataNextLink == "" {
+		if tempAns.OdataDeltaLink != "" {
 			baseURL = tempAns.OdataDeltaLink
 			break
 		} else {
@@ -116,7 +125,7 @@ func HandleDeltaResp(data []byte) {
 		} else {
 			node1, err := model.Find(node.ID)
 			if err != nil || node1.ID == "" {
-				_ = model.InsetFile(node)
+				go model.InsetFile(node)
 			} else {
 				_ = model.UpdateFile(node)
 			}
@@ -158,15 +167,15 @@ func Mkdir(path, floderName string) error {
 	//if err != nil {
 	//	return err
 	//}
-	node, err := model.FindByPath(path)
-	if err != nil {
-		return err
+	node, ok := cache.Cache.Get(path)
+	if !ok {
+		return errors.New("file not found")
 	}
 	m := map[string]interface{}{"name": floderName, "folder": map[string]string{}}
 	data, _ := json.Marshal(m)
 	baseURL := fmt.Sprintf("https://graph.microsoft.com/v1.0/me/drive/items/%s/children",
 		node.ID)
-	_, err = putOneURL(http.MethodPost, baseURL, map[string]string{"Content-Type": "application/json"}, data)
+	_, err := putOneURL(http.MethodPost, baseURL, map[string]string{"Content-Type": "application/json"}, data)
 	if err != nil {
 		return err
 	}

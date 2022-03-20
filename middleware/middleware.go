@@ -8,7 +8,7 @@ import (
 	"gonelist/pkg/app"
 	"gonelist/pkg/e"
 	"gonelist/service/onedrive"
-	"gonelist/service/onedrive/model"
+	"gonelist/service/onedrive/cache"
 )
 
 // 判断 onedrive 是否 login
@@ -48,8 +48,8 @@ func CheckFolderPass() gin.HandlerFunc {
 			c.Abort()
 		}
 		// 判断路径下是否有 .password 文件
-		node, err := model.FindByPath(p)
-		if err != nil {
+		node, ok := cache.Cache.Get(p)
+		if !ok {
 			app.Response(c, http.StatusOK, e.PASS_ERROR, nil)
 			c.Abort()
 		}

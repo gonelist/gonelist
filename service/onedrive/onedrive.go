@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"gonelist/pkg/markdown"
+	"gonelist/service/onedrive/cache"
 	"gonelist/service/onedrive/model"
 
 	log "github.com/sirupsen/logrus"
@@ -30,6 +31,13 @@ func InitOnedrive() {
 // 刷新所有 onedrive 的内容
 // 包括 文件列表，README，password，搜索索引
 func RefreshOnedriveAll() error {
+	defer func() {
+		err := recover()
+		if err != nil {
+			log.Errorln("刷新缓存过程中出现了不可预料的错误")
+			log.Errorln(err)
+		}
+	}()
 	log.Info("开始刷新文件缓存")
 	_, token, _ := Delta(getToken())
 	setToken(token)
@@ -134,13 +142,13 @@ func CacheGetPathList(oPath string) ([]*model.FileNode, error) {
 	//	return []*model.FileNode{}, err
 	//}
 	//return ReturnNode(root), nil
-	node, err := model.FindByPath(oPath)
-	if err != nil || node == nil {
-		return nil, err
+	node, ok := cache.Cache.Get(oPath)
+	if node == nil || ok == false {
+		return nil, errors.New("file not found")
 	}
 	nodes, err := model.GetChildrenByID(node.ID)
 	if err != nil {
-		return nil, err
+		return []*model.FileNode{}, err
 	}
 	return nodes, err
 }
@@ -271,9 +279,9 @@ func getDownloadUrl(node *model.FileNode) (string, error) {
 
 func GetDownloadUrl(filePath string) (string, error) {
 
-	node, err := model.FindByPath(filePath)
-	if err != nil {
-		return "", err
+	node, ok := cache.Cache.Get(filePath)
+	if !ok {
+		return "", errors.New("file not found")
 	}
 	return getDownloadUrl(node)
 	//var (

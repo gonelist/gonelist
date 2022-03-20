@@ -12,6 +12,7 @@ import (
 	"gonelist/pkg/app"
 	"gonelist/pkg/e"
 	"gonelist/service/onedrive"
+	"gonelist/service/onedrive/model"
 )
 
 // 测试接口，从 MG 获取整个树结构
@@ -31,9 +32,10 @@ func CacheGetPath(c *gin.Context) {
 	root, err := onedrive.CacheGetPathList(oPath)
 	// 如果没有找到文件则返回 404
 	if err != nil {
+		log.Errorln(err.Error())
 		app.Response(c, http.StatusNotFound, e.ITEM_NOT_FOUND, nil)
 	} else if root == nil {
-		app.Response(c, http.StatusNotFound, e.LOAD_NOT_READY, nil)
+		app.Response(c, http.StatusOK, e.SUCCESS, []*model.FileNode{})
 	} else {
 		app.Response(c, http.StatusOK, e.SUCCESS, root)
 	}

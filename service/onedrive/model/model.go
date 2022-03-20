@@ -5,6 +5,8 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
+
+	//  sqlite驱动
 	_ "modernc.org/sqlite"
 )
 
@@ -15,11 +17,14 @@ var (
 func init() {
 	var err error
 	// 连接数据库
+
 	db, err = sql.Open("sqlite", "data.db")
 	if err != nil {
 		log.Fatalf("打开数据库失败+ %v", err.Error())
 		return
 	}
+	// 设置数据库连接数为1，防止出现database is locked的情况
+	db.SetMaxOpenConns(1)
 	// 创建表
 	initTable()
 }

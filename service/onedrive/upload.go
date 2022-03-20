@@ -40,7 +40,7 @@ func (u *Uploader) Write(p []byte) (n int, err error) {
 		return 0, err
 	}
 	u.currentWrite += int64(len(p))
-	log.Infoln(gjson.GetBytes(resp, "@this|@pretty"))
+	log.Debugln(gjson.GetBytes(resp, "@this|@pretty"))
 	return len(p), err
 }
 
