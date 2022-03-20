@@ -1,5 +1,5 @@
 #https://basefas.github.io/2019/09/24/%E4%BD%BF%E7%94%A8%20Docker%20%E6%9E%84%E5%BB%BA%20Go%20%E5%BA%94%E7%94%A8/
-FROM golang:1.16.3 as builder
+FROM golang:1.17.7 as builder
 
 
 WORKDIR /root/myapp/
