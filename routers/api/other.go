@@ -70,7 +70,26 @@ func Info(c *gin.Context) {
 	ans := make(map[string]interface{})
 	ans["name"] = conf.UserSet.Name
 	ans["page_title"] = conf.UserSet.PageTitle
-	ans["upload"] = conf.UserSet.Server.EnableUpload
+	ans["upload"] = conf.UserSet.Admin.EnableWrite
 	ans["version"] = conf.UserSet.Version
 	app.Response(c, http.StatusOK, e.SUCCESS, ans)
+}
+
+// UpdatePermission
+/**
+ * @Description: 提升客户端的权限为管理员权限
+ * @return gin.HandlerFunc
+ */
+func UpdatePermission() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		if conf.UserSet.Admin.EnableWrite {
+			if ctx.Query("secret") == conf.UserSet.Admin.Secret {
+				app.Response(ctx, http.StatusOK, e.SUCCESS, nil)
+			} else {
+				app.Response(ctx, http.StatusOK, e.ACCESS_TOKEN_ERROR, nil)
+			}
+		} else {
+			app.Response(ctx, http.StatusOK, e.ACCESS_TOKEN_ERROR, nil)
+		}
+	}
 }

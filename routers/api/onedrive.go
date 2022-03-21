@@ -41,7 +41,7 @@ func CacheGetPath(c *gin.Context) {
 	}
 }
 
-// 创建文件夹
+// MkDir 创建文件夹
 func MkDir() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		path := ctx.Query("path")
@@ -63,7 +63,7 @@ func MkDir() gin.HandlerFunc {
 func CheckUploadSecret() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		secret := ctx.Query("secret")
-		if secret != conf.UserSet.Onedrive.UploadSecret {
+		if secret != conf.UserSet.Admin.Secret {
 			app.Response(ctx, http.StatusOK, e.SECRET_ERROR, nil)
 			ctx.Abort()
 			return
@@ -88,7 +88,7 @@ func CheckUploadSecret() gin.HandlerFunc {
 //   403： the api not open
 func Upload() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if !conf.UserSet.Server.EnableUpload {
+		if !conf.UserSet.Admin.EnableWrite {
 			app.Response(ctx, 403, 1403, "the api not open")
 			return
 		}
@@ -133,7 +133,7 @@ func Upload() gin.HandlerFunc {
 			if err != nil {
 				return
 			}
-			temp := make([]byte, conf.UserSet.Onedrive.UploadSliceSize*327680)
+			temp := make([]byte, conf.UserSet.Admin.UploadSliceSize*327680)
 			_, err = io.CopyBuffer(uploader, data, temp)
 			if err != nil {
 				return
@@ -144,6 +144,23 @@ func Upload() gin.HandlerFunc {
 			}
 			app.Response(ctx, http.StatusOK, e.SUCCESS, nil)
 		}
+	}
+}
+
+func DeleteFile() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		path := ctx.Query("path")
+		node, err := model.FindByPath(path)
+		if err != nil {
+			app.Response(ctx, http.StatusOK, e.ITEM_NOT_FOUND, nil)
+			return
+		}
+		err = onedrive.DeleteFile(node.ID)
+		if err != nil {
+			app.Response(ctx, http.StatusOK, e.ERROR, err.Error())
+			return
+		}
+		app.Response(ctx, http.StatusOK, e.SUCCESS, nil)
 	}
 }
 

@@ -19,12 +19,11 @@ import (
 type Server struct {
 	ReadTimeout  time.Duration `yaml:"read_timeout"`
 	WriteTimeout time.Duration `yaml:"write_timeout"`
-	BindGlobal   bool          `json:"bind_global" yaml:"bind_global"`     // 是否绑定到0.0.0.0
-	DistPATH     string        `json:"dist_path" yaml:"dist_path"`         // 静态文件目录
-	Gzip         bool          `json:"gzip" yaml:"gzip"`                   // 是否打开 Gzip 加速
-	Port         int           `json:"port" yaml:"port"`                   // 绑定端口
-	SiteUrl      string        `json:"site_url" yaml:"site_url"`           // 网站网址，如 https://gonelist.cugxuan.cn
-	EnableUpload bool          `json:"enable_upload" yaml:"enable_upload"` // 是否开启上传
+	BindGlobal   bool          `json:"bind_global" yaml:"bind_global"` // 是否绑定到0.0.0.0
+	DistPATH     string        `json:"dist_path" yaml:"dist_path"`     // 静态文件目录
+	Gzip         bool          `json:"gzip" yaml:"gzip"`               // 是否打开 Gzip 加速
+	Port         int           `json:"port" yaml:"port"`               // 绑定端口
+	SiteUrl      string        `json:"site_url" yaml:"site_url"`       // 网站网址，如 https://gonelist.cugxuan.cn
 }
 
 var defaultServerSetting = &Server{
@@ -35,7 +34,12 @@ var defaultServerSetting = &Server{
 	Port:         8000,
 	Gzip:         true,
 	SiteUrl:      "https://gonelist.cugxuan.cn",
-	EnableUpload: false,
+}
+
+type Admin struct {
+	EnableWrite     bool   `json:"enable_write" yaml:"enable_write"`           // 是否允许客户端写入文件到onedrive服务端，写入包括创建文件夹，上传文件，删除文件
+	Secret          string `json:"secret" yaml:"secret"`                       // 写入权限的secret，前端升级权限时需要，建议更改默认secret
+	UploadSliceSize int    `json:"upload_slice_size" yaml:"upload_slice_size"` // 大文件分片上传时得分片大小，默认为32MB,数字为1表示320kb
 }
 
 type Onedrive struct {
@@ -63,9 +67,7 @@ type Onedrive struct {
 	FolderSub              string `json:"folder_sub" yaml:"folder_sub"`                             // onedrive 的子文件夹
 	DownloadRedirectPrefix string `json:"download_redirect_prefix" yaml:"download_redirect_prefix"` // 下载重定向前缀
 	// 目录密码
-	PassList        []*Pass `json:"pass_list" yaml:"pass_list"`
-	UploadSecret    string  `json:"upload_secret" yaml:"upload_secret"`
-	UploadSliceSize int     `json:"upload_slice_size" yaml:"upload_slice_size"` // 大文件分片上传时得分片大小，默认为32MB,数字为1表示320kb
+	PassList []*Pass `json:"pass_list" yaml:"pass_list"`
 }
 
 // 用户信息设置
@@ -79,6 +81,8 @@ type AllSet struct {
 	ListType string `json:"list_type" yaml:"list_type"`
 	// Onedrive
 	Onedrive *Onedrive `json:"onedrive" yaml:"onedrive"`
+	// 权限管理
+	Admin *Admin `json:"admin" yaml:"admin"`
 }
 
 var UserSet = &AllSet{}
@@ -130,13 +134,14 @@ func LoadUserConfig(configPath string) error {
 		if UserSet.Onedrive.TokenPath == "" {
 			UserSet.Onedrive.TokenPath = GetTokenPath(configPath)
 		} else {
-			//用户一般写目录，此处转成文件
+			// 用户一般写目录，此处转成文件
 			if !strings.HasSuffix(UserSet.Onedrive.TokenPath, ".token") {
 				UserSet.Onedrive.TokenPath = path.Join(UserSet.Onedrive.TokenPath, ".token")
 			}
 		}
-		if UserSet.Onedrive.UploadSliceSize == 0 {
-			UserSet.Onedrive.UploadSliceSize = 100
+		// 设置大文件上传的分片
+		if UserSet.Admin.UploadSliceSize == 0 {
+			UserSet.Admin.UploadSliceSize = 100
 		}
 	default:
 		return fmt.Errorf("不支持的网盘挂载类型")

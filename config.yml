@@ -16,6 +16,15 @@ server:
   site_url: http://localhost:8000 # 不建议修改，在启动后会自适应调整
   enable_upload: false  # 是否开启上传功能
 
+admin:
+  # 是否允许客户端写入文件到onedrive服务端，写入包括创建文件夹，上传文件，删除文件
+  enable_write: false
+  # 写入权限的secret，前端升级权限时需要，建议更改默认secret
+  secret: 123465
+
+  # 大文件分片上传时得分片大小，默认为32MB,数字为1表示320kb
+  upload_slice_size: 100
+
 # 网盘挂载的类型，当前仅支持 onedrive
 list_type: onedrive
 
@@ -33,7 +42,7 @@ onedrive:
   level: 2
 
   # 自动刷新时间，单位分钟
-  refresh_time: 10
+  refresh_time: 60
 
   # 提供 onedrive 的应用配置，建议自己创建应用
   client_id: 16e320f7-e427-4612-88da-f3d03e944d40
@@ -67,8 +76,4 @@ onedrive:
   #  - pass:
   #    path:
   
-  # 上传文件时将会进行密钥验证，验证成功才能上传成功，首次允许建议修改
-  upload_secret: 123465
 
-  # 大文件分片上传时得分片大小，默认为32MB,数字为1表示320kb
-  upload_slice_size: 100

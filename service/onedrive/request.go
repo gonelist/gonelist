@@ -34,6 +34,14 @@ func SetROOTUrl(conf *conf.AllSet) {
 	UrlEnd = user.RemoteConf.UrlEnd
 }
 
+// Upload
+/**
+ * @Description: 小文件上传，直接传字节数组
+ * @param path
+ * @param fileName
+ * @param content
+ * @return error
+ */
 func Upload(path string, fileName string, content []byte) error {
 	baseURL := "https://graph.microsoft.com/v1.0/me/drive/root:" + path + "/" + url.PathEscape(fileName) + ":/content"
 	resp, err := putOneURL("PUT", baseURL, map[string]string{}, content)
@@ -41,16 +49,13 @@ func Upload(path string, fileName string, content []byte) error {
 		return err
 	}
 	log.Debugln(gjson.GetBytes(resp, "@this|@pretty"))
-	err = RefreshOnedriveAll()
-	if err != nil {
-		return err
-	}
+	RefreshFiles()
 	return nil
 }
 
 // Delta
 /**
- * @Description: 获取文件信息
+ * @Description: 获取文件信息，记得不要删除.file_token
  * @param token
  * @return Answer
  * @return string
@@ -125,7 +130,7 @@ func HandleDeltaResp(data []byte) {
 		} else {
 			node1, err := model.Find(node.ID)
 			if err != nil || node1.ID == "" {
-				go model.InsetFile(node)
+				_ = model.InsetFile(node)
 			} else {
 				_ = model.UpdateFile(node)
 			}
@@ -179,10 +184,31 @@ func Mkdir(path, floderName string) error {
 	if err != nil {
 		return err
 	}
+	RefreshFiles()
 	return err
-
 }
 
+func DeleteFile(id string) error {
+	baseURL := fmt.Sprintf("https://graph.microsoft.com/v1.0/me/drive/items/%s", id)
+	resp, err := putOneURL(http.MethodDelete, baseURL, map[string]string{}, nil)
+	if err != nil {
+		return err
+	}
+	log.Debugln(gjson.GetBytes(resp, "@this|@pretty"))
+	RefreshFiles()
+	return err
+}
+
+// putOneURL
+/**
+ * @Description: 请求微软的api
+ * @param method 请求方法 GET,POST,DELETE,PUT
+ * @param url1 url
+ * @param headers 请求头
+ * @param data 请求体
+ * @return []byte 响应内容
+ * @return error
+ */
 func putOneURL(method, url1 string, headers map[string]string, data []byte) ([]byte, error) {
 	var (
 		resp *http.Response
@@ -229,7 +255,8 @@ func putOneURL(method, url1 string, headers map[string]string, data []byte) ([]b
 	return body, nil
 }
 
-// 获取所有文件的树
+// GetAllFiles 获取所有文件的树
+// Deprecated: 该方法已废弃
 func GetAllFiles() (*model.FileNode, error) {
 	var (
 		err  error
@@ -265,6 +292,7 @@ func GetAllFiles() (*model.FileNode, error) {
 // list 返回当前文件夹中的所有文件夹和文件
 // readmeUrl 这个是当前文件夹 readme 文件的下载链接
 // err 返回错误
+// Deprecated: 该方法已废弃
 func GetTreeFileNode(relativePath string) (list []*model.FileNode, readmeUrl, passUrl string, err error) {
 	var (
 		ans Answer
@@ -303,6 +331,7 @@ func GetTreeFileNode(relativePath string) (list []*model.FileNode, readmeUrl, pa
 }
 
 // 获取某个路径的内容，如果 token 失效或没有正常结果返回 err
+// Deprecated: 该方法已废弃
 func GetUrlToAns(relativePath string) (Answer, error) {
 	// 默认一次获取 3000 个文件
 	var (
@@ -349,6 +378,7 @@ func GetUrlToAns(relativePath string) (Answer, error) {
 	return ans, nil
 }
 
+// Deprecated: 该方法已废弃
 func RequestAnswer(urlstr string, relativePath string) (Answer, error) {
 	var (
 		ans Answer

@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"gonelist/conf"
 	"gonelist/pkg/app"
 	"gonelist/pkg/e"
 	"gonelist/service/onedrive"
@@ -59,5 +60,22 @@ func CheckFolderPass() gin.HandlerFunc {
 			app.Response(c, http.StatusOK, e.PASS_ERROR, nil)
 			c.Abort()
 		}
+	}
+}
+
+// CheckSecret
+/**
+ * @Description: 用户权限鉴权，需要鉴权的api有，上传文件，创建文件夹，删除文件
+ * @return gin.HandlerFunc
+ */
+func CheckSecret() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		secret := ctx.Query("secret")
+		if secret != conf.UserSet.Admin.Secret {
+			app.Response(ctx, http.StatusOK, e.SECRET_ERROR, nil)
+			ctx.Abort()
+			return
+		}
+		ctx.Next()
 	}
 }

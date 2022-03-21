@@ -64,6 +64,8 @@ func (cache *LRUCache) Put(node *model.FileNode) error {
  * @return bool
  */
 func (cache *LRUCache) Get(key string) (*model.FileNode, bool) {
+	// cache.rwLock.Lock()
+	// defer cache.rwLock.Unlock()
 	fileNode, ok := cache.datas[key]
 	if ok {
 		cache.list.MoveToHead(fileNode.Path)

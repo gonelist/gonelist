@@ -41,6 +41,12 @@ func initTable() {
 		log.Errorln(err.Error())
 		return
 	}
+	// 为path创建唯一索引
+	_, err = db.Exec(`create unique index  path_index on file (path)`)
+	if err != nil {
+		log.Errorln(err.Error())
+		return
+	}
 }
 
 func insertFile() {
@@ -130,6 +136,7 @@ func BatchInsertFile(nodes []*FileNode) error {
  * @return error
  */
 func DeleteFile(id string) error {
+	log.Errorln("检测到文件删除 ==》" + id)
 	_, err := db.Exec(`delete from main.file where id = ?;`, id)
 	if err != nil {
 		return err

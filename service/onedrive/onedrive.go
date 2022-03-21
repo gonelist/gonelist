@@ -31,6 +31,50 @@ func InitOnedrive() {
 // 刷新所有 onedrive 的内容
 // 包括 文件列表，README，password，搜索索引
 func RefreshOnedriveAll() error {
+
+	// 构建搜索
+	go RefreshFiles()
+	go RefreshReadme()
+	go RefreshPassword()
+
+	return nil
+}
+
+func RefreshPassword() {
+	defer func() {
+		err := recover()
+		if err != nil {
+			log.Errorln("刷新缓存过程中出现了不可预料的错误")
+			log.Errorln(err)
+		}
+	}()
+	log.Infoln("开始刷新password缓存")
+	err := GetPasswordNode()
+	if err != nil {
+		log.Errorln(err.Error())
+		return
+	}
+	log.Infoln("password缓存刷新结束")
+}
+
+func RefreshReadme() {
+	defer func() {
+		err := recover()
+		if err != nil {
+			log.Errorln("刷新缓存过程中出现了不可预料的错误")
+			log.Errorln(err)
+		}
+	}()
+	log.Infoln("开始刷新README.md缓存")
+	err := GetReadMeNodes()
+	if err != nil {
+		log.Errorln(err.Error())
+		return
+	}
+	log.Infoln("README.md缓存刷新结束")
+}
+
+func RefreshFiles() {
 	defer func() {
 		err := recover()
 		if err != nil {
@@ -42,22 +86,6 @@ func RefreshOnedriveAll() error {
 	_, token, _ := Delta(getToken())
 	setToken(token)
 	log.Infoln("刷新文件缓存结束")
-	// 构建搜索
-	log.Infoln("开始刷新README.md缓存")
-	err := GetReadMeNodes()
-	if err != nil {
-		log.Errorln(err.Error())
-		return err
-	}
-	log.Infoln("README.md缓存刷新结束")
-	log.Infoln("开始刷新password缓存")
-	err = GetPasswordNode()
-	if err != nil {
-		log.Errorln(err.Error())
-		return err
-	}
-	log.Infoln("password缓存刷新结束")
-	return nil
 }
 
 func GetPasswordNode() error {
@@ -85,7 +113,7 @@ func GetPasswordNode() error {
 		if err != nil {
 			return err
 		}
-		log.Infoln(string(resp))
+		log.Debugln(string(resp))
 		parentNode.Password = string(resp)
 		parentNode.PasswordURL = downloadUrl
 		_ = model.UpdateFile(parentNode)
@@ -272,8 +300,6 @@ func getDownloadUrl(node *model.FileNode) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	node.DownloadURL = v.MicrosoftGraphDownloadURL
-	_ = model.UpdateFile(node)
 	return v.MicrosoftGraphDownloadURL, err
 }
 
