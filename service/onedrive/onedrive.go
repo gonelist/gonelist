@@ -3,8 +3,10 @@ package onedrive
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"gonelist/pkg/markdown"
 	"gonelist/service/onedrive/cache"
@@ -83,8 +85,11 @@ func RefreshFiles() {
 		}
 	}()
 	log.Info("开始刷新文件缓存")
+	start := time.Now()
 	_, token, _ := Delta(getToken())
 	setToken(token)
+	duration := time.Since(start)
+	log.Infoln(fmt.Sprintf("共用时%.2f分钟", duration.Minutes()))
 	log.Infoln("刷新文件缓存结束")
 }
 
@@ -105,7 +110,7 @@ func GetPasswordNode() error {
 			}
 			downloadUrl = url
 		}
-		resp, err := putOneURL(http.MethodGet, downloadUrl, map[string]string{}, nil)
+		resp, err := GetData(http.MethodGet, downloadUrl, map[string]string{}, nil)
 		if err != nil {
 			return err
 		}
@@ -143,7 +148,7 @@ func GetReadMeNodes() error {
 			}
 			downloadUrl = url
 		}
-		resp, err := putOneURL(http.MethodGet, downloadUrl, map[string]string{}, nil)
+		resp, err := GetData(http.MethodGet, downloadUrl, map[string]string{}, nil)
 		if err != nil {
 			return err
 		}
@@ -291,7 +296,7 @@ func ReturnNode(node *model.FileNode) []*model.FileNode {
 
 func getDownloadUrl(node *model.FileNode) (string, error) {
 	baseURl := "https://graph.microsoft.com/v1.0/me/drive/items/" + node.ID
-	resp, err := putOneURL(http.MethodGet, baseURl, map[string]string{}, nil)
+	resp, err := GetData(http.MethodGet, baseURl, map[string]string{}, nil)
 	if err != nil {
 		return "", err
 	}

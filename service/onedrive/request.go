@@ -44,7 +44,7 @@ func SetROOTUrl(conf *conf.AllSet) {
  */
 func Upload(path string, fileName string, content []byte) error {
 	baseURL := "https://graph.microsoft.com/v1.0/me/drive/root:" + path + "/" + url.PathEscape(fileName) + ":/content"
-	resp, err := putOneURL("PUT", baseURL, map[string]string{}, content)
+	resp, err := GetData("PUT", baseURL, map[string]string{}, content)
 	if err != nil {
 		return err
 	}
@@ -77,7 +77,7 @@ func Delta(token string) (Answer, string, error) {
 	//	baseURL = "https://graph.microsoft.com/v1.0/me/drive/root/delta?token=" + token
 	//}
 	for {
-		resp, err := putOneURL(http.MethodGet, baseURL, map[string]string{}, nil)
+		resp, err := GetData(http.MethodGet, baseURL, map[string]string{}, nil)
 		if err != nil {
 			return ans, "", err
 		}
@@ -180,17 +180,18 @@ func Mkdir(path, floderName string) error {
 	data, _ := json.Marshal(m)
 	baseURL := fmt.Sprintf("https://graph.microsoft.com/v1.0/me/drive/items/%s/children",
 		node.ID)
-	_, err := putOneURL(http.MethodPost, baseURL, map[string]string{"Content-Type": "application/json"}, data)
+	resp, err := GetData(http.MethodPost, baseURL, map[string]string{"Content-Type": "application/json"}, data)
 	if err != nil {
 		return err
 	}
+	log.Infoln(gjson.GetBytes(resp, "@this|@pretty"))
 	RefreshFiles()
 	return err
 }
 
 func DeleteFile(id string) error {
 	baseURL := fmt.Sprintf("https://graph.microsoft.com/v1.0/me/drive/items/%s", id)
-	resp, err := putOneURL(http.MethodDelete, baseURL, map[string]string{}, nil)
+	resp, err := GetData(http.MethodDelete, baseURL, map[string]string{}, nil)
 	if err != nil {
 		return err
 	}
@@ -199,7 +200,7 @@ func DeleteFile(id string) error {
 	return err
 }
 
-// putOneURL
+// GetData
 /**
  * @Description: 请求微软的api
  * @param method 请求方法 GET,POST,DELETE,PUT
@@ -209,7 +210,7 @@ func DeleteFile(id string) error {
  * @return []byte 响应内容
  * @return error
  */
-func putOneURL(method, url1 string, headers map[string]string, data []byte) ([]byte, error) {
+func GetData(method, url1 string, headers map[string]string, data []byte) ([]byte, error) {
 	var (
 		resp *http.Response
 		body []byte

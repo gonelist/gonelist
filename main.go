@@ -4,12 +4,14 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"os"
 	"runtime"
 	"time"
 
 	log "github.com/sirupsen/logrus"
 
 	"gonelist/conf"
+	"gonelist/pkg/static"
 	"gonelist/routers"
 	"gonelist/service/onedrive"
 )
@@ -18,6 +20,7 @@ func main() {
 	confPath := flag.String("conf", "config.yml", "指定配置文件路径")
 	versionB := flag.Bool("version", false, "Show current version of gonelist.")
 	debugB := flag.Bool("debug", false, "debug log level")
+	getStatic := flag.Bool("static", false, "download the static files")
 	flag.Parse()
 
 	log.SetFormatter(&log.TextFormatter{
@@ -30,6 +33,15 @@ func main() {
 	}
 	if *debugB {
 		log.SetLevel(log.DebugLevel)
+	}
+	if *getStatic {
+		err := static.DownloadStatic(gVersion)
+		if err != nil {
+			log.Errorln("文件下载失败" + err.Error())
+			return
+		}
+		log.Infoln("文件下载完成，请重启程序")
+		os.Exit(3)
 	}
 	// 加载 config.yml
 	if err := conf.LoadUserConfig(*confPath); err != nil {
@@ -59,7 +71,6 @@ func main() {
 		WriteTimeout:   60 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
-
 	panic(server.ListenAndServe())
 }
 
