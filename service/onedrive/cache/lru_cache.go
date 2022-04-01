@@ -1,8 +1,10 @@
 package cache
 
 import (
+	"strings"
 	"sync"
 
+	"gonelist/conf"
 	"gonelist/service/onedrive/model"
 )
 
@@ -66,6 +68,10 @@ func (cache *LRUCache) Put(node *model.FileNode) error {
 func (cache *LRUCache) Get(key string) (*model.FileNode, bool) {
 	// cache.rwLock.Lock()
 	// defer cache.rwLock.Unlock()
+	if conf.UserSet.Onedrive.FolderSub != "/" {
+		key = conf.UserSet.Onedrive.FolderSub + key
+		key = strings.TrimRight(key, "/")
+	}
 	fileNode, ok := cache.datas[key]
 	if ok {
 		cache.list.MoveToHead(fileNode.Path)

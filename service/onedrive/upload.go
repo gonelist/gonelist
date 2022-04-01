@@ -7,6 +7,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
+
+	"gonelist/service/onedrive/cache"
 )
 
 // Uploader
@@ -54,8 +56,12 @@ func (u *Uploader) Write(p []byte) (n int, err error) {
  * @return error
  */
 func (u *Uploader) CreateSession(path, fileName string, fileSize int64) error {
-	sessionURL := fmt.Sprintf("https://graph.microsoft.com/v1.0/me/drive/root:%s/%s:/createUploadSession",
-		path, fileName)
+	node, b := cache.Cache.Get(path)
+	if !b {
+		return errors.New("parent folder not found")
+	}
+	sessionURL := fmt.Sprintf("https://graph.microsoft.com/v1.0/me/drive/items/%s:/%s:/createUploadSession",
+		node.ID, fileName)
 	data, err := GetData(http.MethodPost, sessionURL, map[string]string{}, nil)
 	if err != nil {
 		return err

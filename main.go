@@ -75,7 +75,7 @@ func main() {
 }
 
 var (
-	gVersion     = "v0.5.4"
+	gVersion     = "v0.5.5"
 	Version      string
 	gitCommit    string
 	gitTreeState = ""                     // state of git tree, either "clean" or "dirty"

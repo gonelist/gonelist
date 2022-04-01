@@ -43,7 +43,11 @@ func SetROOTUrl(conf *conf.AllSet) {
  * @return error
  */
 func Upload(path string, fileName string, content []byte) error {
-	baseURL := "https://graph.microsoft.com/v1.0/me/drive/root:" + path + "/" + url.PathEscape(fileName) + ":/content"
+	node, b := cache.Cache.Get(path)
+	if !b {
+		return errors.New("parent folder not found")
+	}
+	baseURL := "https://graph.microsoft.com/v1.0/me/drive/items/" + node.ID + ":/" + url.PathEscape(fileName) + ":/content"
 	resp, err := GetData("PUT", baseURL, map[string]string{}, content)
 	if err != nil {
 		return err
@@ -172,6 +176,9 @@ func Mkdir(path, floderName string) error {
 	//if err != nil {
 	//	return err
 	//}
+	if path == "" {
+		path = "/"
+	}
 	node, ok := cache.Cache.Get(path)
 	if !ok {
 		return errors.New("file not found")

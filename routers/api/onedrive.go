@@ -12,6 +12,7 @@ import (
 	"gonelist/pkg/app"
 	"gonelist/pkg/e"
 	"gonelist/service/onedrive"
+	"gonelist/service/onedrive/cache"
 	"gonelist/service/onedrive/model"
 )
 
@@ -48,7 +49,7 @@ func MkDir() gin.HandlerFunc {
 		folderName := ctx.Query("folder_name")
 		err := onedrive.Mkdir(path, folderName)
 		if err != nil {
-			app.Response(ctx, 403, 403, "")
+			app.Response(ctx, 403, 403, err)
 			return
 		}
 		app.Response(ctx, http.StatusOK, e.SUCCESS, "")
@@ -142,6 +143,7 @@ func Upload() gin.HandlerFunc {
 			if err != nil {
 				return
 			}
+			onedrive.RefreshFiles()
 			app.Response(ctx, http.StatusOK, e.SUCCESS, nil)
 		}
 	}
@@ -150,12 +152,12 @@ func Upload() gin.HandlerFunc {
 func DeleteFile() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		path := ctx.Query("path")
-		node, err := model.FindByPath(path)
-		if err != nil {
+		node, ok := cache.Cache.Get(path)
+		if !ok {
 			app.Response(ctx, http.StatusOK, e.ITEM_NOT_FOUND, nil)
 			return
 		}
-		err = onedrive.DeleteFile(node.ID)
+		err := onedrive.DeleteFile(node.ID)
 		if err != nil {
 			app.Response(ctx, http.StatusOK, e.ERROR, err.Error())
 			return

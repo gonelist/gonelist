@@ -14,7 +14,7 @@ import (
 )
 
 func DownloadStatic(version string) error {
-	url := fmt.Sprintf("https://github.do/https://github.com/gonelist/gonelist-web/releases/download/%v/dist.tar.gz", version)
+	url := fmt.Sprintf("https://github.com/gonelist/gonelist-web/releases/download/%v/dist.tar.gz", version)
 	log.Infoln("开始下载文件")
 	response, err := http.Get(url)
 	if err != nil {

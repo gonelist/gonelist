@@ -31,6 +31,9 @@ func GetREADME(c *gin.Context) {
 	if path == "" {
 		path = "/"
 	}
+	if conf.UserSet.Onedrive.FolderSub != "/" {
+		path = conf.UserSet.Onedrive.FolderSub + path
+	}
 	// 从 cache 中获取对应的 readme 的内容
 	readmeBytes, err := onedrive.GetREADMEInCache(path)
 	if err != nil {
