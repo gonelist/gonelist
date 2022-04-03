@@ -310,9 +310,9 @@ func getDownloadUrl(node *model.FileNode) (string, error) {
 
 func GetDownloadUrl(filePath string) (string, error) {
 
-	node, ok := cache.Cache.Get(filePath)
-	if !ok {
-		return "", errors.New("file not found")
+	node, err := model.FindByPath(filePath)
+	if err != nil {
+		return "", err
 	}
 	return getDownloadUrl(node)
 	//var (

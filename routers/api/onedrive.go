@@ -178,7 +178,7 @@ func Download(c *gin.Context) {
 
 	downloadURL, err := onedrive.GetDownloadUrl(filePath)
 	if err != nil || downloadURL == "" {
-		app.Response(c, http.StatusOK, e.ITEM_NOT_FOUND, nil)
+		app.Response(c, http.StatusOK, e.ITEM_NOT_FOUND, err)
 	} else {
 		c.Redirect(http.StatusFound, downloadURL)
 		c.Abort()
