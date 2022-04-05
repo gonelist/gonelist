@@ -47,7 +47,7 @@ func (cache *LRUCache) Put(node *model.FileNode) error {
 	}
 
 	// 缓存中容量超过上限
-	if cache.list.size >= cache.cap {
+	if cache.list.Size >= cache.cap {
 		// 删除链表尾部节点
 		k := cache.list.RemoveOneNodeByTail()
 		delete(cache.datas, k)

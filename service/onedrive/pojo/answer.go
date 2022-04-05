@@ -1,4 +1,4 @@
-package onedrive
+package pojo
 
 import (
 	"encoding/json"

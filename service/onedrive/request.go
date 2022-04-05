@@ -17,6 +17,7 @@ import (
 	"gonelist/conf"
 	"gonelist/service/onedrive/cache"
 	"gonelist/service/onedrive/model"
+	"gonelist/service/onedrive/pojo"
 )
 
 var (
@@ -65,10 +66,10 @@ func Upload(path string, fileName string, content []byte) error {
  * @return string
  * @return error
  */
-func Delta(token string) (Answer, string, error) {
+func Delta(token string) (pojo.Answer, string, error) {
 	var (
-		ans     Answer
-		tempAns Answer
+		ans     pojo.Answer
+		tempAns pojo.Answer
 		baseURL string
 	)
 	baseURL = token
@@ -303,7 +304,7 @@ func GetAllFiles() (*model.FileNode, error) {
 // Deprecated: 该方法已废弃
 func GetTreeFileNode(relativePath string) (list []*model.FileNode, readmeUrl, passUrl string, err error) {
 	var (
-		ans Answer
+		ans pojo.Answer
 	)
 
 	ans, err = GetUrlToAns(relativePath)
@@ -340,12 +341,12 @@ func GetTreeFileNode(relativePath string) (list []*model.FileNode, readmeUrl, pa
 
 // 获取某个路径的内容，如果 token 失效或没有正常结果返回 err
 // Deprecated: 该方法已废弃
-func GetUrlToAns(relativePath string) (Answer, error) {
+func GetUrlToAns(relativePath string) (pojo.Answer, error) {
 	// 默认一次获取 3000 个文件
 	var (
 		baseURL string
-		ans     Answer
-		tmpAns  Answer
+		ans     pojo.Answer
+		tmpAns  pojo.Answer
 		err     error
 	)
 
@@ -387,9 +388,9 @@ func GetUrlToAns(relativePath string) (Answer, error) {
 }
 
 // Deprecated: 该方法已废弃
-func RequestAnswer(urlstr string, relativePath string) (Answer, error) {
+func RequestAnswer(urlstr string, relativePath string) (pojo.Answer, error) {
 	var (
-		ans Answer
+		ans pojo.Answer
 	)
 	if strings.Contains(urlstr, "%") {
 		log.Debugf("123")
@@ -418,7 +419,7 @@ func RequestAnswer(urlstr string, relativePath string) (Answer, error) {
 		return ans, err
 	}
 	log.Debugf("url:%s relativePath:%s | body:%s", urlstr, relativePath, string(body))
-	err = CheckAnswerValid(ans, relativePath)
+	err = pojo.CheckAnswerValid(ans, relativePath)
 
 	//如果获取内容不正常，则返回
 	if err != nil {

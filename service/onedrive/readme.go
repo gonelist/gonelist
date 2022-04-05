@@ -1,6 +1,7 @@
 package onedrive
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -64,13 +65,18 @@ func GetAllREADMEAndPass(current *model.FileNode) error {
 }
 
 func GetREADMEInCache(p string) ([]byte, error) {
-	ans, ok := reCache.Get(README + p)
-	if !ok {
-		log.WithFields(log.Fields{
-			"path": p,
-		}).Info("README not in cache")
-		return nil, fmt.Errorf("README not in cache")
+	data, b := ReadmeCache.GetREADME(p)
+	if !b {
+		return nil, errors.New("file not found")
 	}
-
-	return ans.([]byte), nil
+	return data, nil
+	//ans, ok := reCache.Get(README + p)
+	//if !ok {
+	//	log.WithFields(log.Fields{
+	//		"path": p,
+	//	}).Info("README not in cache")
+	//	return nil, fmt.Errorf("README not in cache")
+	//}
+	//
+	//return ans.([]byte), nil
 }

@@ -11,6 +11,7 @@ import (
 	"gonelist/pkg/markdown"
 	"gonelist/service/onedrive/cache"
 	"gonelist/service/onedrive/model"
+	"gonelist/service/onedrive/pojo"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -300,7 +301,7 @@ func getDownloadUrl(node *model.FileNode) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	v := new(Value)
+	v := new(pojo.Value)
 	err = json.Unmarshal(resp, v)
 	if err != nil {
 		return "", err

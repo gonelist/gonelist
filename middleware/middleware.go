@@ -50,10 +50,11 @@ func CheckFolderPass() gin.HandlerFunc {
 		}
 		// 判断路径下是否有 .password 文件
 		node, ok := cache.Cache.Get(p)
-		if !ok {
+		if !ok || node == nil {
 			app.Response(c, http.StatusOK, e.PASS_ERROR, nil)
 			c.Abort()
 		}
+
 		if node.Password == "" || node.Password == pass {
 			c.Next()
 		} else {

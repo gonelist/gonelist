@@ -10,6 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"gonelist/service/onedrive/model"
+	"gonelist/service/onedrive/pojo"
 )
 
 // 设置缓存的默认时间为 2 天，每 2 天清空已经失效的缓存
@@ -24,7 +25,7 @@ const (
 )
 
 // Answer 是请求接口返回内容，里面包含的 Value 是一个列表
-func ConvertAnsToFileNodes(oldPath string, ans Answer) []*model.FileNode {
+func ConvertAnsToFileNodes(oldPath string, ans pojo.Answer) []*model.FileNode {
 	var (
 		list []*model.FileNode
 		path string

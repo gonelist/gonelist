@@ -7,9 +7,9 @@ type Node struct {
 }
 
 type DoubleList struct {
-	head *Node
-	tail *Node
-	size int
+	Head *Node
+	Tail *Node
+	Size int
 }
 
 // NewDoubleList
@@ -19,14 +19,14 @@ type DoubleList struct {
  */
 func NewDoubleList() *DoubleList {
 	d := new(DoubleList)
-	d.head = nil
-	d.tail = nil
-	d.size = 0
+	d.Head = nil
+	d.Tail = nil
+	d.Size = 0
 	return d
 }
 
 func (l *DoubleList) MoveToHead(data string) {
-	if l.head.key == data {
+	if l.Head.key == data {
 		return
 	}
 	l.RemoveNode(data)
@@ -40,10 +40,10 @@ func (l *DoubleList) MoveToHead(data string) {
  * @param data
  */
 func (l *DoubleList) RemoveNode(data string) {
-	if l.size == 0 {
+	if l.Size == 0 {
 		return
 	}
-	temp := l.head
+	temp := l.Head
 	flag := false
 	for {
 		if temp.next == nil {
@@ -63,14 +63,14 @@ func (l *DoubleList) RemoveNode(data string) {
 		if temp.next != nil {
 			temp.next.prev = temp.prev
 		} else {
-			l.tail = temp.prev
+			l.Tail = temp.prev
 		}
 		if temp.prev != nil {
 			temp.prev.next = temp.next
 		} else {
-			l.head = temp.next
+			l.Head = temp.next
 		}
-		l.size--
+		l.Size--
 	}
 }
 
@@ -84,18 +84,18 @@ func (l *DoubleList) InsertList(data string) {
 	n := new(Node)
 	n.key = data
 	// 链表为空时
-	if l.size < 1 {
-		l.head = n
-		l.tail = n
+	if l.Size < 1 {
+		l.Head = n
+		l.Tail = n
 	} else {
 		// 链表的长度>=1时
-		firstNode := l.head
+		firstNode := l.Head
 		n.next = firstNode
 		firstNode.prev = n
 		n.prev = nil
-		l.head = n
+		l.Head = n
 	}
-	l.size++
+	l.Size++
 }
 
 // RemoveOneNodeByTail
@@ -104,11 +104,11 @@ func (l *DoubleList) InsertList(data string) {
  * @receiver l
  */
 func (l *DoubleList) RemoveOneNodeByTail() string {
-	result := l.tail.key
-	tempNode := l.tail.prev
+	result := l.Tail.key
+	tempNode := l.Tail.prev
 	tempNode.next = nil
-	l.tail = tempNode
-	l.size--
+	l.Tail = tempNode
+	l.Size--
 	return result
 
 }
