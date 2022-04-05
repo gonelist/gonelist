@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -41,6 +42,10 @@ func CheckOnedriveInit() gin.HandlerFunc {
 func CheckFolderPass() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		p := c.Query("path")
+		if conf.UserSet.Local.Enable && strings.HasPrefix(p, "/"+conf.UserSet.Local.Name) {
+			c.Next()
+			return
+		}
 		pass := c.GetHeader("pass")
 		// 判断 config.yml 中的密码
 		if !onedrive.CheckPassCorrect(p, pass) {

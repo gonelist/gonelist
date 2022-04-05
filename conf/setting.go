@@ -42,6 +42,14 @@ type Admin struct {
 	UploadSliceSize int    `json:"upload_slice_size" yaml:"upload_slice_size"` // 大文件分片上传时得分片大小，默认为32MB,数字为1表示320kb
 }
 
+// Local
+// 本地目录挂载配置
+type Local struct {
+	Enable bool   `json:"enable" yaml:"enable"` // 是否开启本地挂载
+	Name   string `json:"name" yaml:"name"`     // 本地挂载的目录在gonelist中显示的名称
+	Path   string `json:"path" yaml:"path"`     // 本地挂载目录的路径
+}
+
 type Onedrive struct {
 	// Remote to load RemoteConf
 	Remote     string `json:"remote" yaml:"remote"`
@@ -83,6 +91,9 @@ type AllSet struct {
 	Onedrive *Onedrive `json:"onedrive" yaml:"onedrive"`
 	// 权限管理
 	Admin *Admin `json:"admin" yaml:"admin"`
+
+	// 本地目录挂载
+	Local *Local `json:"local" yaml:"local"`
 }
 
 var UserSet = &AllSet{}

@@ -26,6 +26,7 @@
 - 「README」，支持页面添加 README
 - 「加密目录」，支持给目录加密
 - 「登陆缓存」，登陆 onedrive 之后会有缓存，下次直接启动无需登录
+- 「本地挂载」，支持同时挂载onedrive和本地目录
 - ...
 
 注：支持绝大部分教育账号，部分 **教育账号** 因为需要管理员同意无法使用
@@ -98,6 +99,27 @@ server:
 
 # 网盘挂载的类型，当前仅支持 onedrive
 list_type: onedrive
+
+# 权限配置
+admin:
+  # 是否允许客户端写入文件到onedrive服务端，写入包括创建文件夹，上传文件，删除文件
+  enable_write: true
+  # 写入权限的secret，前端升级权限时需要，建议更改默认secret
+  secret: 123465
+
+  # 大文件分片上传时得分片大小，默认为32MB,数字为1表示320kb
+  upload_slice_size: 100
+
+# 本地文件挂载配置，请谨慎挂载，挂载后在管理员权限下将拥有删除文件和上传文件的权限
+local:
+  # 是否启用本地文件挂载
+  enable: false
+  # 本地文件挂载的名称，即挂载目录在跟目录显示的名称
+  name: local
+  # 本地文件挂载的路径，请使用/而不是\\,支持绝对路径和相对路径
+  # eg: 绝对路径 D:/Test  /root/test
+  # eg: 相对路径 ./test  ../
+  path: ./
 
 # onedrive 设置选项
 onedrive:

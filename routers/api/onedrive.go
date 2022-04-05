@@ -4,6 +4,7 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -13,6 +14,7 @@ import (
 	"gonelist/pkg/e"
 	"gonelist/service/onedrive"
 	"gonelist/service/onedrive/cache"
+	"gonelist/service/onedrive/local"
 	"gonelist/service/onedrive/model"
 )
 
@@ -34,12 +36,50 @@ func CacheGetPath(c *gin.Context) {
 	// 如果没有找到文件则返回 404
 	if err != nil {
 		log.Errorln(err.Error())
-		app.Response(c, http.StatusNotFound, e.ITEM_NOT_FOUND, nil)
-	} else if root == nil {
-		app.Response(c, http.StatusOK, e.SUCCESS, []*model.FileNode{})
-	} else {
-		app.Response(c, http.StatusOK, e.SUCCESS, root)
+		err = nil
 	}
+	if conf.UserSet.Local.Enable {
+		if root == nil {
+			if oPath == "/" {
+				app.Response(c, http.StatusOK, e.SUCCESS, []*model.FileNode{{
+					Name:           conf.UserSet.Local.Name,
+					Path:           "/" + conf.UserSet.Local.Name,
+					IsFolder:       true,
+					LastModifyTime: time.Now(),
+					Size:           0,
+				}})
+				return
+			} else if strings.HasPrefix(oPath, "/"+conf.UserSet.Local.Name) {
+				nodes, err := local.GetPath(oPath)
+				if err != nil {
+					app.Response(c, http.StatusNotFound, e.ITEM_NOT_FOUND, nil)
+					return
+				}
+				app.Response(c, http.StatusOK, e.SUCCESS, nodes)
+				return
+			}
+		} else {
+			if oPath == "/" {
+				app.Response(c, http.StatusOK, e.SUCCESS, append(root, &model.FileNode{
+					Name:           conf.UserSet.Local.Name,
+					Path:           "/" + conf.UserSet.Local.Name,
+					IsFolder:       true,
+					LastModifyTime: time.Now(),
+					Size:           0,
+				}))
+				return
+			} else {
+				app.Response(c, http.StatusOK, e.SUCCESS, root)
+			}
+		}
+	} else {
+		if root == nil {
+			app.Response(c, http.StatusOK, e.SUCCESS, []*model.FileNode{})
+		} else {
+			app.Response(c, http.StatusOK, e.SUCCESS, root)
+		}
+	}
+
 }
 
 // MkDir 创建文件夹

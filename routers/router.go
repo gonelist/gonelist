@@ -49,18 +49,18 @@ func InitRouter() *gin.Engine {
 	root := r.Group("/")
 	root.Use(middleware.CheckLogin())
 	{
-		r.GET("/d/*path", api.Download)
+		r.GET("/d/*path", api.LocalDownload(), api.Download)
 		r.GET("/README", middleware.CheckFolderPass(), api.GetREADME)
 	}
 
 	onedrive := r.Group("/onedrive")
 	onedrive.Use(middleware.CheckLogin())
 	{
-		onedrive.GET("/mkdir", middleware.CheckSecret(), api.MkDir())
+		onedrive.GET("/mkdir", middleware.CheckSecret(), api.LocalMkdir(), api.MkDir())
 		// 上传文件，仅支持大小4MB
-		onedrive.POST("/upload", middleware.CheckSecret(), api.Upload())
+		onedrive.POST("/upload", middleware.CheckSecret(), api.LocalUpload(), api.Upload())
 		// 删除文件
-		onedrive.GET("/delete_file", middleware.CheckSecret(), api.DeleteFile())
+		onedrive.GET("/delete_file", middleware.CheckSecret(), api.LocalDelete(), api.DeleteFile())
 		// 主动获取所有文件，返回整个树的目录
 		onedrive.GET("/getallfiles", api.MGGetFileTree)
 		// 根据路径获取对应数据
