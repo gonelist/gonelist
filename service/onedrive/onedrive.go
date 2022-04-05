@@ -37,7 +37,7 @@ func RefreshOnedriveAll() error {
 
 	// 构建搜索
 	go RefreshFiles()
-	go RefreshReadme()
+	// go RefreshReadme()
 	go RefreshPassword()
 
 	return nil
