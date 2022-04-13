@@ -43,7 +43,7 @@ case "$1" in
     }
     ;;
   "buildx") #使用buildx 构建多平台镜像
-    [ -n "$TAG_NUM" ] && build_arg="--build-arg VERSION=$DIST_VERSION"
+    [ -n "$TAG_NUM" ] && build_arg="$build_arg --build-arg VERSION=$DIST_VERSION"
     [ -n "${DockerUser}" ] && {
       docker login -u "${DockerUser}" -p "${DockerPass}"
       BUILDX_OPTS+='--push'

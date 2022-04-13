@@ -11,6 +11,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
+    # action 里不需要国内的代理
+      GOPROXY: https://goproxy.io,direct
       DockerUser: zhangguanzhang
       DockerPass: ${{ secrets.DockerPass }} 
       # list of architectures for build
@@ -57,6 +59,7 @@ jobs:
       - name: docker buildx
         id: build
         run: |
+          export build_arg="--build-arg GOPROXY=${GOPROXY}"
           bash -n build/build.sh buildx
           bash build/build.sh buildx
 
