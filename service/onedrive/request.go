@@ -21,8 +21,8 @@ import (
 )
 
 var (
-	// 默认 https://graph.microsoft.com/v1.0/me/drive/root/children
-	// ChinaCloud https://microsoftgraph.chinacloudapi.cn/v1.0/me/drive/root/children
+	// 默认 https://graph.microsoft.com/v1.0/me/drive
+	// ChinaCloud https://microsoftgraph.chinacloudapi.cn/v1.0/me/drive
 	ROOTUrl  string
 	UrlBegin string
 	UrlEnd   string
@@ -48,7 +48,7 @@ func Upload(path string, fileName string, content []byte) error {
 	if !b {
 		return errors.New("parent folder not found")
 	}
-	baseURL := "https://graph.microsoft.com/v1.0/me/drive/items/" + node.ID + ":/" + url.PathEscape(fileName) + ":/content"
+	baseURL := ROOTUrl + "/items/" + node.ID + ":/" + url.PathEscape(fileName) + ":/content"
 	resp, err := GetData("PUT", baseURL, map[string]string{}, content)
 	if err != nil {
 		return err
@@ -74,12 +74,12 @@ func Delta(token string) (pojo.Answer, string, error) {
 	)
 	baseURL = token
 	if baseURL == "" {
-		baseURL = "https://graph.microsoft.com/v1.0/me/drive/root/delta"
+		baseURL = ROOTUrl + "/root/delta"
 	}
 	//if token == "" {
-	//	baseURL = "https://graph.microsoft.com/v1.0/me/drive/root/delta"
+	//	baseURL = ROOTUrl+"/root/delta"
 	//} else {
-	//	baseURL = "https://graph.microsoft.com/v1.0/me/drive/root/delta?token=" + token
+	//	baseURL = ROOTUrl+"/root/delta?token=" + token
 	//}
 	for {
 		resp, err := GetData(http.MethodGet, baseURL, map[string]string{}, nil)
@@ -186,7 +186,7 @@ func Mkdir(path, floderName string) error {
 	}
 	m := map[string]interface{}{"name": floderName, "folder": map[string]string{}}
 	data, _ := json.Marshal(m)
-	baseURL := fmt.Sprintf("https://graph.microsoft.com/v1.0/me/drive/items/%s/children",
+	baseURL := fmt.Sprintf(ROOTUrl+"/items/%s/children",
 		node.ID)
 	resp, err := GetData(http.MethodPost, baseURL, map[string]string{"Content-Type": "application/json"}, data)
 	if err != nil {
@@ -198,7 +198,7 @@ func Mkdir(path, floderName string) error {
 }
 
 func DeleteFile(id string) error {
-	baseURL := fmt.Sprintf("https://graph.microsoft.com/v1.0/me/drive/items/%s", id)
+	baseURL := fmt.Sprintf(ROOTUrl+"/items/%s", id)
 	resp, err := GetData(http.MethodDelete, baseURL, map[string]string{}, nil)
 	if err != nil {
 		return err

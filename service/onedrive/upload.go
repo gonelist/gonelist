@@ -21,6 +21,14 @@ type Uploader struct {
 	currentWrite int64
 }
 
+func (u *Uploader) Close() error {
+	_, err := GetData(http.MethodDelete, u.sessionURL, map[string]string{}, nil)
+	if err != nil {
+		return err
+	}
+	return err
+}
+
 func NewUploader() *Uploader {
 	return &Uploader{}
 }
@@ -60,7 +68,7 @@ func (u *Uploader) CreateSession(path, fileName string, fileSize int64) error {
 	if !b {
 		return errors.New("parent folder not found")
 	}
-	sessionURL := fmt.Sprintf("https://graph.microsoft.com/v1.0/me/drive/items/%s:/%s:/createUploadSession",
+	sessionURL := fmt.Sprintf(ROOTUrl+"/items/%s:/%s:/createUploadSession",
 		node.ID, fileName)
 	data, err := GetData(http.MethodPost, sessionURL, map[string]string{}, nil)
 	if err != nil {

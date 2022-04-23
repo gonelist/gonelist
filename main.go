@@ -62,7 +62,6 @@ func main() {
 	}
 	// 处理端口绑定
 	Addr := conf.GetBindAddr(conf.UserSet.Server.BindGlobal, conf.UserSet.Server.Port)
-
 	// 启动服务器
 	server := &http.Server{
 		Addr:           Addr,
@@ -75,7 +74,7 @@ func main() {
 }
 
 var (
-	gVersion     = "v0.5.5"
+	gVersion     = "v0.6.0"
 	Version      string
 	gitCommit    string
 	gitTreeState = ""                     // state of git tree, either "clean" or "dirty"

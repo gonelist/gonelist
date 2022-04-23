@@ -20,7 +20,7 @@ var (
 			AuthURL:  "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
 			TokenURL: "https://login.microsoftonline.com/common/oauth2/v2.0/token",
 		},
-		ROOTUrl:  "https://graph.microsoft.com/v1.0/me/drive/root/children",
+		ROOTUrl:  "https://graph.microsoft.com/v1.0/me/drive",
 		UrlBegin: "https://graph.microsoft.com/v1.0/me/drive/root:",
 		UrlEnd:   ":/children",
 	}
@@ -31,7 +31,7 @@ var (
 			AuthURL:  "https://login.chinacloudapi.cn/common/oauth2/v2.0/authorize",
 			TokenURL: "https://login.chinacloudapi.cn/common/oauth2/v2.0/token",
 		},
-		ROOTUrl:  "https://microsoftgraph.chinacloudapi.cn/v1.0/me/drive/root/children",
+		ROOTUrl:  "https://microsoftgraph.chinacloudapi.cn/v1.0/me/drive",
 		UrlBegin: "https://microsoftgraph.chinacloudapi.cn/v1.0/me/drive/root:",
 		UrlEnd:   ":/children",
 	}
