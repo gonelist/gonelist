@@ -35,7 +35,7 @@ func GetPath(path string) ([]*model.FileNode, error) {
 			IsFolder:       file.IsDir(),
 			DownloadURL:    "",
 			LastModifyTime: info.ModTime(),
-			Size:           0,
+			Size:           info.Size(),
 			Children:       nil,
 			RefreshTime:    time.Time{},
 			Password:       "",

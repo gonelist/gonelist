@@ -34,8 +34,7 @@ func SetOnedriveInfo(conf *conf.AllSet) {
 	clientID = user.ClientID
 	clientSecret = user.ClientSecret
 
-	var endPoint oauth2.Endpoint
-	endPoint = user.RemoteConf.EndPoint
+	endPoint := user.RemoteConf.EndPoint
 	// 只申请读权限，避免应用程序进行修改，但使用 config.yml 给的默认 id 还是不太安全
 	var scopes = []string{"offline_access", "files.read", "https://graph.microsoft.com/Sites.Read.All"}
 	// 如果允许上传，则申请读写权限

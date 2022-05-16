@@ -1,16 +1,19 @@
 package api
 
 import (
+	"net/http"
+	"os"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 
 	"gonelist/conf"
 	"gonelist/pkg/app"
 	"gonelist/pkg/e"
+	"gonelist/pkg/markdown"
 	"gonelist/service/onedrive"
 	"gonelist/service/onedrive/model"
-
-	"net/http"
 )
 
 // swagger:operation GET /README?path= readme
@@ -37,6 +40,19 @@ func GetREADME(c *gin.Context) {
 	// 从 cache 中获取对应的 readme 的内容
 	readmeBytes, err := onedrive.GetREADMEInCache(path)
 	if err != nil {
+		// 判断本地是否开启
+		if conf.UserSet.Local.Enable && strings.HasPrefix(path, "/"+conf.UserSet.Local.Name) {
+			p1 := strings.TrimPrefix(path, "/"+conf.UserSet.Local.Name)
+			log.Infoln(p1)
+			file, err := os.ReadFile(conf.UserSet.Local.Path + p1 + "/README.md")
+			if err != nil {
+				app.Response(c, http.StatusOK, e.CACHE_NOT_FIND, nil)
+				return
+			}
+			data := markdown.MarkdownToHTMLByBytes(file)
+			app.Response(c, http.StatusOK, e.SUCCESS, string(data))
+			return
+		}
 		app.Response(c, http.StatusOK, e.CACHE_NOT_FIND, nil)
 	} else {
 		app.Response(c, http.StatusOK, e.SUCCESS, string(readmeBytes))

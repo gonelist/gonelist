@@ -24,7 +24,7 @@ func InitRouter() *gin.Engine {
 		AllowedHeaders: []string{"pass"}, // 允许 header
 	}))
 
-	if conf.UserSet.Server.Gzip == true {
+	if conf.UserSet.Server.Gzip {
 		r.Use(gzip.Gzip(gzip.DefaultCompression))
 	}
 

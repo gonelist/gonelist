@@ -43,7 +43,7 @@ list_type: onedrive
 
 # onedrive 设置选项
 onedrive:
-  # Remote name，可选 onedrive, chinacloud（世纪互联）
+  # Remote name，可选 onedrive, chinacloud（世纪互联）,可选local,选中local时仅支持挂载本地目录
   remote: onedrive
 
   # onedrive 的刷新模式，all，fresh 两种模式

@@ -1,20 +1,22 @@
 package api
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
+
 	"gonelist/conf"
 	"gonelist/pkg/app"
 	"gonelist/pkg/e"
 	"gonelist/service/onedrive"
-	"net/http"
 )
 
 // 通过监听一个地址，跳转打开 login
 func Login(c *gin.Context) {
 	conf.UserSet.Server.SiteUrl = c.GetHeader("Host")
 	// 判断是否登录
-	if onedrive.FileTree.IsLogin() == true {
+	if onedrive.FileTree.IsLogin() || conf.UserSet.Onedrive.Remote == "local" {
 		// 有 Client 则重定向到首页
 		c.Redirect(http.StatusFound, "/onedrive/getpath?path=/")
 	} else {

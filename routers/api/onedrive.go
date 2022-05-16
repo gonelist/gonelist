@@ -57,6 +57,9 @@ func CacheGetPath(c *gin.Context) {
 				}
 				app.Response(c, http.StatusOK, e.SUCCESS, nodes)
 				return
+			} else {
+				app.Response(c, http.StatusOK, e.SUCCESS, []*model.FileNode{})
+				return
 			}
 		} else {
 			if oPath == "/" {

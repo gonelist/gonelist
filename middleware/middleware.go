@@ -16,7 +16,7 @@ import (
 // 判断 onedrive 是否 login
 func CheckLogin() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if onedrive.GetClient() == nil {
+		if onedrive.GetClient() == nil && conf.UserSet.Onedrive.Remote != "local" {
 			// 没有 Client 则重定向到登陆
 			app.Response(c, http.StatusOK, e.REDIRECT_LOGIN, nil)
 			//c.Redirect(http.StatusFound, "/login")
@@ -55,9 +55,11 @@ func CheckFolderPass() gin.HandlerFunc {
 		}
 		// 判断路径下是否有 .password 文件
 		node, ok := cache.Cache.Get(p)
+		// 如果文件不存在，不应该进行拦截，而应该放行，因为不拦截请求不存在的路径全部会报错密码错误，而且可以通过local请求
 		if !ok || node == nil {
-			app.Response(c, http.StatusOK, e.PASS_ERROR, nil)
-			c.Abort()
+			//app.Response(c, http.StatusOK, e.PASS_ERROR, nil)
+			c.Next()
+			return
 		}
 
 		if node.Password == "" || node.Password == pass {
