@@ -100,7 +100,7 @@ type AllSet struct {
 	// 本地目录挂载
 	Local *Local `json:"local" yaml:"local"`
 
-	WebDav *WebDav `json:"web_dav" json:"webDav"`
+	WebDav *WebDav `json:"web_dav" yaml:"web_dav"`
 }
 
 var UserSet = &AllSet{}
