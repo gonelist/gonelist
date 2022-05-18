@@ -36,6 +36,11 @@ var defaultServerSetting = &Server{
 	SiteUrl:      "https://gonelist.cugxuan.cn",
 }
 
+type WebDav struct {
+	Host string `json:"host" yaml:"host"`
+	Port int    `json:"port" yaml:"port"`
+}
+
 type Admin struct {
 	EnableWrite     bool   `json:"enable_write" yaml:"enable_write"`           // 是否允许客户端写入文件到onedrive服务端，写入包括创建文件夹，上传文件，删除文件
 	Secret          string `json:"secret" yaml:"secret"`                       // 写入权限的secret，前端升级权限时需要，建议更改默认secret
@@ -94,6 +99,8 @@ type AllSet struct {
 
 	// 本地目录挂载
 	Local *Local `json:"local" yaml:"local"`
+
+	WebDav *WebDav `json:"web_dav" json:"webDav"`
 }
 
 var UserSet = &AllSet{}
