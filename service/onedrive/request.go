@@ -1,7 +1,6 @@
 package onedrive
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -15,9 +14,11 @@ import (
 	"github.com/tidwall/gjson"
 
 	"gonelist/conf"
+	"gonelist/service/onedrive/auth"
 	"gonelist/service/onedrive/cache"
 	"gonelist/service/onedrive/model"
 	"gonelist/service/onedrive/pojo"
+	"gonelist/service/onedrive/utils"
 )
 
 var (
@@ -49,7 +50,7 @@ func Upload(path string, fileName string, content []byte) error {
 		return errors.New("parent folder not found")
 	}
 	baseURL := ROOTUrl + "/items/" + node.ID + ":/" + url.PathEscape(fileName) + ":/content"
-	resp, err := GetData("PUT", baseURL, map[string]string{}, content)
+	resp, err := utils.GetData("PUT", baseURL, map[string]string{}, content)
 	if err != nil {
 		return err
 	}
@@ -82,7 +83,7 @@ func Delta(token string) (pojo.Answer, string, error) {
 	//	baseURL = ROOTUrl+"/root/delta?token=" + token
 	//}
 	for {
-		resp, err := GetData(http.MethodGet, baseURL, map[string]string{}, nil)
+		resp, err := utils.GetData(http.MethodGet, baseURL, map[string]string{}, nil)
 		if err != nil {
 			return ans, "", err
 		}
@@ -188,7 +189,7 @@ func Mkdir(path, floderName string) error {
 	data, _ := json.Marshal(m)
 	baseURL := fmt.Sprintf(ROOTUrl+"/items/%s/children",
 		node.ID)
-	resp, err := GetData(http.MethodPost, baseURL, map[string]string{"Content-Type": "application/json"}, data)
+	resp, err := utils.GetData(http.MethodPost, baseURL, map[string]string{"Content-Type": "application/json"}, data)
 	if err != nil {
 		return err
 	}
@@ -199,69 +200,13 @@ func Mkdir(path, floderName string) error {
 
 func DeleteFile(id string) error {
 	baseURL := fmt.Sprintf(ROOTUrl+"/items/%s", id)
-	resp, err := GetData(http.MethodDelete, baseURL, map[string]string{}, nil)
+	resp, err := utils.GetData(http.MethodDelete, baseURL, map[string]string{}, nil)
 	if err != nil {
 		return err
 	}
 	log.Debugln(gjson.GetBytes(resp, "@this|@pretty"))
 	RefreshFiles()
 	return err
-}
-
-// GetData
-/**
- * @Description: 请求微软的api
- * @param method 请求方法 GET,POST,DELETE,PUT
- * @param url1 url
- * @param headers 请求头
- * @param data 请求体
- * @return []byte 响应内容
- * @return error
- */
-func GetData(method, url1 string, headers map[string]string, data []byte) ([]byte, error) {
-	var (
-		resp *http.Response
-		body []byte
-		err  error
-	)
-
-	client := GetClient()
-	if client == nil {
-		log.Errorln("cannot get client to start request.")
-		return nil, fmt.Errorf("RequestOneURL cannot get client")
-	}
-	request, err := http.NewRequest(method, url1, bytes.NewReader(data))
-	for key, value := range headers {
-		request.Header.Add(key, value)
-	}
-	// 如果超时，重试两次
-	for retryCount := 3; retryCount > 0; retryCount-- {
-		if resp, err = client.Do(request); err != nil && strings.Contains(err.Error(), "timeout") {
-			log.WithFields(log.Fields{
-				"url":  url1,
-				"resp": resp,
-				"err":  err,
-			}).Info("RequestOneUrl 出现错误，开始重试")
-			<-time.After(time.Second / 3)
-		} else {
-			break
-		}
-	}
-
-	if err != nil {
-		log.WithFields(log.Fields{
-			"url":  url1,
-			"resp": resp,
-			"err":  err,
-		}).Info("请求 graph.microsoft.com 失败, request timeout")
-		return body, err
-	}
-
-	if body, err = ioutil.ReadAll(resp.Body); err != nil {
-		log.WithField("err", err).Info("读取 graph.microsoft.com 返回内容失败")
-		return body, err
-	}
-	return body, nil
 }
 
 // GetAllFiles 获取所有文件的树
@@ -434,7 +379,7 @@ func RequestOneUrl(url string) (body []byte, err error) {
 		client *http.Client // 获取全局的 client 来请求接口
 		resp   *http.Response
 	)
-	if client = GetClient(); client == nil {
+	if client = auth.GetClient(); client == nil {
 		log.Errorln("cannot get client to start request.")
 		return nil, fmt.Errorf("RequestOneURL cannot get client")
 	}

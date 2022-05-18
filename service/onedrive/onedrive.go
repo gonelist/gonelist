@@ -9,9 +9,11 @@ import (
 	"time"
 
 	"gonelist/pkg/markdown"
+	"gonelist/service/onedrive/auth"
 	"gonelist/service/onedrive/cache"
 	"gonelist/service/onedrive/model"
 	"gonelist/service/onedrive/pojo"
+	"gonelist/service/onedrive/utils"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -26,7 +28,7 @@ func InitOnedrive() {
 	}
 	// 设置 onedrive 登陆状态
 	FileTree.SetLogin(true)
-	cacheGoOnce.Do(func() {
+	auth.CacheOne.Do(func() {
 		go SetAutoRefresh()
 	})
 }
@@ -111,7 +113,7 @@ func GetPasswordNode() error {
 			}
 			downloadUrl = url
 		}
-		resp, err := GetData(http.MethodGet, downloadUrl, map[string]string{}, nil)
+		resp, err := utils.GetData(http.MethodGet, downloadUrl, map[string]string{}, nil)
 		if err != nil {
 			return err
 		}
@@ -149,7 +151,7 @@ func GetReadMeNodes() error {
 			}
 			downloadUrl = url
 		}
-		resp, err := GetData(http.MethodGet, downloadUrl, map[string]string{}, nil)
+		resp, err := utils.GetData(http.MethodGet, downloadUrl, map[string]string{}, nil)
 		if err != nil {
 			return err
 		}
@@ -297,7 +299,7 @@ func ReturnNode(node *model.FileNode) []*model.FileNode {
 
 func getDownloadUrl(node *model.FileNode) (string, error) {
 	baseURl := "https://graph.microsoft.com/v1.0/me/drive/items/" + node.ID
-	resp, err := GetData(http.MethodGet, baseURl, map[string]string{}, nil)
+	resp, err := utils.GetData(http.MethodGet, baseURl, map[string]string{}, nil)
 	if err != nil {
 		return "", err
 	}

@@ -14,6 +14,7 @@ import (
 	"gonelist/pkg/static"
 	"gonelist/routers"
 	"gonelist/service/onedrive"
+	"gonelist/service/onedrive/auth"
 )
 
 func main() {
@@ -52,7 +53,8 @@ func main() {
 
 	// 设置 onedrive 的相关配置，如果有 .token 那么会在这儿进行处理初始化
 	// 否则在端口绑定之后通过接口登陆之后初始化
-	onedrive.SetOnedriveInfo(conf.UserSet)
+	onedrive.SetROOTUrl(conf.UserSet)
+	auth.SetOnedriveInfo(conf.UserSet, onedrive.InitOnedrive)
 
 	// 设置 version
 	if Version != "" {

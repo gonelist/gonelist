@@ -10,6 +10,7 @@ import (
 	"gonelist/pkg/app"
 	"gonelist/pkg/e"
 	"gonelist/service/onedrive"
+	"gonelist/service/onedrive/auth"
 )
 
 // 通过监听一个地址，跳转打开 login
@@ -27,14 +28,14 @@ func Login(c *gin.Context) {
 
 // 跳转到网页登录
 func LoginMG(c *gin.Context) {
-	onedrive.RedirectLoginMG(c)
+	auth.RedirectLoginMG(c)
 	c.Abort()
 }
 
 // 接受 code
 func GetCode(c *gin.Context) {
 	var err error
-	code := &onedrive.ReceiveCode{
+	code := &auth.ReceiveCode{
 		Code: c.Query("code"),
 		//SessionState: c.Query("session_state"), // 有的账号好像没有
 		State: c.Query("state"),
@@ -46,7 +47,7 @@ func GetCode(c *gin.Context) {
 		return
 	}
 	// 获取 AccessToken
-	err = onedrive.GetAccessToken(*code)
+	err = auth.GetAccessToken(*code)
 	if err != nil {
 		app.Response(c, http.StatusOK, e.GetErrorCode(err), "登陆失败，请重新登陆")
 	} else {

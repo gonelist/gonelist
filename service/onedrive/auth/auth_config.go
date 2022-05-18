@@ -1,4 +1,4 @@
-package onedrive
+package auth
 
 import (
 	"context"

@@ -12,9 +12,9 @@ import (
 	"gonelist/conf"
 	"gonelist/pkg/app"
 	"gonelist/pkg/e"
+	"gonelist/service/local"
 	"gonelist/service/onedrive"
 	"gonelist/service/onedrive/cache"
-	"gonelist/service/onedrive/local"
 	"gonelist/service/onedrive/model"
 )
 

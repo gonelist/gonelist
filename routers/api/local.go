@@ -10,7 +10,7 @@ import (
 	"gonelist/conf"
 	"gonelist/pkg/app"
 	"gonelist/pkg/e"
-	"gonelist/service/onedrive/local"
+	"gonelist/service/local"
 )
 
 // LocalDownload

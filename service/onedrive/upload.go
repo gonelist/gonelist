@@ -9,6 +9,7 @@ import (
 	"github.com/tidwall/gjson"
 
 	"gonelist/service/onedrive/cache"
+	"gonelist/service/onedrive/utils"
 )
 
 // Uploader
@@ -22,7 +23,7 @@ type Uploader struct {
 }
 
 func (u *Uploader) Close() error {
-	_, err := GetData(http.MethodDelete, u.sessionURL, map[string]string{}, nil)
+	_, err := utils.GetData(http.MethodDelete, u.sessionURL, map[string]string{}, nil)
 	if err != nil {
 		return err
 	}
@@ -45,7 +46,7 @@ func (u *Uploader) Write(p []byte) (n int, err error) {
 	m := map[string]string{"Content-Range": fmt.Sprintf("bytes %d-%d/%d",
 		u.currentWrite, u.currentWrite+int64(len(p))-1, u.fileSize)}
 	log.Debugln(fmt.Sprintf("文件上传中==》%v", (u.currentWrite/u.fileSize)*100))
-	resp, err := GetData(http.MethodPut, u.sessionURL, m, p)
+	resp, err := utils.GetData(http.MethodPut, u.sessionURL, m, p)
 	if err != nil {
 		return 0, err
 	}
@@ -70,7 +71,7 @@ func (u *Uploader) CreateSession(path, fileName string, fileSize int64) error {
 	}
 	sessionURL := fmt.Sprintf(ROOTUrl+"/items/%s:/%s:/createUploadSession",
 		node.ID, fileName)
-	data, err := GetData(http.MethodPost, sessionURL, map[string]string{}, nil)
+	data, err := utils.GetData(http.MethodPost, sessionURL, map[string]string{}, nil)
 	if err != nil {
 		return err
 	}

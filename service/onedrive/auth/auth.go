@@ -1,4 +1,4 @@
-package onedrive
+package auth
 
 import (
 	"context"
@@ -26,10 +26,10 @@ var (
 	oauthConfig      Config
 	oauthStateString string
 	client           *http.Client
-	cacheGoOnce      sync.Once
+	CacheOne         sync.Once
 )
 
-func SetOnedriveInfo(conf *conf.AllSet) {
+func SetOnedriveInfo(conf *conf.AllSet, initFunc func()) {
 	user := conf.Onedrive
 	clientID = user.ClientID
 	clientSecret = user.ClientSecret
@@ -41,7 +41,7 @@ func SetOnedriveInfo(conf *conf.AllSet) {
 	if conf.Admin.EnableWrite {
 		scopes = append(scopes, "https://graph.microsoft.com/Files.ReadWrite.All")
 	}
-	SetROOTUrl(conf)
+
 	// 初始化 oauth 的 config
 	oauthConfig = Config{
 		Config: &oauth2.Config{
@@ -60,7 +60,7 @@ func SetOnedriveInfo(conf *conf.AllSet) {
 		client = oauthConfig.Client(ctx, tok)
 		log.WithField("refresh_token", tok.RefreshToken).Infof("从文件 %s 读取refresh_token成功", user.TokenPath)
 		// 初始化 onedrive 的内容
-		InitOnedrive()
+		initFunc()
 		return
 	}
 	client = nil

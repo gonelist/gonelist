@@ -1,6 +1,7 @@
-package onedrive
+package cache
 
 import (
+	"encoding/json"
 	"net/http"
 	"strings"
 	"sync"
@@ -10,8 +11,9 @@ import (
 
 	"gonelist/conf"
 	"gonelist/pkg/markdown"
-	"gonelist/service/onedrive/cache"
 	"gonelist/service/onedrive/model"
+	"gonelist/service/onedrive/pojo"
+	"gonelist/service/onedrive/utils"
 )
 
 var (
@@ -26,7 +28,7 @@ type ReadmeData struct {
 type READMECache struct {
 	cap         int                    // 缓存容量
 	datas       map[string]*ReadmeData // map结构，存储数据
-	list        *cache.DoubleList      // 双向链表
+	list        *DoubleList            // 双向链表
 	expiredTime int                    // Lru设置的过期时间
 	rwLock      sync.RWMutex
 }
@@ -40,7 +42,7 @@ func InitREADMECache(cap, expiredTime int) {
 	ReadmeCache = new(READMECache)
 	ReadmeCache.cap = cap
 	ReadmeCache.expiredTime = expiredTime
-	ReadmeCache.list = cache.NewDoubleList()
+	ReadmeCache.list = NewDoubleList()
 	ReadmeCache.datas = make(map[string]*ReadmeData)
 }
 
@@ -114,7 +116,7 @@ func (c *READMECache) GetREADME(key string) ([]byte, bool) {
 		log.Errorln("获取节点下载链接错误" + err.Error())
 		return nil, false
 	}
-	content, err := GetData(http.MethodGet, url, map[string]string{}, nil)
+	content, err := utils.GetData(http.MethodGet, url, map[string]string{}, nil)
 	if err != nil {
 		return nil, false
 	}
@@ -127,4 +129,18 @@ func (c *READMECache) GetREADME(key string) ([]byte, bool) {
 	//_ = c.Put(node)
 	//return node, true
 	return d, true
+}
+
+func getDownloadUrl(node *model.FileNode) (string, error) {
+	baseURl := "https://graph.microsoft.com/v1.0/me/drive/items/" + node.ID
+	resp, err := utils.GetData(http.MethodGet, baseURl, map[string]string{}, nil)
+	if err != nil {
+		return "", err
+	}
+	v := new(pojo.Value)
+	err = json.Unmarshal(resp, v)
+	if err != nil {
+		return "", err
+	}
+	return v.MicrosoftGraphDownloadURL, err
 }

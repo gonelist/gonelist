@@ -12,7 +12,7 @@ import (
 	"gonelist/pkg/app"
 	"gonelist/pkg/e"
 	"gonelist/pkg/markdown"
-	"gonelist/service/onedrive"
+	"gonelist/service/onedrive/cache"
 	"gonelist/service/onedrive/model"
 )
 
@@ -38,7 +38,7 @@ func GetREADME(c *gin.Context) {
 	//	path = conf.UserSet.Onedrive.FolderSub + path
 	//}
 	// 从 cache 中获取对应的 readme 的内容
-	readmeBytes, err := onedrive.GetREADMEInCache(path)
+	readmeBytes, err := cache.GetREADMEInCache(path)
 	if err != nil {
 		// 判断本地是否开启
 		if conf.UserSet.Local.Enable && strings.HasPrefix(path, "/"+conf.UserSet.Local.Name) {

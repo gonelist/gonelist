@@ -10,13 +10,14 @@ import (
 	"gonelist/pkg/app"
 	"gonelist/pkg/e"
 	"gonelist/service/onedrive"
+	"gonelist/service/onedrive/auth"
 	"gonelist/service/onedrive/cache"
 )
 
 // 判断 onedrive 是否 login
 func CheckLogin() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if onedrive.GetClient() == nil && conf.UserSet.Onedrive.Remote != "local" {
+		if auth.GetClient() == nil && conf.UserSet.Onedrive.Remote != "local" {
 			// 没有 Client 则重定向到登陆
 			app.Response(c, http.StatusOK, e.REDIRECT_LOGIN, nil)
 			//c.Redirect(http.StatusFound, "/login")
