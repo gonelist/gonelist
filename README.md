@@ -121,9 +121,22 @@ local:
   # eg: 相对路径 ./test  ../
   path: ./
 
+# webdav配置
+web_dav:
+  # 是否启用webdav
+  enable: false
+  # webdav监听地址
+  host: 0.0.0.0
+  # webdav监听端口
+  port: 80
+  # webdav登录账号
+  account: admin
+  # webdav登录密码
+  password: admin
+  
 # onedrive 设置选项
 onedrive:
-  # Remote name，可选 onedrive, chinacloud（世纪互联）
+  # Remote name，可选 onedrive, chinacloud（世纪互联），在local开启下可输入local,仅挂载本地目录
   remote: onedrive
 
   # onedrive 的刷新模式，all，fresh 两种模式

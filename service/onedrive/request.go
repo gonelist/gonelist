@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -45,6 +46,7 @@ func SetROOTUrl(conf *conf.AllSet) {
  * @return error
  */
 func Upload(path string, fileName string, content []byte) error {
+	path = strings.TrimRight(path, "/")
 	node, b := cache.Cache.Get(path)
 	if !b {
 		return errors.New("parent folder not found")
@@ -240,6 +242,75 @@ func GetAllFiles() (*model.FileNode, error) {
 	// 更新树结构
 	FileTree.SetRoot(root)
 	return root, nil
+}
+
+// GetDrive get the drive id
+func GetDrive() (string, error) {
+	data, err := utils.GetData(http.MethodGet, ROOTUrl, map[string]string{}, nil)
+	if err != nil {
+		return "", err
+	}
+	id := gjson.GetBytes(data, "id")
+	return id.String(), err
+}
+
+func Copy(src, desc string) error {
+	src = strings.TrimRight(src, "/")
+	if desc != "/" {
+		desc = strings.TrimRight(desc, "/")
+	}
+
+	srcNode, b := cache.Cache.Get(src)
+	if !b {
+		return errors.New("the src node not found")
+	}
+
+	descNode, b := cache.Cache.Get(desc)
+	if !b {
+		return errors.New("the desc node not found")
+	}
+	drive, _ := GetDrive()
+	baseUrl := fmt.Sprintf("%s/items/%v/copy", ROOTUrl, srcNode.ID)
+	d := map[string]interface{}{
+		"parentReference": map[string]string{
+			"id":      descNode.ID,
+			"driveId": drive,
+		},
+		"name": filepath.Base(src),
+	}
+	data, _ := json.Marshal(d)
+	resp, err := utils.GetData(http.MethodPost, baseUrl, map[string]string{"Content-type": "application/json"}, data)
+	log.Debugln("[copy] " + gjson.GetBytes(resp, "@this|@pretty").String())
+	return err
+}
+
+func Move(src, desc string) error {
+	src = strings.TrimRight(src, "/")
+	if desc != "/" {
+		desc = strings.TrimRight(desc, "/")
+	}
+
+	srcNode, b := cache.Cache.Get(src)
+	if !b {
+		return errors.New("the src node not found")
+	}
+
+	descNode, b := cache.Cache.Get(desc)
+	if !b {
+		return errors.New("the desc node not found")
+	}
+	baseUrl := fmt.Sprintf("%s/items/%v", ROOTUrl, srcNode.ID)
+	d := map[string]interface{}{
+		"parentReference": map[string]string{
+			"id":   descNode.ID,
+			"path": descNode.Path,
+		},
+		"name": filepath.Base(src),
+	}
+	data, _ := json.Marshal(d)
+	resp, err := utils.GetData(http.MethodPatch, baseUrl, map[string]string{"Content-type": "application/json"}, data)
+	log.Debugln("[move] " + gjson.GetBytes(resp, "@this|@pretty").String())
+	return err
 }
 
 // 获取树的一个节点

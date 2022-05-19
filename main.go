@@ -8,13 +8,12 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/emersion/go-webdav"
 	log "github.com/sirupsen/logrus"
 
 	"gonelist/conf"
 	"gonelist/pkg/static"
 	"gonelist/routers"
-	dav "gonelist/routers/webdav"
+	"gonelist/routers/webdav"
 	"gonelist/service/onedrive"
 	"gonelist/service/onedrive/auth"
 )
@@ -57,7 +56,7 @@ func main() {
 	// 否则在端口绑定之后通过接口登陆之后初始化
 	onedrive.SetROOTUrl(conf.UserSet)
 	auth.SetOnedriveInfo(conf.UserSet, onedrive.InitOnedrive)
-
+	println(onedrive.GetDrive())
 	// 设置 version
 	if Version != "" {
 		conf.UserSet.Version = Version
@@ -74,9 +73,9 @@ func main() {
 		WriteTimeout:   60 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
-	go func() {
-		panic(http.ListenAndServe(fmt.Sprintf("%v:%v", conf.UserSet.WebDav.Host, conf.UserSet.WebDav.Port), &webdav.Handler{FileSystem: &dav.Dav{}}))
-	}()
+	if conf.UserSet.WebDav.Enable {
+		go webdav.DavInit()
+	}
 	panic(server.ListenAndServe())
 }
 

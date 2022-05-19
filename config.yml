@@ -37,6 +37,18 @@ local:
   # eg: 相对路径 ./test  ../
   path: ./
 
+# webdav配置
+web_dav:
+  # 是否启用webdav
+  enable: false
+  # webdav监听地址
+  host: 0.0.0.0
+  # webdav监听端口
+  port: 80
+  # webdav登录账号
+  account: admin
+  # webdav登录密码
+  password: admin
 
 # 网盘挂载的类型，当前仅支持 onedrive
 list_type: onedrive
