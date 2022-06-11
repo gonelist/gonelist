@@ -39,8 +39,6 @@ var defaultServerSetting = &Server{
 // WebDav WebDav配置
 type WebDav struct {
 	Enable   bool   `json:"enable" yaml:"enable"`     //是否开启webdav
-	Host     string `json:"host" yaml:"host"`         // webdav监听地址
-	Port     int    `json:"port" yaml:"port"`         // webdav监听端口
 	Account  string `json:"account" yaml:"account"`   // webdav账号
 	Password string `json:"password" yaml:"password"` // webdav密码
 }

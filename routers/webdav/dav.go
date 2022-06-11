@@ -11,7 +11,6 @@ import (
 	"github.com/emersion/go-webdav"
 	log "github.com/sirupsen/logrus"
 
-	"gonelist/conf"
 	"gonelist/service/onedrive"
 	"gonelist/service/onedrive/cache"
 	"gonelist/service/onedrive/model"
@@ -19,29 +18,15 @@ import (
 
 // DavInit
 // 初始化webdav
-func DavInit() {
+func DavInit() *webdav.Handler {
 	defer func() {
 		err := recover()
 		log.Errorln("[webdav] webdav初始化异常")
 		log.Errorln(err)
 	}()
 	han := &webdav.Handler{FileSystem: &Dav{}}
-	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		// 获取用户名/密码
-		username, password, ok := req.BasicAuth()
-		if !ok {
-			w.Header().Set("WWW-Authenticate", `Basic realm="Restricted"`)
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		// 验证用户名/密码
-		if username != conf.UserSet.WebDav.Account || password != conf.UserSet.WebDav.Account {
-			http.Error(w, "WebDAV: need authorized!", http.StatusUnauthorized)
-			return
-		}
-		han.ServeHTTP(w, req)
-	})
-	panic(http.ListenAndServe(fmt.Sprintf("%v:%v", conf.UserSet.WebDav.Host, conf.UserSet.WebDav.Port), nil))
+	return han
+	//panic(http.ListenAndServe(fmt.Sprintf("%v:%v", conf.UserSet.WebDav.Host, conf.UserSet.WebDav.Port), nil))
 }
 
 type Dav struct {
@@ -139,6 +124,10 @@ func (d *Dav) Mkdir(name string) error {
 }
 
 func (d *Dav) Copy(name, dest string, recursive, overwrite bool) (created bool, err error) {
+
+	// 删除/webdav前缀
+	dest = trimLeft(dest)
+
 	log.Debugln(fmt.Sprintf("[webdav] 开始从%v复制文件%v", name, strings.TrimRight(dest, filepath.Base(dest))))
 	err = onedrive.Copy(name, strings.TrimRight(dest, filepath.Base(dest)))
 	if err != nil {
@@ -150,6 +139,10 @@ func (d *Dav) Copy(name, dest string, recursive, overwrite bool) (created bool, 
 }
 
 func (d *Dav) MoveAll(name, dest string, overwrite bool) (created bool, err error) {
+
+	// 删除/webdav前缀
+	dest = trimLeft(dest)
+
 	log.Debugln(fmt.Sprintf("[webdav] 开始从%v移动文件%v", name, strings.TrimRight(dest, filepath.Base(dest))))
 	err = onedrive.Move(name, strings.TrimRight(dest, filepath.Base(dest)))
 	if err != nil {
@@ -177,4 +170,8 @@ func (u *uploader) Write(p []byte) (n int, err error) {
 
 func (u *uploader) Close() error {
 	return onedrive.Upload(u.path, u.name, u.data)
+}
+
+func trimLeft(path string) string {
+	return strings.TrimPrefix(path, "/webdav")
 }

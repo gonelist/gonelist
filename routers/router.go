@@ -1,6 +1,9 @@
 package routers
 
 import (
+	"net/http"
+	"strings"
+
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
@@ -9,6 +12,7 @@ import (
 	"gonelist/conf"
 	"gonelist/middleware"
 	"gonelist/routers/api"
+	"gonelist/routers/webdav"
 )
 
 func InitRouter() *gin.Engine {
@@ -17,7 +21,6 @@ func InitRouter() *gin.Engine {
 	// 对于 router 中多个斜杠（slash）进行兼容
 	// 如 /ping //ping 是同一个接口
 	r.RemoveExtraSlash = true
-
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 	r.Use(cors.New(cors.Options{
@@ -36,6 +39,42 @@ func InitRouter() *gin.Engine {
 			"message": "hello world",
 		})
 	})
+
+	// 检测webdav是否开启
+	if conf.UserSet.WebDav.Enable {
+		// 初始化webdav处理器
+		handler := webdav.DavInit()
+		r.Use(func(ctx *gin.Context) {
+			// 挂载目录
+			if strings.HasPrefix(ctx.Request.URL.Path, "/webdav") {
+				// 获取用户名/密码
+				username, password, ok := ctx.Request.BasicAuth()
+				if !ok {
+					ctx.Writer.Header().Set("WWW-Authenticate", `Basic realm="Restricted"`)
+					ctx.Writer.WriteHeader(http.StatusUnauthorized)
+					return
+				}
+				// 验证用户名/密码
+				if username != conf.UserSet.WebDav.Account || password != conf.UserSet.WebDav.Account {
+					http.Error(ctx.Writer, "WebDAV: need authorized!", http.StatusUnauthorized)
+					return
+				}
+				// 修改path
+				ctx.Request.URL.Path = strings.TrimPrefix(ctx.Request.URL.Path, "/webdav")
+				if !strings.HasPrefix(ctx.Request.URL.Path, "/") {
+					ctx.Request.URL.Path = "/" + ctx.Request.URL.Path
+				}
+				if ctx.Request.Method == http.MethodGet {
+					ctx.Writer.WriteHeader(200)
+				}
+				handler.ServeHTTP(ctx.Writer, ctx.Request)
+
+				ctx.Abort()
+				return
+			}
+		})
+	}
+
 	r.GET("/info", api.Info)
 
 	r.GET("/login", api.Login)

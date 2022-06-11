@@ -13,7 +13,6 @@ import (
 	"gonelist/conf"
 	"gonelist/pkg/static"
 	"gonelist/routers"
-	"gonelist/routers/webdav"
 	"gonelist/service/onedrive"
 	"gonelist/service/onedrive/auth"
 )
@@ -73,9 +72,7 @@ func main() {
 		WriteTimeout:   60 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
-	if conf.UserSet.WebDav.Enable {
-		go webdav.DavInit()
-	}
+
 	panic(server.ListenAndServe())
 }
 

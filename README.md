@@ -27,6 +27,7 @@
 - 「加密目录」，支持给目录加密
 - 「登陆缓存」，登陆 onedrive 之后会有缓存，下次直接启动无需登录
 - 「本地挂载」，支持同时挂载onedrive和本地目录
+- 「webdav」，支持使用webdav协议对onedrive进行挂载
 - ...
 
 注：支持绝大部分教育账号，部分 **教育账号** 因为需要管理员同意无法使用
@@ -125,10 +126,6 @@ local:
 web_dav:
   # 是否启用webdav
   enable: false
-  # webdav监听地址
-  host: 0.0.0.0
-  # webdav监听端口
-  port: 80
   # webdav登录账号
   account: admin
   # webdav登录密码
@@ -197,5 +194,6 @@ onedrive:
 <a href="https://github.com/Sillywa/"><img src="https://avatars0.githubusercontent.com/u/22909601?s=400&v=4" width="30"></a>
 <a href="https://github.com/zhangguanzhang"><img src="https://avatars3.githubusercontent.com/u/18641678?s=400&v=4" width="30"></a>
 <a href="https://github.com/StringKe"><img src="https://avatars.githubusercontent.com/u/31089228?s=400&v=4" width="30"></a>
+<a href="https://github.com/huoxue1"><img src="https://avatars.githubusercontent.com/u/66867313?s=400&v=4" width="30"></a>
 - logo
   设计：<a href="http://lambertchan.me/"><img src="https://avatars0.githubusercontent.com/u/39192150?s=400&v=4" width="30"></a>
