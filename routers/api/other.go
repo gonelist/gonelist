@@ -62,6 +62,10 @@ func GetREADME(c *gin.Context) {
 // 搜索功能
 func Search(c *gin.Context) {
 	key := c.Query("key")
+	path, b := c.GetQuery("path")
+	if !b {
+		path = ""
+	}
 
 	if key == "" {
 		app.Response(c, http.StatusOK, e.ITEM_NOT_FOUND, nil)
@@ -69,7 +73,7 @@ func Search(c *gin.Context) {
 	}
 
 	//ans := onedrive.FileTree.Search(key)
-	nodes, err := model.Search(key)
+	nodes, err := model.Search(key, path)
 	if err != nil {
 		log.Errorln(err.Error())
 		return

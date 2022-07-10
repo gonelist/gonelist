@@ -282,15 +282,26 @@ func FindByName(name string) ([]*FileNode, error) {
 	return nodes, err
 }
 
-func Search(key string) ([]*FileNode, error) {
+func Search(key string, path string) ([]*FileNode, error) {
 	var (
 		nodes []*FileNode
 		t     int64
+		rows  *sql.Rows
+		err   error
 	)
-	rows, err := db.Query("select * from file where name like ?", "%"+key+"%")
-	if err != nil {
-		return nil, err
+	if path == "" {
+		rows, err = db.Query("select * from file where name like ?;", "%"+key+"%")
+	} else {
+		node, err := FindByPath(path)
+		if err != nil {
+			return nil, err
+		}
+		rows, err = db.Query("select * from file where name like ? and parent_id=?", "%"+key+"%", node.ID)
+		if err != nil {
+			return nil, err
+		}
 	}
+
 	defer func(rows *sql.Rows) {
 		_ = rows.Close()
 	}(rows)
