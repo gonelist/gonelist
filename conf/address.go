@@ -28,8 +28,8 @@ var (
 	ChinaCloud = Remote{
 		Name: "chinacloud",
 		EndPoint: oauth2.Endpoint{
-			AuthURL:  "https://login.chinacloudapi.cn/common/oauth2/v2.0/authorize",
-			TokenURL: "https://login.chinacloudapi.cn/common/oauth2/v2.0/token",
+			AuthURL:  "https://login.partner.microsoftonline.cn/organizations/oauth2/v2.0/authorize",
+			TokenURL: "https://login.partner.microsoftonline.cn/organizations/oauth2/v2.0/token",
 		},
 		ROOTUrl:  "https://microsoftgraph.chinacloudapi.cn/v1.0/me/drive",
 		UrlBegin: "https://microsoftgraph.chinacloudapi.cn/v1.0/me/drive/root:",
