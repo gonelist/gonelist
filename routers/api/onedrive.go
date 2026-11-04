@@ -49,7 +49,7 @@ func CacheGetPath(c *gin.Context) {
 					Size:           0,
 				}})
 				return
-			} else if strings.HasPrefix(oPath, "/"+conf.UserSet.Local.Name) {
+			} else if local.IsPath(oPath) {
 				nodes, err := local.GetPath(oPath)
 				if err != nil {
 					app.Response(c, http.StatusNotFound, e.ITEM_NOT_FOUND, nil)
@@ -121,15 +121,16 @@ func CheckUploadSecret() gin.HandlerFunc {
 // summary: 上传文件
 // description: 上传一个文件，目前仅支持单文件
 // parameters:
-// 		- name: path
-//   	in: path
-//   	description: 地址id
-//   	type: string
-//   	required: true
+//   - name: path
+//     in: path
+//     description: 地址id
+//     type: string
+//     required: true
 //
 // responses:
-//   200: repoResp
-//   403： the api not open
+//
+//	200: repoResp
+//	403： the api not open
 func Upload() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		if !conf.UserSet.Admin.EnableWrite {
@@ -160,7 +161,7 @@ func Upload() gin.HandlerFunc {
 			log.Infoln("开始上传文件：文件名==》"+file.Filename+" 文件大小===》", file.Size/1024/1024, "Mb", " 上传路径==》"+path)
 			err = onedrive.Upload(path, file.Filename, content)
 			if err != nil {
-				app.Response(ctx, http.StatusOK, e.SUCCESS, nil)
+				app.Response(ctx, http.StatusBadGateway, e.ERROR, "upload failed")
 				return
 			}
 			app.Response(ctx, http.StatusOK, e.SUCCESS, nil)
@@ -214,9 +215,10 @@ func Download(c *gin.Context) {
 	filePath := c.Param("path")
 	// 屏蔽 .password 文件的下载
 	list := strings.Split(filePath, "/")
-	if list[len(list)-1] == ".password" {
+	if strings.EqualFold(list[len(list)-1], ".password") {
 		app.Response(c, http.StatusOK, e.PASSWORD_FORBIT_DOWNLOAD, nil)
 		c.Abort()
+		return
 	}
 
 	downloadURL, err := onedrive.GetDownloadUrl(filePath)

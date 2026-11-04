@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -54,11 +55,11 @@ func SetOnedriveInfo(conf *conf.AllSet, initFunc func()) {
 		Storage: &FileStorage{Path: user.TokenPath},
 	}
 	oauthStateString = user.State
-	ctx := context.Background()
+	ctx := context.WithValue(context.Background(), oauth2.HTTPClient, &http.Client{Timeout: 60 * time.Second})
 	tok, err := oauthConfig.Storage.GetToken()
 	if err == nil {
 		client = oauthConfig.Client(ctx, tok)
-		log.WithField("refresh_token", tok.RefreshToken).Infof("从文件 %s 读取refresh_token成功", user.TokenPath)
+		log.Info("从文件读取 OAuth 令牌成功")
 		// 初始化 onedrive 的内容
 		initFunc()
 		return
@@ -80,22 +81,19 @@ type ReceiveCode struct {
 
 // receive code ,get access_token
 func GetAccessToken(code ReceiveCode) error {
-	ctx := context.Background()
+	ctx := context.WithValue(context.Background(), oauth2.HTTPClient, &http.Client{Timeout: 60 * time.Second})
 	if code.State != oauthStateString {
 		return errors.New("state 字符串与设置的不一致，请检查设置")
 	}
 
 	tok, err := GetToken(ctx, oauthConfig, code.Code)
 	if err != nil {
-		log.WithFields(log.Fields{
-			"token": tok,
-			"error": err,
-		}).Info("获取 AccessToken 错误")
+		log.Warn("获取 AccessToken 错误")
 		return errors.New("获取 AccessToken 错误")
 	}
 	// 如果登陆成功返回成功，前端去跳转
 	client = oauthConfig.Client(ctx, tok)
-	log.WithField("token", tok).Info("获取 AccessToken 成功")
+	log.Info("获取 AccessToken 成功")
 	return nil
 }
 

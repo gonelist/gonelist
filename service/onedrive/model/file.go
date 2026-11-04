@@ -42,7 +42,7 @@ func initTable() {
 		return
 	}
 	// 为path创建唯一索引
-	_, err = db.Exec(`create unique index  path_index on file (path)`)
+	_, err = db.Exec(`create unique index if not exists path_index on file (path)`)
 	if err != nil {
 		log.Errorln(err.Error())
 		return

@@ -1,8 +1,8 @@
 package api
 
 import (
+	"io"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -12,6 +12,7 @@ import (
 	"gonelist/pkg/app"
 	"gonelist/pkg/e"
 	"gonelist/pkg/markdown"
+	"gonelist/service/local"
 	"gonelist/service/onedrive/cache"
 	"gonelist/service/onedrive/model"
 )
@@ -21,13 +22,15 @@ import (
 // summary: 获取 README 的内容
 // description: 获取 README 的内容
 // parameters:
-// - name: path
-//   in: path
-//   description: 地址id
-//   type: string
-//   required: true
+//   - name: path
+//     in: path
+//     description: 地址id
+//     type: string
+//     required: true
+//
 // responses:
-//   200: repoResp
+//
+//	200: repoResp
 func GetREADME(c *gin.Context) {
 	path := c.Query("path")
 
@@ -41,14 +44,19 @@ func GetREADME(c *gin.Context) {
 	readmeBytes, err := cache.GetREADMEInCache(path)
 	if err != nil {
 		// 判断本地是否开启
-		if conf.UserSet.Local.Enable && strings.HasPrefix(path, "/"+conf.UserSet.Local.Name) {
-			p1 := strings.TrimPrefix(path, "/"+conf.UserSet.Local.Name)
-			log.Infoln(p1)
-			file, err := os.ReadFile(conf.UserSet.Local.Path + p1 + "/README.md")
+		if conf.UserSet.Local.Enable && local.IsPath(path) {
+			f, err := local.Open(strings.TrimRight(path, "/") + "/README.md")
 			if err != nil {
-				app.Response(c, http.StatusOK, e.CACHE_NOT_FIND, nil)
+				localError(c)
 				return
 			}
+			defer f.Close()
+			file, err := io.ReadAll(f)
+			if err != nil {
+				localError(c)
+				return
+			}
+
 			data := markdown.MarkdownToHTMLByBytes(file)
 			app.Response(c, http.StatusOK, e.SUCCESS, string(data))
 			return
@@ -88,7 +96,8 @@ func Search(c *gin.Context) {
 // parameters:
 //
 // responses:
-//   200: repoResp
+//
+//	200: repoResp
 func Info(c *gin.Context) {
 	ans := make(map[string]interface{})
 	ans["name"] = conf.UserSet.Name
@@ -106,7 +115,7 @@ func Info(c *gin.Context) {
 func UpdatePermission() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		if conf.UserSet.Admin.EnableWrite {
-			if ctx.Query("secret") == conf.UserSet.Admin.Secret {
+			if conf.UserSet.Admin.Secret != "" && ctx.Query("secret") == conf.UserSet.Admin.Secret {
 				app.Response(ctx, http.StatusOK, e.SUCCESS, nil)
 			} else {
 				app.Response(ctx, http.StatusOK, e.ACCESS_TOKEN_ERROR, nil)

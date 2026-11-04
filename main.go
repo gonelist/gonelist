@@ -36,7 +36,7 @@ func main() {
 		log.SetLevel(log.DebugLevel)
 	}
 	if *getStatic {
-		err := static.DownloadStatic(gVersion)
+		err := static.DownloadStatic(frontendVersion)
 		if err != nil {
 			log.Errorln("文件下载失败" + err.Error())
 			return
@@ -77,11 +77,12 @@ func main() {
 }
 
 var (
-	gVersion     = "v0.6.0"
-	Version      string
-	gitCommit    string
-	gitTreeState = ""                     // state of git tree, either "clean" or "dirty"
-	buildDate    = "1970-01-01T00:00:00Z" // build date, output of $(date +'%Y-%m-%dT%H:%M:%S')
+	gVersion        = "v0.6.1"
+	frontendVersion = "v0.6.0" // Frontend releases are versioned separately.
+	Version         string
+	gitCommit       string
+	gitTreeState    = ""                     // state of git tree, either "clean" or "dirty"
+	buildDate       = "1970-01-01T00:00:00Z" // build date, output of $(date +'%Y-%m-%dT%H:%M:%S')
 )
 
 func versionPrint() {

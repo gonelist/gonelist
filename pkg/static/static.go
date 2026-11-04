@@ -20,6 +20,10 @@ func DownloadStatic(version string) error {
 	if err != nil {
 		return err
 	}
+	defer response.Body.Close()
+	if response.StatusCode != http.StatusOK {
+		return fmt.Errorf("static download returned HTTP %d", response.StatusCode)
+	}
 	data, err := io.ReadAll(response.Body)
 	if err != nil {
 		return err
@@ -35,7 +39,7 @@ func DownloadStatic(version string) error {
 	return nil
 }
 
-//解压 tar.gz
+// 解压 tar.gz
 func DeCompress(tarFile, dest string) error {
 	srcFile, err := os.Open(tarFile)
 	if err != nil {

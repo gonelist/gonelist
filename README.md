@@ -1,3 +1,7 @@
+> **安全升级：请升级到 [v0.6.1](https://github.com/gonelist/gonelist/releases/tag/v0.6.1)。**
+> v0.6.0 已确认存在本地路径越界和凭据泄露风险；包含 WebDAV 的旧 master 还存在密码校验错误。影响条件及升级步骤见 [安全公告](SECURITY.md)。
+> 源码构建需要 Go 1.25 或更高版本。必须自行配置 OneDrive 应用凭据；开启写入前设置至少 16 位随机管理密钥，开启 WebDAV 前设置至少 12 位私密密码。仅挂载专门用于共享的目录。
+
 # GONEList
 
 <img align="right" width="240" src="https://gonelist-doc.cugxuan.cn/img/logo/logo.png">
@@ -104,9 +108,9 @@ list_type: onedrive
 # 权限配置
 admin:
   # 是否允许客户端写入文件到onedrive服务端，写入包括创建文件夹，上传文件，删除文件
-  enable_write: true
+  enable_write: false
   # 写入权限的secret，前端升级权限时需要，建议更改默认secret
-  secret: 123465
+  secret: "" # 启用写入前设置至少 16 位的随机私密值
 
   # 大文件分片上传时得分片大小，默认为32MB,数字为1表示320kb
   upload_slice_size: 100
@@ -120,7 +124,7 @@ local:
   # 本地文件挂载的路径，请使用/而不是\\,支持绝对路径和相对路径
   # eg: 绝对路径 D:/Test  /root/test
   # eg: 相对路径 ./test  ../
-  path: ./
+  path: ./files
 
 # webdav配置
 web_dav:
@@ -129,8 +133,7 @@ web_dav:
   # webdav登录账号
   account: admin
   # webdav登录密码
-  password: admin
-  
+  password: "" # 启用 WebDAV 前设置至少 12 位私密密码
 # onedrive 设置选项
 onedrive:
   # Remote name，可选 onedrive, chinacloud（世纪互联），在local开启下可输入local,仅挂载本地目录
@@ -147,12 +150,12 @@ onedrive:
   # 自动刷新时间，单位分钟
   refresh_time: 10
 
-  # 提供 onedrive 的应用配置，建议自己创建应用
-  client_id: 16e320f7-e427-4612-88da-f3d03e944d40
-  client_secret: lURpL3U@bBlmJ0:_dnU.LeLOGNGdVT30
-  # 提供 chinacloud 的应用配置，建议自己创建应用
-  #client_id: 2b54b127-b403-42a3-8b55-d25f3119aa13
-  #client_secret: a0CGqBT3f_8U5gztxKjxR-LNW-ZnTe.m
+  # onedrive 应用配置：必须自行创建应用并填写凭据
+  client_id: "" # 必须填写自己的应用 ID
+  client_secret: "" # 必须填写自己应用的新密钥；不要提交到版本库
+  # chinacloud 应用配置：必须自行创建应用并填写凭据
+  #client_id: "" # 必须填写自己的应用 ID
+  #client_secret: "" # 必须填写自己应用的新密钥
 
   # 子文件夹设置，比如你只想挂载你盘根目录下的 public 文件夹，就使用 /public
   folder_sub: /
@@ -180,7 +183,7 @@ onedrive:
   #    path:
 
   # 上传文件时将会进行密钥验证，验证成功才能上传成功，首次允许建议修改
-  upload_secret: 123465
+  upload_secret: "" # 启用写入前设置至少 16 位的随机私密值
 
   # 大文件分片上传时得分片大小，默认为32MB,数字为1表示320kb
   upload_slice_size: 100

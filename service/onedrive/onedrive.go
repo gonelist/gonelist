@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"path"
 	"strings"
 	"time"
 
@@ -121,7 +122,7 @@ func GetPasswordNode() error {
 		if err != nil {
 			return err
 		}
-		log.Debugln(string(resp))
+
 		parentNode.Password = string(resp)
 		parentNode.PasswordURL = downloadUrl
 		_ = model.UpdateFile(parentNode)
@@ -312,6 +313,9 @@ func getDownloadUrl(node *model.FileNode) (string, error) {
 }
 
 func GetDownloadUrl(filePath string) (string, error) {
+	if strings.EqualFold(path.Base(filePath), ".password") {
+		return "", errors.New("password files cannot be downloaded")
+	}
 
 	node, err := model.FindByPath(filePath)
 	if err != nil {

@@ -22,7 +22,7 @@ func InitPass(conf *conf.AllSet) {
 			passList[pass.Path] = pass.Pass
 		}
 	}
-	log.WithField("passlist", passList).Info("成功导入目录密码")
+	log.Info("成功导入目录密码")
 }
 
 // 判断输入目录和密码是否正确

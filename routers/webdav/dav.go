@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"path"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/emersion/go-webdav"
 	log "github.com/sirupsen/logrus"
@@ -19,14 +21,7 @@ import (
 // DavInit
 // 初始化webdav
 func DavInit() *webdav.Handler {
-	defer func() {
-		err := recover()
-		log.Errorln("[webdav] webdav初始化异常")
-		log.Errorln(err)
-	}()
-	han := &webdav.Handler{FileSystem: &Dav{}}
-	return han
-	//panic(http.ListenAndServe(fmt.Sprintf("%v:%v", conf.UserSet.WebDav.Host, conf.UserSet.WebDav.Port), nil))
+	return &webdav.Handler{FileSystem: &Dav{}}
 }
 
 type Dav struct {
@@ -39,15 +34,22 @@ func (d *Dav) Open(name string) (io.ReadCloser, error) {
 		log.Errorln("获取下载链接错误" + err.Error())
 		return nil, err
 	}
-	response, err := http.Get(url)
+	response, err := (&http.Client{Timeout: 60 * time.Second}).Get(url)
 	if err != nil {
-		log.Errorln("[webdav] " + "下载文件错误" + err.Error())
-		return nil, err
+		log.Error("[webdav] 下载文件错误")
+		return nil, errors.New("upstream download failed")
+	}
+	if response.StatusCode < 200 || response.StatusCode >= 300 {
+		response.Body.Close()
+		return nil, fmt.Errorf("download returned HTTP %d", response.StatusCode)
 	}
 	return response.Body, nil
 }
 
 func (d *Dav) Stat(name string) (*webdav.FileInfo, error) {
+	if strings.EqualFold(path.Base(name), ".password") {
+		return nil, errors.New("password files cannot be read")
+	}
 	log.Debugln("[webdav] " + "获取文件状态 ==> " + name)
 	if name != "/" {
 		name = strings.TrimRight(name, "/")
@@ -82,8 +84,11 @@ func (d *Dav) Readdir(name string, recursive bool) ([]webdav.FileInfo, error) {
 		log.Errorln("获取文件目录子目录错误" + err.Error())
 		return nil, err
 	}
-	files := make([]webdav.FileInfo, len(nodes))
+	files := make([]webdav.FileInfo, 0, len(nodes))
 	for _, fileNode := range nodes {
+		if strings.EqualFold(fileNode.Name, ".password") {
+			continue
+		}
 		files = append(files, webdav.FileInfo{
 			Path:     fileNode.Path,
 			Size:     fileNode.Size,

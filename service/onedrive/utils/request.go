@@ -2,69 +2,72 @@ package utils
 
 import (
 	"bytes"
+	"context"
+	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
+	"net"
 	"net/http"
-	"strings"
 	"time"
-
-	"github.com/sirupsen/logrus"
 
 	"gonelist/service/onedrive/auth"
 )
 
-// GetData
-/**
- * @Description: 请求微软的api
- * @param method 请求方法 GET,POST,DELETE,PUT
- * @param url1 url
- * @param headers 请求头
- * @param data 请求体
- * @return []byte 响应内容
- * @return error
- */
-func GetData(method, url1 string, headers map[string]string, data []byte) ([]byte, error) {
-	var (
-		resp *http.Response
-		body []byte
-		err  error
-	)
-
+// GetData performs a bounded request without exposing URLs, bodies or tokens in
+// errors. Graph error responses must never be treated as successful operations.
+func GetData(method, url string, headers map[string]string, data []byte) ([]byte, error) {
 	client := auth.GetClient()
 	if client == nil {
-		logrus.Errorln("cannot get client to start request.")
-		return nil, fmt.Errorf("RequestOneURL cannot get client")
+		return nil, errors.New("OneDrive client is not initialized")
 	}
-	request, err := http.NewRequest(method, url1, bytes.NewReader(data))
-	for key, value := range headers {
-		request.Header.Add(key, value)
+	return getData(context.Background(), client, method, url, headers, data)
+}
+
+func getData(ctx context.Context, client *http.Client, method, url string, headers map[string]string, data []byte) ([]byte, error) {
+	attempts := 1
+	if method == http.MethodGet || method == http.MethodHead {
+		attempts = 3
 	}
-	// 如果超时，重试两次
-	for retryCount := 3; retryCount > 0; retryCount-- {
-		if resp, err = client.Do(request); err != nil && strings.Contains(err.Error(), "timeout") {
-			logrus.WithFields(logrus.Fields{
-				"url":  url1,
-				"resp": resp,
-				"err":  err,
-			}).Info("RequestOneUrl 出现错误，开始重试")
-			<-time.After(time.Second / 3)
-		} else {
-			break
+	for attempt := 0; attempt < attempts; attempt++ {
+		body, retry, err := request(ctx, client, method, url, headers, data)
+		if !retry || attempt == attempts-1 {
+			return body, err
+		}
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		case <-time.After(time.Second / 3):
 		}
 	}
+	return nil, errors.New("request failed")
+}
 
+func request(ctx context.Context, client *http.Client, method, url string, headers map[string]string, data []byte) ([]byte, bool, error) {
+	ctx, cancel := context.WithTimeout(ctx, 60*time.Second)
+	defer cancel()
+	req, err := http.NewRequestWithContext(ctx, method, url, bytes.NewReader(data))
 	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"url":  url1,
-			"resp": resp,
-			"err":  err,
-		}).Info("请求 graph.microsoft.com 失败, request timeout")
-		return body, err
+		return nil, false, errors.New("invalid upstream request")
 	}
-
-	if body, err = ioutil.ReadAll(resp.Body); err != nil {
-		logrus.WithField("err", err).Info("读取 graph.microsoft.com 返回内容失败")
-		return body, err
+	for key, value := range headers {
+		req.Header.Set(key, value)
 	}
-	return body, nil
+	resp, err := client.Do(req)
+	if err != nil {
+		if resp != nil && resp.Body != nil {
+			resp.Body.Close()
+		}
+		var netErr net.Error
+		retry := errors.As(err, &netErr) && netErr.Timeout()
+		return nil, retry, errors.New("upstream request failed")
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return nil, false, fmt.Errorf("upstream returned HTTP %d", resp.StatusCode)
+	}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, false, errors.New("could not read upstream response")
+	}
+	return body, false, nil
 }

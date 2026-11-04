@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path/filepath"
@@ -15,7 +14,6 @@ import (
 	"github.com/tidwall/gjson"
 
 	"gonelist/conf"
-	"gonelist/service/onedrive/auth"
 	"gonelist/service/onedrive/cache"
 	"gonelist/service/onedrive/model"
 	"gonelist/service/onedrive/pojo"
@@ -52,11 +50,11 @@ func Upload(path string, fileName string, content []byte) error {
 		return errors.New("parent folder not found")
 	}
 	baseURL := ROOTUrl + "/items/" + node.ID + ":/" + url.PathEscape(fileName) + ":/content"
-	resp, err := utils.GetData("PUT", baseURL, map[string]string{}, content)
+	_, err := utils.GetData("PUT", baseURL, map[string]string{}, content)
 	if err != nil {
 		return err
 	}
-	log.Debugln(gjson.GetBytes(resp, "@this|@pretty"))
+
 	RefreshFiles()
 	return nil
 }
@@ -191,22 +189,22 @@ func Mkdir(path, floderName string) error {
 	data, _ := json.Marshal(m)
 	baseURL := fmt.Sprintf(ROOTUrl+"/items/%s/children",
 		node.ID)
-	resp, err := utils.GetData(http.MethodPost, baseURL, map[string]string{"Content-Type": "application/json"}, data)
+	_, err := utils.GetData(http.MethodPost, baseURL, map[string]string{"Content-Type": "application/json"}, data)
 	if err != nil {
 		return err
 	}
-	log.Infoln(gjson.GetBytes(resp, "@this|@pretty"))
+
 	RefreshFiles()
 	return err
 }
 
 func DeleteFile(id string) error {
 	baseURL := fmt.Sprintf(ROOTUrl+"/items/%s", id)
-	resp, err := utils.GetData(http.MethodDelete, baseURL, map[string]string{}, nil)
+	_, err := utils.GetData(http.MethodDelete, baseURL, map[string]string{}, nil)
 	if err != nil {
 		return err
 	}
-	log.Debugln(gjson.GetBytes(resp, "@this|@pretty"))
+
 	RefreshFiles()
 	return err
 }
@@ -279,8 +277,8 @@ func Copy(src, desc string) error {
 		"name": filepath.Base(src),
 	}
 	data, _ := json.Marshal(d)
-	resp, err := utils.GetData(http.MethodPost, baseUrl, map[string]string{"Content-type": "application/json"}, data)
-	log.Debugln("[copy] " + gjson.GetBytes(resp, "@this|@pretty").String())
+	_, err := utils.GetData(http.MethodPost, baseUrl, map[string]string{"Content-type": "application/json"}, data)
+
 	return err
 }
 
@@ -308,8 +306,8 @@ func Move(src, desc string) error {
 		"name": filepath.Base(src),
 	}
 	data, _ := json.Marshal(d)
-	resp, err := utils.GetData(http.MethodPatch, baseUrl, map[string]string{"Content-type": "application/json"}, data)
-	log.Debugln("[move] " + gjson.GetBytes(resp, "@this|@pretty").String())
+	_, err := utils.GetData(http.MethodPatch, baseUrl, map[string]string{"Content-type": "application/json"}, data)
+
 	return err
 }
 
@@ -434,7 +432,7 @@ func RequestAnswer(urlstr string, relativePath string) (pojo.Answer, error) {
 	if err := json.Unmarshal(body, &ans); err != nil {
 		return ans, err
 	}
-	log.Debugf("url:%s relativePath:%s | body:%s", urlstr, relativePath, string(body))
+
 	err = pojo.CheckAnswerValid(ans, relativePath)
 
 	//如果获取内容不正常，则返回
@@ -445,42 +443,6 @@ func RequestAnswer(urlstr string, relativePath string) (pojo.Answer, error) {
 }
 
 // 请求 onedrive 的原始 URL 数据
-func RequestOneUrl(url string) (body []byte, err error) {
-	var (
-		client *http.Client // 获取全局的 client 来请求接口
-		resp   *http.Response
-	)
-	if client = auth.GetClient(); client == nil {
-		log.Errorln("cannot get client to start request.")
-		return nil, fmt.Errorf("RequestOneURL cannot get client")
-	}
-
-	// 如果超时，重试两次
-	for retryCount := 3; retryCount > 0; retryCount-- {
-		if resp, err = client.Get(url); err != nil && strings.Contains(err.Error(), "timeout") {
-			log.WithFields(log.Fields{
-				"url":  url,
-				"resp": resp,
-				"err":  err,
-			}).Info("RequestOneUrl 出现错误，开始重试")
-			<-time.After(time.Second / 3)
-		} else {
-			break
-		}
-	}
-
-	if err != nil {
-		log.WithFields(log.Fields{
-			"url":  url,
-			"resp": resp,
-			"err":  err,
-		}).Info("请求 graph.microsoft.com 失败, request timeout")
-		return body, err
-	}
-
-	if body, err = ioutil.ReadAll(resp.Body); err != nil {
-		log.WithField("err", err).Info("读取 graph.microsoft.com 返回内容失败")
-		return body, err
-	}
-	return body, nil
+func RequestOneUrl(url string) ([]byte, error) {
+	return utils.GetData(http.MethodGet, url, nil, nil)
 }

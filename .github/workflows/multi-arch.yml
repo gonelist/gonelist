@@ -1,82 +1,87 @@
-name: build multi-arch images
+name: Build release and multi-arch images
 on:
   push:
-    branches: 
-    - master
-    - '*ci*'
-    tags:
-    - 'v*'
+    branches: [master]
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+env:
+  DIST_VERSION: v0.6.0
 
 jobs:
-  build:
+  images:
     runs-on: ubuntu-latest
-    env:
-    # action 里不需要国内的代理
-      GOPROXY: https://goproxy.io,direct
-      DockerUser: zhangguanzhang
-      DockerPass: ${{ secrets.DockerPass }} 
-      # list of architectures for build
-      # https://github.com/containerd/containerd/blob/v1.4.3/platforms/platforms.go#L63
-      PLATFORMS: linux/amd64,linux/arm64,linux/arm # linux/s390x,linux/ppc64le,
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Current info 
-        id: current
+      - name: Check Docker publishing configuration
+        id: docker
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DockerPass }}
         run: |
-          ls -l
-          echo $GITHUB_REF - $GITHUB_SHA
-
-      - name: Set up Go 1.x
-        uses: actions/setup-go@v2
-        with:
-          go-version: ^1.17
-
-      - name: Install gh cli and login
-        continue-on-error: true
-        id: gh
-        run: |
-          sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
-          sudo apt-add-repository https://cli.github.com/packages
-          sudo apt update
-          sudo apt install gh
-          gh version
-          gh auth login --with-token <<< ${{ secrets.gh_token }}
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-        with:
-          driver-opts: network=host
-          install: true
-
-      - name: docker buildx
-        id: build
-        run: |
-          export build_arg="--build-arg GOPROXY=${GOPROXY}"
-          bash -n build/build.sh buildx
-          bash build/build.sh buildx
-
-      - name: release build 
-        id: build_release
-        run: |
-          BRANCH_NAME=${GITHUB_REF##*/}
-          if echo "$BRANCH_NAME" | grep -qE '^v'; then
-            bash build/build.sh release
+          if [ -n "$DOCKER_PASSWORD" ]; then
+            echo 'enabled=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'Docker publishing skipped: DockerPass is not configured.'
           fi
-          true
-
-      - name: Create release
-        id: create_release
-        if: steps.gh.outcome == 'success'
+      - uses: docker/setup-qemu-action@v3
+        if: steps.docker.outputs.enabled == 'true'
+      - uses: docker/setup-buildx-action@v3
+        if: steps.docker.outputs.enabled == 'true'
+      - uses: docker/login-action@v3
+        if: steps.docker.outputs.enabled == 'true'
+        with:
+          username: zhangguanzhang
+          password: ${{ secrets.DockerPass }}
+      - name: Image metadata
+        if: steps.docker.outputs.enabled == 'true'
+        id: metadata
         run: |
-          BRANCH_NAME=${GITHUB_REF##*/}
-          if echo "$BRANCH_NAME" | grep -qE '^v'; then
-            gh release create -R ${GITHUB_REPOSITORY} "$BRANCH_NAME" release/*.tar.gz --title ""
-          fi     
+          version=$(git describe --tags --always)
+          tag=latest
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then tag="$GITHUB_REF_NAME"; version="$tag"; fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "ldflags=-s -w -X main.Version=$version -X main.gitCommit=$GITHUB_SHA -X main.gitTreeState=clean" >> "$GITHUB_OUTPUT"
+      - uses: docker/build-push-action@v6
+        if: steps.docker.outputs.enabled == 'true'
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          tags: zhangguanzhang/gonelist:${{ steps.metadata.outputs.tag }}
+          build-args: |
+            VERSION=${{ env.DIST_VERSION }}
+            GOPROXY=https://proxy.golang.org,direct
+            LDFLAGS=${{ steps.metadata.outputs.ldflags }}
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: go test -race ./...
+      - run: go vet ./...
+      - name: Build installation packages
+        env:
+          RELEASE_VERSION: ${{ github.ref_name }}
+        run: bash build/lib/all-release.sh
+      - name: Publish packages and security notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            # Keep an already published, reviewed set of artifacts immutable.
+            echo 'Release already exists; leaving its notes and assets unchanged.'
+          else
+            gh release create "$GITHUB_REF_NAME" release/gonelist_*.tar.gz release/SHA256SUMS \
+              --verify-tag --title "$GITHUB_REF_NAME" --notes-file "docs/releases/$GITHUB_REF_NAME.md"
+          fi

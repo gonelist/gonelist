@@ -1,90 +1,82 @@
 package model
 
 import (
+	"database/sql"
+	"errors"
+	"os"
 	"testing"
 	"time"
-
-	log "github.com/sirupsen/logrus"
 )
 
-var (
-	file = &FileNode{
-		ID:             "122",
-		Name:           "test.txt",
-		Path:           "/test",
-		READMEUrl:      "123",
-		IsFolder:       true,
-		DownloadURL:    "https://test.com",
-		LastModifyTime: time.Now(),
-		Size:           100,
-		Children:       nil,
-		RefreshTime:    time.Now(),
-		Password:       "123",
-		PasswordURL:    "123",
-		ParentID:       "122111111",
-	}
-)
-
-func TestInsert(t *testing.T) {
-	err := InsetFile(file)
-	if err != nil {
-		panic(err.Error())
-	}
-}
-
-func TestBatchInsertFile(t *testing.T) {
-	err := BatchInsertFile([]*FileNode{file})
-	if err != nil {
-		panic(err.Error())
-	}
-}
-
-func TestDeleteFile(t *testing.T) {
-	err := DeleteFile(file.ID)
+func TestMain(m *testing.M) {
+	db.Close()
+	var err error
+	db, err = sql.Open("sqlite", ":memory:")
 	if err != nil {
 		panic(err)
 	}
+	db.SetMaxOpenConns(1)
+	initTable()
+	code := m.Run()
+	db.Close()
+	os.Exit(code)
 }
 
-func TestUpdateFile(t *testing.T) {
-	err := UpdateFile(file)
-	if err != nil {
-		panic(err.Error())
+func testNode(t *testing.T) *FileNode {
+	t.Helper()
+	return &FileNode{ID: t.Name(), Name: "test.txt", Path: "/" + t.Name(), ParentID: "parent", LastModifyTime: time.Unix(1, 0)}
+}
+
+func TestInsert(t *testing.T) {
+	node := testNode(t)
+	if err := InsetFile(node); err != nil {
+		t.Fatal(err)
+	}
+	deadline := time.Now().Add(time.Second)
+	for {
+		got, err := Find(node.ID)
+		if err == nil {
+			if got.Path != node.Path {
+				t.Fatal(got)
+			}
+			break
+		}
+		if time.Now().After(deadline) {
+			t.Fatal(err)
+		}
+		time.Sleep(time.Millisecond)
 	}
 }
 
-func TestFind(t *testing.T) {
-	node, err := Find("122111111")
-	if err != nil {
-		panic(err.Error())
+func TestFileLifecycle(t *testing.T) {
+	node := testNode(t)
+	if err := BatchInsertFile([]*FileNode{node}); err != nil {
+		t.Fatal(err)
 	}
-	log.Infoln(node.Name)
-}
-
-func TestGetChildrenByID(t *testing.T) {
-	nodes, err := GetChildrenByID("122111111")
-	if err != nil {
-		panic(err.Error())
+	got, err := FindByPath(node.Path)
+	if err != nil || got.ID != node.ID {
+		t.Fatalf("find by path: %v, %v", got, err)
 	}
-	for _, node := range nodes {
-		log.Infoln(node.LastModifyTime)
+	node.Name = "renamed.txt"
+	if err := UpdateFile(node); err != nil {
+		t.Fatal(err)
 	}
-}
-
-func TestFindByPath(t *testing.T) {
-	node, err := FindByPath("/test")
-	if err != nil {
-		panic(err.Error())
+	got, err = Find(node.ID)
+	if err != nil || got.Name != node.Name {
+		t.Fatalf("update: %v, %v", got, err)
 	}
-	log.Infoln(node.Name)
-}
-
-func TestFindByName(t *testing.T) {
-	nodes, err := FindByName("test.txt")
-	if err != nil {
-		panic(err.Error())
+	nodes, err := FindByName(node.Name)
+	if err != nil || len(nodes) != 1 {
+		t.Fatalf("find by name: %v, %v", nodes, err)
 	}
-	for _, node := range nodes {
-		log.Infoln(node.Name)
+	nodes, err = GetChildrenByID(node.ParentID)
+	if err != nil || len(nodes) == 0 {
+		t.Fatalf("children: %v, %v", nodes, err)
+	}
+	if err := DeleteFile(node.ID); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := Find(node.ID); !errors.Is(err, sql.ErrNoRows) {
+		t.Fatalf("deleted node: %v", err)
 	}
 }

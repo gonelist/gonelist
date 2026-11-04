@@ -1,7 +1,7 @@
 package conf
 
 import (
-	"encoding/json"
+	"crypto/sha256"
 	"errors"
 	"fmt"
 	"os"
@@ -125,50 +125,79 @@ func LoadUserConfig(configPath string) error {
 	if content, err = file.ReadFromFile(configPath); err != nil {
 		return fmt.Errorf("read config err,path: %s", configPath)
 	}
-	err = yaml.Unmarshal(content, &UserSet)
+	loaded := &AllSet{}
+	err = yaml.Unmarshal(content, loaded)
 	if err != nil {
-		return fmt.Errorf("导入用户配置出现错误: %w", err)
+		return errors.New("导入用户配置出现错误，请检查 YAML 格式和字段类型")
 	}
-	// Server 的设置
-	if UserSet.Server == nil {
-		return fmt.Errorf("Server 设置读取出现错误")
+	if loaded.Server == nil || loaded.Onedrive == nil {
+		return errors.New("server and onedrive configuration are required")
 	}
-	switch UserSet.ListType {
+	if loaded.Admin == nil {
+		loaded.Admin = &Admin{}
+	}
+	if loaded.Local == nil {
+		loaded.Local = &Local{}
+	}
+	if loaded.WebDav == nil {
+		loaded.WebDav = &WebDav{}
+	}
+	if loaded.Admin.EnableWrite && (len(loaded.Admin.Secret) < 16 || loaded.Admin.Secret == "CHANGE_ME_ADMIN_SECRET") {
+		return errors.New("admin.secret must be a private random secret of at least 16 characters when writes are enabled")
+	}
+	if loaded.WebDav.Enable && (loaded.WebDav.Account == "" || len(loaded.WebDav.Password) < 12 || loaded.WebDav.Password == loaded.WebDav.Account) {
+		return errors.New("WebDAV requires an account and a private password of at least 12 characters different from the account")
+	}
+	if loaded.Local.Enable && (loaded.Local.Path == "" || loaded.Local.Name == "" || loaded.Local.Name == "." || loaded.Local.Name == ".." || strings.ContainsAny(loaded.Local.Name, "/\\\x00")) {
+		return errors.New("local mount requires a path and a single directory name")
+	}
+	if loaded.Onedrive.Remote != "local" && (loaded.Onedrive.ClientID == "" || loaded.Onedrive.ClientSecret == "") {
+		return errors.New("configure your own onedrive.client_id and client_secret before starting")
+	}
+	// These fingerprints identify the shared credentials published in old templates.
+	digest := fmt.Sprintf("%x", sha256.Sum256([]byte(loaded.Onedrive.ClientSecret)))
+	if digest == "821093316eb629192fa9972c25f752ec65a6d3f8b4b703c66bde465db0d8a5a1" || digest == "ba8fb5201df33fa76068f8424afd8506c2bce91be0c66954d38aa89c55c12d40" {
+		return errors.New("the legacy shared client secret is public; create your own application and rotate its credentials")
+	}
+	switch loaded.ListType {
 	case "onedrive":
 		// 处理 Remote 地址
-		switch UserSet.Onedrive.Remote {
+		switch loaded.Onedrive.Remote {
 		case "onedrive":
-			UserSet.Onedrive.RemoteConf = OneDrive
+			loaded.Onedrive.RemoteConf = OneDrive
 		case "chinacloud":
-			UserSet.Onedrive.RemoteConf = ChinaCloud
+			loaded.Onedrive.RemoteConf = ChinaCloud
+		case "local":
+		default:
+			return errors.New("unsupported onedrive.remote")
 		}
 		// PassList 设置
-		if UserSet.Onedrive.FolderSub == "" {
-			UserSet.Onedrive.FolderSub = "/"
+		if loaded.Onedrive.FolderSub == "" {
+			loaded.Onedrive.FolderSub = "/"
 		}
-		if UserSet.Onedrive.PassList == nil {
-			UserSet.Onedrive.PassList = defaultPassListSetting
+		if loaded.Onedrive.PassList == nil {
+			loaded.Onedrive.PassList = defaultPassListSetting
 		}
 		// TokenPath 不为 ""，token 保存在用户设置的目录
 		// 否则 token 将保存在用户 config.yml 所在的目录
-		if UserSet.Onedrive.TokenPath == "" {
-			UserSet.Onedrive.TokenPath = GetTokenPath(configPath)
+		if loaded.Onedrive.TokenPath == "" {
+			loaded.Onedrive.TokenPath = GetTokenPath(configPath)
 		} else {
 			// 用户一般写目录，此处转成文件
-			if !strings.HasSuffix(UserSet.Onedrive.TokenPath, ".token") {
-				UserSet.Onedrive.TokenPath = path.Join(UserSet.Onedrive.TokenPath, ".token")
+			if !strings.HasSuffix(loaded.Onedrive.TokenPath, ".token") {
+				loaded.Onedrive.TokenPath = path.Join(loaded.Onedrive.TokenPath, ".token")
 			}
 		}
 		// 设置大文件上传的分片
-		if UserSet.Admin.UploadSliceSize == 0 {
-			UserSet.Admin.UploadSliceSize = 100
+		if loaded.Admin.UploadSliceSize == 0 {
+			loaded.Admin.UploadSliceSize = 100
 		}
 	default:
 		return fmt.Errorf("不支持的网盘挂载类型")
 	}
 
-	setting, _ := json.Marshal(UserSet)
-	log.Infof("gonelist 监听端口:%v,成功导入用户配置:%+v", UserSet.Server.Port, string(setting))
+	log.Infof("gonelist 监听端口:%v,成功导入用户配置", loaded.Server.Port)
+	UserSet = loaded
 	return nil
 }
 

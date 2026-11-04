@@ -1,5 +1,5 @@
 #https://basefas.github.io/2019/09/24/%E4%BD%BF%E7%94%A8%20Docker%20%E6%9E%84%E5%BB%BA%20Go%20%E5%BA%94%E7%94%A8/
-FROM golang:1.17.7 as builder
+FROM golang:1.25 as builder
 
 
 WORKDIR /root/myapp/
@@ -13,11 +13,11 @@ RUN go mod download
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=${GOARCH} go build -o gonelist -ldflags "${LDFLAGS}" main.go
 
 
-FROM alpine:3.12
+FROM alpine:3
 
 WORKDIR /opt
 
-ARG VERSION=v0.5.3
+ARG VERSION=v0.6.0
 ARG TZ="Asia/Shanghai"
 
 COPY --from=builder /root/myapp/gonelist /bin/gonelist

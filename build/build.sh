@@ -16,7 +16,7 @@ read TAG_NUM LDFLAGS < <(GONELIST::SetVersion)
 echo go build -o ${GONELIST_ROOT}/gonelist -ldflags "${LDFLAGS}" ${GONELIST_ROOT}/main.go
 
 # 前端dist版本无值则取TAG版本号
-[ -z "$DIST_VERSION" ] && DIST_VERSION=$TAG_NUM
+export DIST_VERSION=${DIST_VERSION:-v0.6.0}
 
 case "$1" in
   "release") # checkout到tag构建完再checkout回来

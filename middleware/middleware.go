@@ -2,13 +2,13 @@ package middleware
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 
 	"gonelist/conf"
 	"gonelist/pkg/app"
 	"gonelist/pkg/e"
+	"gonelist/service/local"
 	"gonelist/service/onedrive"
 	"gonelist/service/onedrive/auth"
 	"gonelist/service/onedrive/cache"
@@ -43,7 +43,7 @@ func CheckOnedriveInit() gin.HandlerFunc {
 func CheckFolderPass() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		p := c.Query("path")
-		if conf.UserSet.Local.Enable && strings.HasPrefix(p, "/"+conf.UserSet.Local.Name) {
+		if conf.UserSet.Local.Enable && local.IsPath(p) {
 			c.Next()
 			return
 		}
@@ -53,6 +53,7 @@ func CheckFolderPass() gin.HandlerFunc {
 			// 如果密码错误，则返回
 			app.Response(c, http.StatusOK, e.PASS_ERROR, nil)
 			c.Abort()
+			return
 		}
 		// 判断路径下是否有 .password 文件
 		node, ok := cache.Cache.Get(p)
@@ -80,7 +81,7 @@ func CheckFolderPass() gin.HandlerFunc {
 func CheckSecret() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		secret := ctx.Query("secret")
-		if secret != conf.UserSet.Admin.Secret {
+		if !conf.UserSet.Admin.EnableWrite || conf.UserSet.Admin.Secret == "" || secret != conf.UserSet.Admin.Secret {
 			app.Response(ctx, http.StatusOK, e.SECRET_ERROR, nil)
 			ctx.Abort()
 			return

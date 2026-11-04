@@ -101,8 +101,8 @@ func (v *Value) UnmarshalJSON(b []byte) error {
 func CheckAnswerValid(ans Answer, relativePath string) error {
 	if ans.Error.Code != "" {
 		log.WithFields(log.Fields{
-			"Answer": ans,
-			"Path":   relativePath,
+			"code": ans.Error.Code,
+			"Path": relativePath,
 		}).Info("获取的 Answer 不正确")
 		return errors.New("获取的 Answer 不正确")
 	}

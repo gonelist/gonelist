@@ -1,112 +1,101 @@
 package api
 
 import (
+	"mime"
 	"net/http"
-	"os"
-	"strings"
 
 	"github.com/gin-gonic/gin"
-
 	"gonelist/conf"
 	"gonelist/pkg/app"
 	"gonelist/pkg/e"
 	"gonelist/service/local"
 )
 
-// LocalDownload
-/**
- * @Description: 本地文件下载
- * @return gin.HandlerFunc
- */
+func localError(ctx *gin.Context) {
+	app.Response(ctx, http.StatusForbidden, e.ERROR, "local file operation denied or failed")
+	ctx.Abort()
+}
+
 func LocalDownload() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if conf.UserSet.Local.Enable {
-			path := ctx.Param("path")
-			if strings.HasPrefix(path, "/"+conf.UserSet.Local.Name) {
-				ctx.Header("Content-Type", "application/octet-stream")
-				ctx.Header("Content-Disposition", "attachment; filename="+strings.Split(path, "/")[len(strings.Split(path, "/"))-1])
-				ctx.Header("Content-Transfer-Encoding", "binary")
-				ctx.File(local.HandlePath(path))
-				ctx.Abort()
-				return
-			}
+		p := ctx.Param("path")
+		if !conf.UserSet.Local.Enable || !local.IsPath(p) {
+			ctx.Next()
+			return
 		}
-		ctx.Next()
+		f, err := local.Open(p)
+		if err != nil {
+			localError(ctx)
+			return
+		}
+		defer f.Close()
+		info, err := f.Stat()
+		if err != nil || !info.Mode().IsRegular() {
+			localError(ctx)
+			return
+		}
+		ctx.Header("Content-Type", "application/octet-stream")
+		ctx.Header("Content-Disposition", mime.FormatMediaType("attachment", map[string]string{"filename": info.Name()}))
+		http.ServeContent(ctx.Writer, ctx.Request, info.Name(), info.ModTime(), f)
+		ctx.Abort()
 	}
 }
 
-// LocalMkdir
-/**
- * @Description: 本地文件夹创建
- * @return gin.HandlerFunc
- */
 func LocalMkdir() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if conf.UserSet.Local.Enable {
-			path := ctx.Query("path")
-			folderName := ctx.Query("folder_name")
-			if strings.HasPrefix(path, "/"+conf.UserSet.Local.Name) {
-				err := os.Mkdir(local.HandlePath(path)+"/"+folderName, 0666)
-				if err != nil {
-					app.Response(ctx, http.StatusBadGateway, e.SUCCESS, err)
-					ctx.Abort()
-					return
-				}
-				app.Response(ctx, http.StatusOK, e.SUCCESS, nil)
-				ctx.Abort()
-				return
-			}
+		p := ctx.Query("path")
+		if !conf.UserSet.Local.Enable || !local.IsPath(p) {
+			ctx.Next()
+			return
 		}
-		ctx.Next()
+		if err := local.Mkdir(p, ctx.Query("folder_name")); err != nil {
+			localError(ctx)
+			return
+		}
+		app.Response(ctx, http.StatusOK, e.SUCCESS, nil)
+		ctx.Abort()
 	}
 }
 
-// LocalUpload
-/**
- * @Description: 本地文件上传
- * @return gin.HandlerFunc
- */
 func LocalUpload() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if conf.UserSet.Local.Enable {
-			path := ctx.Query("path")
-			file, err := ctx.FormFile("file")
-			if err != nil {
-				ctx.Abort()
-				return
-			}
-			if strings.HasPrefix(path, "/"+conf.UserSet.Local.Name) {
-				err := ctx.SaveUploadedFile(file, local.HandlePath(path)+"/"+file.Filename)
-				if err != nil {
-					app.Response(ctx, http.StatusBadGateway, e.SUCCESS, err)
-					ctx.Abort()
-					return
-				}
-				app.Response(ctx, http.StatusOK, e.SUCCESS, nil)
-				ctx.Abort()
-				return
-			}
+		p := ctx.Query("path")
+		if !conf.UserSet.Local.Enable || !local.IsPath(p) {
+			ctx.Next()
+			return
 		}
-		ctx.Next()
+		file, err := ctx.FormFile("file")
+		if err != nil {
+			localError(ctx)
+			return
+		}
+		src, err := file.Open()
+		if err != nil {
+			localError(ctx)
+			return
+		}
+		defer src.Close()
+		if err := local.Upload(p, file.Filename, src); err != nil {
+			localError(ctx)
+			return
+		}
+		app.Response(ctx, http.StatusOK, e.SUCCESS, nil)
+		ctx.Abort()
 	}
 }
 
 func LocalDelete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if conf.UserSet.Local.Enable {
-			path := ctx.Query("path")
-			if strings.HasPrefix(path, "/"+conf.UserSet.Local.Name) {
-				err := os.Remove(local.HandlePath(path))
-				if err != nil {
-					app.Response(ctx, http.StatusBadGateway, e.SUCCESS, err)
-					ctx.Abort()
-					return
-				}
-				app.Response(ctx, http.StatusOK, e.SUCCESS, nil)
-				ctx.Abort()
-				return
-			}
+		p := ctx.Query("path")
+		if !conf.UserSet.Local.Enable || !local.IsPath(p) {
+			ctx.Next()
+			return
 		}
-		ctx.Next()
+		if err := local.Delete(p); err != nil {
+			localError(ctx)
+			return
+		}
+		app.Response(ctx, http.StatusOK, e.SUCCESS, nil)
+		ctx.Abort()
 	}
 }

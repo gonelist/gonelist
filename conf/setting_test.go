@@ -2,18 +2,24 @@ package conf
 
 import (
 	"github.com/go-playground/assert/v2"
-	log "github.com/sirupsen/logrus"
+	"os"
+	"path/filepath"
 	"testing"
 )
 
 func TestLoadUserConfig(t *testing.T) {
-	filePath := "../config.yml"
-	LoadUserConfig(filePath)
-	if UserSet == nil || UserSet.Server == nil {
-		log.Error("not find Userset")
+	old := UserSet
+	t.Cleanup(func() { UserSet = old })
+	t.Setenv("CONF_PATH", "")
+	filePath := filepath.Join(t.TempDir(), "config.yml")
+	if err := os.WriteFile(filePath, []byte("server:\n  port: 8000\nlist_type: onedrive\nonedrive:\n  remote: local\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := LoadUserConfig(filePath); err != nil {
+		t.Fatal(err)
 	}
 	assert.Equal(t, UserSet.Server.Port, 8000)
-	log.Infof("default config.yml: %v", UserSet)
+
 }
 
 func TestGetBindAddr(t *testing.T) {

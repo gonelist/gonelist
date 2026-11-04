@@ -9,8 +9,10 @@ import (
 func TestCheckPassCorrect(t *testing.T) {
 	var valid bool
 
-	conf.LoadUserConfig("../example/config.yml")
-	InitPass(conf.UserSet)
+	previous := passList
+	passList = map[string]string{}
+	t.Cleanup(func() { passList = previous })
+	InitPass(&conf.AllSet{Onedrive: &conf.Onedrive{PassList: []*conf.Pass{{Path: "/test-pass", Pass: "123456"}}}})
 
 	valid = CheckPassCorrect("/test-pass", "123456")
 	assert.Equal(t, valid, true)

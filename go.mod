@@ -1,6 +1,6 @@
 module gonelist
 
-go 1.17
+go 1.25.0
 
 require (
 	github.com/emersion/go-webdav v0.3.1
